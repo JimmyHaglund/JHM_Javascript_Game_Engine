@@ -3,7 +3,7 @@
  * Creates and manipulates game according to customization.
  */
 // System variables.
-var debugModeEnabled = false;
+var debugModeEnabled = true;
 
 // Game windows.
 var gameWindow;
@@ -20,6 +20,7 @@ var heldDownKeys =
     space : false
 };
 var testSprite = null;
+var testImage = null;
 function Start()
 {
     // Create game window.
@@ -29,15 +30,31 @@ function Start()
         gameWindowWidth, 
         gameWindowHeight);
     gameWindow.SetBackgroundColor("#33ccff");
+    
+    var preload = document.getElementById("preload");
+    console.log("Preload: " + preload);
+    
+    // testImage = document.createElement("img");
+    // testImage.src = "SpriteA.png";
+    // testImage.id = "SpriteA";
+    // console.log("ID: " + testImage.id);
+    testImage = gameWindow.AddEntity(50, 50);
+    // testSprite = imgEntity.AddComponent(new SpriteComponent("SpriteA.png"));
 
-    var imgEntity = gameWindow.AddEntity(50, 50);
-    testSprite = imgEntity.AddComponent(new SpriteComponent("buttonnormal"));
+    testSprite = testImage.AddComponent(new ButtonComponent("buttonnormal", "buttonhover", "buttonpressed"));
+    // testSprite = testImage.AddComponent(new SpriteComponent("buttonnormal"));
+    console.log("Entity: " + testImage);
+    // console.log("dir files: " + dirFiles);
+    // console.log("Image: " + document.getElementById("SpriteA"));
+    // console.log(window.location);
+    // console.log(dirFiles);
+
 }
 
 // Run when mouse is pressed down.
 function AcceptMousePress(event)
 {
-    testSprite.SetSpriteByURL("SpriteA.png");
+    // testSprite.SetSprite("SpriteA");
 
 
     var clickEvent = WindowManager.CheckPoint(event.clientX, event.clientY);

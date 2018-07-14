@@ -17,6 +17,8 @@
         {
             spriteID = targetSpriteID;
             if (spriteID == null) return;
+            // image = new Image();
+            // image.src = spriteID;
             image = document.getElementById(spriteID); // Document image.
             this.SetAlpha(alpha);
             imageWidth = image.naturalWidth;
