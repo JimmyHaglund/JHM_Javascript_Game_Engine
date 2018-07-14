@@ -1,0 +1,58 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <style>
+            canvas 
+            {
+                background-color: #f1f1f1;
+                align-self: center;
+                position:absolute;
+                border:3px solid black;
+            }
+            div.preload
+            {
+                display : none;
+            }
+            body
+            {
+                background-color: rgb(49, 49, 49);
+            }
+        </style>
+    </head>
+    
+    <body onload="Start()" 
+        onmousedown = "AcceptMousePress(event)" 
+        onmouseup="AcceptMouseRelease(event)" 
+        onmousemove = "MouseMove(event)" 
+        onkeydown = "AcceptKeyPress(event)" 
+        onkeyup = "AcceptKeyUp(event)">
+
+        <div class = "preload">
+        <img src = "./Sprites/ButtonBackground.png" id = "buttonbackground">
+        <img src = "./Sprites/ButtonNormal.png" id = "buttonnormal">
+        <img src = "./Sprites/ButtonHover.png" id = "buttonhover">
+        <img src = "./Sprites/ButtonPressed.png" id = "buttonpressed">
+        <img src = "./Sprites/Pixel_Portrait.png" id = "portrait">
+        <img src = "./Sprites/HitEffect.png" id = "fxhit">
+        <img src = "./Sprites/mage-3-87x110.png" id = "mage3">
+        </div>
+        
+        <script src = "./Scripts/JHM-Framework/JHM-Utility.js"></script>
+        <script src = "./Scripts/JHM-Framework/JHM-Component.js"></script>
+        <!--Comment-->
+
+        <script src = "./Scripts/JHM-Framework/JHM-Event.js"></script>
+        <script src = "./Scripts/JHM-Framework/JHM-MovementComponent.js"></script>
+        <script src = "./Scripts/JHM-Framework/JHM-TextComponent.js"></script>
+        <script src = "./Scripts/JHM-Framework/JHM-AudioComponent.js"></script>
+        <script src = "./Scripts/JHM-Framework/JHM-SpriteComponent.js"></script>
+        <script src = "./Scripts/JHM-Framework/JHM-ColliderComponent.js"></script>
+        <script src = "./Scripts/JHM-Framework/JHM-ButtonComponent.js"></script>
+        <script src = "./Scripts/JHM-Framework/JHM-Entity.js"></script>
+        <script src = "./Scripts/JHM-Framework/JHM-InterfaceManager.js"></script>
+        <script src = "./Scripts/JHM-Framework/JHM-Window.js"></script>
+        <script src = "./Scripts/JHM-Framework/JHM-WindowManager.js"></script>
+        <script src = "./Scripts/Master.js"></script>
+        
+    </body>
+</html>
