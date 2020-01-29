@@ -1,0 +1,61 @@
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <style>
+            canvas 
+            {
+                background-color: #f1f1f1;
+                align-self: center;
+                position:absolute;
+                border:3px solid black;
+            }
+            div.preload
+            {
+                display : none;
+            }
+            body
+            {
+                background-color: rgb(49, 49, 49);
+            }
+        </style>
+    </head>
+
+    <body onload="Start()" 
+        onmousedown = "AcceptMousePress(event)" 
+        onmouseup="AcceptMouseRelease(event)" 
+        onmousemove = "MouseMove(event)" 
+        onkeydown = "AcceptKeyPress(event)" 
+        onkeyup = "AcceptKeyUp(event)">
+        
+        <div class = "preload" id = "preload">
+            <!-- Core components-->
+            <script src = "../JHM-Framework/Core/JHM-Component.js"></script>
+            <script src = "../JHM-Framework/Core/JHM-Entity.js"></script>
+            <script src = "../JHM-Framework/Core/JHM-Event.js"></script>
+            <script src = "../JHM-Framework/Core/JHM-Utility.js"></script>
+            <!-- Window management -->
+            <script src = "../JHM-Framework/Window/JHM-Window.js"></script>
+            <script src = "../JHM-Framework/Window/JHM-WindowManager.js"></script>
+            <!-- Rendering -->
+            <script src = "../JHM-Framework/Rendering/AnimatedSpriteComponent.js"></script>
+            <script src = "../JHM-Framework/Rendering/JHM-ImageLoader.js"></script>
+            <script src = "../JHM-Framework/Rendering/JHM-SpriteComponent.js"></script>
+            <script src = "../JHM-Framework/Rendering/JHM-TextComponent.js"></script>
+            <!-- Audio -->
+            <script src = "../JHM-Framework/Audio/JHM-AudioComponent.js"></script>
+            <!-- Input -->
+            <script src = "../JHM-Framework/Input/JHM-ButtonComponent.js"></script>
+            <script src = "../JHM-Framework/Input/JHM-InterfaceManager.js"></script>
+            <!-- Physics -->
+            <script src = "../JHM-Framework/Physics/JHM-ColliderComponent.js"></script>
+            <script src = "../JHM-Framework/Physics/JHM-MovementComponent.js"></script>
+            <script src = "../JHM-Framework/Physics/JHM-Navmesh.js"></script>
+            <script src = "../JHM-Framework/Physics/JHM-Ray.js"></script>
+            
+        </div>
+        <script src = "./Master.js"></script>
+
+    </body>
+</html>
+        

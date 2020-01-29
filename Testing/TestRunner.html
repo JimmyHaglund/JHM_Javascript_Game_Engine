@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tests</title>
+  </head>
+  <body onload="jhm_test()">
+    <div id = "preload">
+      <!-- Core components-->
+      <script src = "../JHM-Framework/Core/One.js"></script>
+      <script src = "../JHM-Framework/Core/JHM-Component.js"></script>
+      <script src = "../JHM-Framework/Core/JHM-Entity.js"></script>
+      <script src = "../JHM-Framework/Core/JHM-Event.js"></script>
+      <script src = "../JHM-Framework/Core/JHM-Utility.js"></script>
+      <!-- Window management -->
+      <script src = "../JHM-Framework/Window/JHM-Window.js"></script>
+      <script src = "../JHM-Framework/Window/JHM-WindowManager.js"></script>
+      <!-- Rendering -->
+      <script src = "../JHM-Framework/Rendering/AnimatedSpriteComponent.js"></script>
+      <script src = "../JHM-Framework/Rendering/JHM-ImageLoader.js"></script>
+      <script src = "../JHM-Framework/Rendering/JHM-SpriteComponent.js"></script>
+      <script src = "../JHM-Framework/Rendering/JHM-TextComponent.js"></script>
+      <!-- Audio -->
+      <script src = "../JHM-Framework/Audio/JHM-AudioComponent.js"></script>
+      <!-- Input -->
+      <script src = "../JHM-Framework/Input/JHM-ButtonComponent.js"></script>
+      <script src = "../JHM-Framework/Input/JHM-InterfaceManager.js"></script>
+      <!-- Physics -->
+      <script src = "../JHM-Framework/Physics/JHM-ColliderComponent.js"></script>
+      <script src = "../JHM-Framework/Physics/JHM-MovementComponent.js"></script>
+      <script src = "../JHM-Framework/Physics/JHM-Navmesh.js"></script>
+      <script src = "../JHM-Framework/Physics/JHM-Ray.js"></script>
+      
+      <div id = "tests">
+        <script src = "./Assert.js"></script>
+        <script src = "./JHM-Test.js"></script>
+        
+        <script src = "./Tests/One_Test.js"></script>
+      </div>
+      
+    </div>
+    <div id = "Display">
+      <button onclick="test()">Run Test</button>
+    </div>
+  </body>
+</html>
