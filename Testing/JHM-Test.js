@@ -5,7 +5,6 @@ function jhm_test(){
     test_windowManager();
     component_test();
     entity_test();
-    one_test();
     setTimeout (() => {
     console.log('Tests executed: ', testsRun);
     console.log('Tests succeeded: ', testsPassed);
