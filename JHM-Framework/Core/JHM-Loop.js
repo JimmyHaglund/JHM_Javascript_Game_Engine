@@ -1,10 +1,31 @@
+const iLoop = Symbol("iLoop");
+// Number ticksPerSecond {set, get}
+// void pause()
+// void play()
+// bool playing {get}
+// object update {get} => {void add(value), void remove(value)}
 /**
  * @constructor Loop
  * @param ticksPerSecond Number of updates per second
  */
-function Loop(ticksPerSecond = 60, startPaused = false) {
+const Loop = function(ticksPerSecond = 60, startPaused = false) {
+    let _intervalTime = 1000 / ticksPerSecond;
+    let _onUpdateEvents = [];
+    let _interval = null;
+    let _updateFunctions = {
+        add: function (value) {
+            if (typeof value != typeof (() => { })) return;
+            _onUpdateEvents.push(value);
+        },
+        remove: function (value) {
+            let index = _onUpdateEvents.indexOf(value);
+            if (index < 0) return;
+
+            _onUpdateEvents.shift(index, 0);
+        }
+    };
     class loop {
-        constructor() { 
+        constructor() {
             if (!startPaused) this.play();
         }
         // Note that when setting a new interval,
@@ -15,10 +36,10 @@ function Loop(ticksPerSecond = 60, startPaused = false) {
             if (ticksPerSecond != value) {
                 this.pause();
             }
-            
+
             if (value <= 0) _intervalTime = 0;
             else _intervalTime = 1000 / value;
-            
+
             if (value > 0) {
                 this.play();
             }
@@ -40,48 +61,19 @@ function Loop(ticksPerSecond = 60, startPaused = false) {
                 _interval = setInterval(update, _intervalTime);
             }
         }
-        get playing(){
+        get playing() {
             return _interval != null;
         }
     }
-    // Private members & methods
-    let _intervalTime = 1000 / ticksPerSecond;
-    let _onUpdateEvents = [];
-    let _interval = null;
-    let _updateFunctions = {
-        add: function (value) {
-            if (typeof value != typeof (() => { })) return;
-            _onUpdateEvents.push(value);
-        },
-        remove: function (value) {
-            let index = _onUpdateEvents.indexOf(value);
-            if (index < 0) return;
-
-            _onUpdateEvents.shift(index, 0);
-        }
-    };
-    let _myLoop = new loop();
     
+    let _myLoop = new loop();
+
     function update() {
         if (_onUpdateEvents.length == 0) return;
         _onUpdateEvents.forEach((event) => {
-            event();
+            event(_intervalTime);
         });
     }
 
     return _myLoop;
-}
-
-class Interval {
-
-    constructor(interavalTime) {
-        this.interavalTime = interavalTime;
-        this.onUpdate = [];
-        setInterval
-    }
-    Update() {
-        onUpdate.forEach(element => {
-
-        });
-    }
 }

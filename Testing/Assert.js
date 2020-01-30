@@ -18,9 +18,9 @@ function describe(functionName, actionDescriptionFunction) {
     testData.push(currentTestData);
 
     // Print result info if test failed.
-    // if (failCount != testsFailed){
+    if (failCount != testsFailed){
         console.log(currentTestData);
-    // }
+    }
     return testSucceeded;
 }
 
