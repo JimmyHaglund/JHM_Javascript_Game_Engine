@@ -1,36 +1,98 @@
-// Generates JHM-Test.js based on test files in Tests folder.
+/** Jimmy Haglund, 2020-01-29
+ * Run this script with node to generate a TestRunner.html and JHM-Test.js.
+ * TestRunner.html can be opened in a browser in order to run tests.
+ * Files included will be any in subfolders of the Tests folder and in
+ * the JHM-Framework folder.
+ * 
+ * Each test file is expected to start with a function which is used to 
+ * execute the test, declared with the syntax "function exampleTest()".
+ */
 
 const fileSystem = require('fs');
+const pathSystem = require('path');
 const testPath = './Tests/';
-fileSystem.readdir(testPath, processFiles);
-var functionNames = [];
-function processFiles(error, dirEnt) {
-    if (error != null){
-        console.log("error when reading test file directory!");
-        return;
-    }
-    // Read each test file & extract test function names
-    let fileCount = dirEnt.length;
-    dirEnt.forEach(fileName => {
-        fileSystem.readFile(testPath + fileName, "utf8", (err, data) => {
-            // console.log(extractFunction(data));
-            functionNames.push(extractFunction(data));
-            if (functionNames.length >= fileCount) {
-                // Write JHM-Test.js
-                fileSystem.writeFile('./JHM-Test.js', GenerateTester(), () => console.log("Test file generated."));
-                // Write TestRunner.html
-                // TODO
-            }
-        });
+const corePath = '../JHM-Framework/';
+const testFunctionNames = [];
+const testFiles = [];
+const coreFiles = [];
+processCoreFiles();
+processTestFiles();
+writeJHMTest();
+writeTestRunner();
+
+function processCoreFiles(){
+    forEachFileInFolder(corePath, path => {
+        if (pathSystem.extname(path) != ".js") return;
+        coreFiles.push(path);
     });
 }
 
-function GenerateTester(){
-    let contents = "function jhm_test(){\n";
-    functionNames.forEach(element => {
-        contents += element + "();\n";
+function processTestFiles() {
+    // Read test files
+    forEachFileInFolder(testPath, path => {
+        if (pathSystem.extname(path) != ".js") return;
+        testFunctionNames.push(
+            extractFunction(
+                fileSystem.readFileSync(path, "utf8")));
+        testFiles.push(path);
     });
+}
+
+function forEachFileInFolder(folderPath, operation){
+    let files = fileSystem.readdirSync(folderPath);
+    files.forEach(path => {
+        if (fileSystem.statSync(folderPath + path).isDirectory()){
+            forEachFileInFolder(folderPath + path + "/", operation);
+        } else {
+            operation(folderPath + path);
+        }
+    });
+
+}
+function writeTestRunner(){
+    fileSystem.writeFile('./TestRunner.html', generateTestRunner(), 
+    () => console.log("Test runner generated."));
+}
+function writeJHMTest(){
+    fileSystem.writeFile('./JHM-Test.js', generateTester(), 
+    () => console.log("Test file generated."));
+}
+
+function generateTester(){
+    let contents = "function jhm_test(){\n";
+    testFunctionNames.forEach(element => {
+        contents += "   " + element + "();\n";
+    });
+    contents += "    console.log('Tests executed: ', testsRun)\n";
+    contents += "    console.log('Tests succeeded: ', testsPassed)\n";
+    contents += "    console.log('Tests failed: ', testsFailed)\n";
+    contents += "    resetTestData()";
     contents += "}";
+    return contents;
+}
+
+function generateTestRunner(){
+    let contents = "<!DOCTYPE html>\n";
+    contents += "<html>\n";
+    contents += "  <head>\n";
+    contents += "    <title>Tests</title>\n";
+    contents += "  </head>\n";
+    contents += "  <body onload='jhm_test()'>\n";
+    contents += "    <div id = 'preload'>\n";
+    coreFiles.forEach(path => 
+    contents += `      <script src = "` + path + `"></script>\n`);
+    contents += "      <div id = 'tests'>\n";
+    contents += "        <script src = './Assert.js'></script>\n"
+    contents += "        <script src = './JHM-Test.js'></script>\n"
+    testFiles.forEach(path => 
+    contents += `        <script src = "` + path + `"></script>\n`);
+    contents += "      </div>\n";
+    contents += "    </div>\n";
+    contents += "    <div id = 'Display'>\n";
+    contents += "      <button onClick = 'jhm_test()'>Run Test</button>\n";
+    contents += "    </div>\n"
+    contents += "  </body>\n";
+    contents += "</html>\n";
     return contents;
 }
 /**

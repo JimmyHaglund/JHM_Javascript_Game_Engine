@@ -1,104 +1,47 @@
-/**
- * @class Window
- * @description Application window. Contains entities, answers to WindowManager.
- * @param {number} browserPositionX X-position of window's left side in browser.
- * @param {number} browserPositionY Y-position of window's top side in browser.
- * @param {number} width Pixel width of window.
- * @param {number} height Pixel height of window.
- *
- * @description Public methods
- * @method Start()
- * @method AddRenderComponent(component,priority)
- * @method Render()
- * @method AddEntity(coordX,coordY)
- * @method CheckCollidersAtPoint(coordX,coordY)
- * @method SetBackgroundColor(color)
- * @method GetLeftSideCoord()
- * @method GetRightSideCoord()
- * @method GetTopSideCoord()
- * @method GetBottomSideCoord()
- * @method GetHeight()
- * @method GetWidth()
- * @method Resize()
- * @method WindowTest()
- * @method GetColliderSets()
- */
-/// <reference path="./JHM-Utility.js" />
-/// <reference path="./JHM-Entity.js" />
-var Window = function(browserPositionX, browserPositionY, width, height)
+const Window = function(positionX, positionY, width, height, backgroundColor = "#B6B6B4")
 {
-    // #region Private variables
-    // Set window position and size.
-    var browserPositionX = CheckTypeForNumber(browserPositionX);
-    var browserPositionY = CheckTypeForNumber(browserPositionY);
-    var width = CheckTypeForNumber(width);
-    var height = CheckTypeForNumber(height);
-    
-    var renderArray = new Array(new Array()); // TODO: Add render priorities//layers//z axis.
-    var colliderArray = new Array(); // Contains collider components.
-    var renderLayerCounter = new Array();
+    let renderComponents = [];
+    let colliders = [];
+    // let renderLayerCounter = [];
 
     // Create canvas.
-    var canvas = document.createElement("canvas");
-    var context = canvas.getContext("2d");
+    let canvas = document.createElement("canvas");
+    let renderContext = canvas.getContext("2d");
 
-    // Initialize entity array.
-    var entityArray = new Array();
-    var entityCount = 0;
-    
-    var color = "#B6B6B4"; // Window background color.
+    let entities = [];
 
-    var initialized = false; // Prevents running Start() twice.
+    class window {
+        constructor(){ 
 
-    var type = "Window";
-    //#endregion
+            canvas.width = width;
+            canvas.height = height;
 
-    //#region public functions
-    /**
-     * @name Window#Start
-     * @type {function}
-     */ 
-    this.Start = function()
-    {
-        // Prevent multiple initializations.
-        if (initialized)
-            return;
-        initilized = true;
+            canvas.style.left = positionX;
+            canvas.style.top = positionY;
 
-        canvas.width = width;
-        canvas.height = height;
-
-        canvas.style.left = browserPositionX;
-        canvas.style.top = browserPositionY;
-
-        document.body.insertBefore(canvas, document.body.childNodes[0]);
-    }
-
-    /** 
-     * @function AddRenderComponent
-     * @description Adds component to rendering cycle.
-     * @param  {Object} component
-     * @param {number} layer Render layer of new component higher = rendered over lower..
-     */
-    this.AddRenderComponent = function (component, layer = 0)
-    {
-        // if (layer == undefined) layer = 0;
-        console.log("Adding sprite to layer: " + layer);
-        // TODO: Add priority & layers.
-        // console.log("Component: " + component + ". Layer: " + layer);
-        var index = ArrayFindIndex(renderLayerCounter, layer);
-        console.log("Index A: " + index);
-        if (index === null)
-        {
-            index = this.AddRenderLayer(layer);
-            ArrayInsert(renderArray, new Array(), index);
+            document.body.insertBefore(canvas, document.body.childNodes[0]);
         }
-        console.log("Index B: " + index);
-        console.log("Layer counter: " + renderLayerCounter.length);
-        renderArray[index].push(component);
-        console.log(renderArray);
+        addRenderComponent(component) {
+            let layer = component.GetLayer();
+            let layerArray = renderComponents.find(renderComponents, 
+                layer);
+            if (layerArray == undefined) {
+                layerArray = [];
+                renderComponents.push(layerArray);
+            }
+            layerArray.push(component);
+        }
+        removeRenderComponent(component) {
+            let layer = renderComponents[component.getLayer()];
+            let index = layer.find((value => value.getId() == component.getId()));
+            if (index == -1) return null;
+            let foundComponent = layer[index];
+            layer.splice(layer[index], 0);
+            return foundComponent;
+        }
     }
-
+    return new window();
+    /*
     this.AddRenderLayer = function(layer)
     {
         if (renderLayerCounter.length == 0)
@@ -118,16 +61,7 @@ var Window = function(browserPositionX, browserPositionY, width, height)
         renderLayerCounter.push(layer);
         return renderLayerCounter.length-1;
     }
-
-    this.RemoveRenderComponent = function(component)
-    {
-        var targetIndex = ArrayFindIndex(targetArray, component);
-        if (targetIndex === null)
-        {
-            renderArray.shift
-        }
-        ArrayRemoveIndex(renderArray, targetIndex);
-    }
+    */
 
     /**
      * @function Render
@@ -343,12 +277,6 @@ var Window = function(browserPositionX, browserPositionY, width, height)
         color = color;
     }
     //#endregion
-
-    //#region  GET/SET
-    this.GetType = function()
-    {
-        return type;
-    }
 
     this.GetContext = function()
     {
