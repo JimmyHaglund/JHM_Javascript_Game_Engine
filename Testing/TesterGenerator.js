@@ -63,10 +63,12 @@ function generateTester(){
     testFunctionNames.forEach(element => {
         contents += "   " + element + "();\n";
     });
-    contents += "    console.log('Tests executed: ', testsRun)\n";
-    contents += "    console.log('Tests succeeded: ', testsPassed)\n";
-    contents += "    console.log('Tests failed: ', testsFailed)\n";
-    contents += "    resetTestData()";
+    contents += "    setTimeout (() => {\n";
+    contents += "    console.log('Tests executed: ', testsRun);\n";
+    contents += "    console.log('Tests succeeded: ', testsPassed);\n";
+    contents += "    console.log('Tests failed: ', testsFailed);\n";
+    contents += "    resetTestData();\n";
+    contents += "}, 1000);\n"
     contents += "}";
     return contents;
 }

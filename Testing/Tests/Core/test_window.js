@@ -1,15 +1,13 @@
 function test_window(){
-    windowTester.construct();
-    windowTester.removeRenderComponent();
-    windowTester.addRenderComponent();
+    // windowTester.construct();
+    // windowTester.removeRenderComponent();
+    // windowTester.addRenderComponent();
 }
 
 const windowTester = {
     mockRenderComponent: {
+        
         [iRenderComponent]: {
-            getId: function(){
-                return 0;
-            },
             getLayer: function(){
                 return 0;
             },

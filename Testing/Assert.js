@@ -47,7 +47,40 @@ is = {
         let failMessage = "Failed, was type " + aType + ", expected type " + bType + ".";
         return this.evaluate(aType, bType, successMessage, failMessage);
     },
-
+    greaterThan: function(greater, lesser) {
+        let successMessage = "Succeeded";
+        let failMessage = "Failed, expecter greater was" + greater + ", expecter lesser was " + lesser + ".";
+        let testPassed = false;
+        let feedback = "";
+        if (greater > lesser){
+            testsPassed++;
+            feedback = successMessage;
+            testPassed = true;
+        } else {
+            testsFailed++;
+            feedback = failMessage;
+        }
+        ++testsRun;
+        currentTestData += feedback;
+        return testPassed;
+    },
+    greaterThanOrEqual: function(greater, lesser) {
+        let successMessage = "Succeeded";
+        let failMessage = "Failed, expecter greater or equal was" + greater + ", expecter lesser or equal was " + lesser + ".";
+        let testPassed = false;
+        let feedback = "";
+        if (greater >= lesser){
+            testsPassed++;
+            feedback = successMessage;
+            testPassed = true;
+        } else {
+            testsFailed++;
+            feedback = failMessage;
+        }
+        ++testsRun;
+        currentTestData += feedback;
+        return testPassed;
+    },
     evaluate: function(valA, valB, successMessage, failMessage){
         let feedback = "";
         let testPassed = false;

@@ -1,5 +1,13 @@
-const Window = function(positionX, positionY, width, height, backgroundColor = "#B6B6B4")
-{
+/**
+ * @constructor Window
+ * @description Rendering window. Renders attached RenderComponents to a canvas of a given size, relative to local window space.
+ * @param {*} originX Left-side position of window
+ * @param {*} originY Bottom position of window
+ * @param {*} width 
+ * @param {*} height 
+ * @param {*} backgroundColor 
+ */
+const Window = function(originX, originY, width, height, backgroundColor = "#B6B6B4") {
     let renderComponents = [];
     let colliders = [];
     // let renderLayerCounter = [];
