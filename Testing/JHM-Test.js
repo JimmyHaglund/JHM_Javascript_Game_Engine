@@ -1,4 +1,5 @@
 function jhm_test(){
+    test_actionHandler();
     test_loop();
     test_physicsSpace();
     test_window();
