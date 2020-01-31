@@ -1,44 +1,75 @@
-function test_window(){
-    // windowTester.construct();
-    // windowTester.removeRenderComponent();
-    // windowTester.addRenderComponent();
+function test_window() {
+    windowTester.added_render_components_should_be_updated_by_calling_render();
+    windowTester.removed_render_components_should_no_longer_be_updated();
+    windowTester.wiped_window_should_no_longer_render();
 }
-
-const windowTester = {
-    mockRenderComponent: {
-        
-        [iRenderComponent]: {
-            getLayer: function(){
-                return 0;
-            },
-            render: function(){}
-        }
-    },
-    construct: function() {
-        describe('new Window(), (0, 0, 100, 100)', () => {
-        it('should create a new window of type "object"', () => 
-            is.sameType(new Window(0, 0, 100, 100), {}));
-        });
-        describe('new Window(), (0, 0, 100, 100)', () => {
-            it('should create a new window & not null', () => 
-                is.notEqual(new Window(0, 0, 100, 100), null));
-        });
-    },
-    removeRenderComponent: function() {
-        describe('removeRenderComponent()', () => {
-            it('should do nothing if no render component is added', () => 
-                is.notEqual(new Window(0, 0, 100, 100).removeRenderComponent(this.mockRenderComponent), null));
-        });
-    },
-    addRenderComponent: function() {
-        describe('addRenderComponent(component)', () => {
-        it('adds new render component to correct layer.', () => 
-            is.sameType(new Window(0, 0, 100, 100).addRenderComponent(mockRenderComponent)));
-        });
-    },
+function MockLoop(){
     
-    addEntity: function(){
+    let updateables = [];
 
+    class mockLoop {
+        constructor() {
+            let me = this;
+            this.ticksPerSecond = 0;
+            this.playing = true;
+            this.update = {
+                add: function (value) { updateables.push(value) },
+                remove: function () { updateables.shift(0, 0)}
+            }
+        }
+        pause() { }
+        play() {
+            updateables.forEach(element => element(1));
+        }
+    };
+    return new mockLoop();
+}
+class mockRenderComponent {
+    constructor() {
+        this.renderCount = 0;
+        this.layer = 0;
+        this.render = function (renderContext) { this.renderCount++; }
+    }
+}
+let realLoop = new Loop(15);
+const windowTester = {
+    added_render_components_should_be_updated_by_calling_render: function () {
+        let loop = new MockLoop();
+        let testWindow = new Window(0, 0, 150, 150, loop);
+        let renderComponent = new mockRenderComponent();
+        testWindow.addRenderComponent(renderComponent);
+        loop.play();
+        testWindow.wipe();
+        describe('Render components in window', () => {
+            it('should be updated with each update call', () =>
+                is.greaterThan(renderComponent.renderCount, 0));
+        });
     },
-
+    removed_render_components_should_no_longer_be_updated: function () {
+        let loop = new MockLoop();
+        let renderComponent = new mockRenderComponent();
+        let window = new Window(0, 0, 0, 0, loop);
+        window.addRenderComponent(renderComponent);
+        loop.play();
+        window.removeRenderComponent(renderComponent);
+        loop.play();
+        window.wipe();
+        describe('removeRenderComponent(component)', () => {
+            it('should remove the render component and stop it from being updated.', () =>
+                is.equal(renderComponent.renderCount, 1));
+        });
+    },
+    wiped_window_should_no_longer_render: function () {
+        let loop = new MockLoop();
+        let renderComponent = new mockRenderComponent();
+        let window = new Window(0, 0, 0, 0, loop);
+        window.addRenderComponent(renderComponent);
+        loop.play();
+        window.wipe();
+        loop.play();
+        describe('window.wipe()', () => {
+            it('render component should not be updated by loop', () =>
+                is.equal(renderComponent.renderCount, 1));
+        });
+    }
 };
