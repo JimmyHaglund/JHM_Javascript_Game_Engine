@@ -7,11 +7,9 @@ function TestCounter(){
     class testCounter{
 
         constructor(){
-            console.log(a);
         }
         add(){
             a++;
-            console.log(a);
         }
         get num() {
             return a;

@@ -14,7 +14,6 @@ const Action = function() {
             _actionsArguments.shift(index, 0);
         }
         invoke() {
-            console.log(_actions);
             for (let n = 0; n < _actions.length; n++) {
                 _actions[n](_actionsArguments[n]);
             }
