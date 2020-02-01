@@ -43,9 +43,9 @@ function WalkingActorTestClass() {
     document.onmousemove = (event) => {
         mouseX = event.clientX;
         mouseY = event.clientY;
-        walker.speed = mouseY * 0.3;
-        parent.transform.x = mouseX;
-        parent.transform.y = mouseY;
+        // walker.speed = mouseY * 0.3;
+        parent.transform.x = mouseX* 0.1;
+        parent.transform.y = mouseY * 0.1;
         // console.log("mouse pos:", mouseX, mouseY);
         // console.log("enitty pos: ", testCollider.entity.transform.worldX, testCollider.entity.transform.worldY);
         // console.log(testCollider.collider.bounds.left, testCollider.collider.bounds.right);
@@ -62,6 +62,6 @@ function VisibleBoxColliderEntity(posX, posY, width, height, renderSpace, physic
     this.entity.addComponent(this.visual);
 
     renderSpace.addRenderComponent(this.visual);
-    physicsSpace.addCollider(this.collider, 0);
+    physicsSpace.addCollider(this.collider, "geometry");
 }
 let walkingActorTestClass = new WalkingActorTestClass();
