@@ -1,8 +1,21 @@
 function happrint_start() {
 
 }
+function happrint_checkInput(event){
+    // R
+    if (event.keyCode == 82 || event.keyCode == 114){
+        // console.log("R pressed");
+        happrintInstance.resetCharacter();
+    } 
+}
 
-function WalkingActorTestClass() {
+function Happrint() {
+    this.resetCharacter = function(){
+        character.entity.transform.x = currentLevel.start.x;
+        character.entity.transform.y = currentLevel.start.y;
+        character.walker.moveToLeft = currentLevel.startMoveToLeft;
+    }
+
     let loop = new Loop(30);
     
     let physicsSpace = new PhysicsSpace(0, 0, 800, 600, loop);
@@ -11,7 +24,7 @@ function WalkingActorTestClass() {
     let currentLevel = loadLevel1();
     let heldSheet = currentLevel.sheets[0];
 
-    let character = new Character();
+    let character = new Character(currentLevel.start.x, currentLevel.start.y);
     let ground = new Ground(100, 100, 600, 400);
     /*
     let thickness = 10;
@@ -30,8 +43,8 @@ function WalkingActorTestClass() {
         }
     }
 
-    function Character(){
-        this.entity = new Entity(250, 250);
+    function Character(posX, posY){
+        this.entity = new Entity(posX, posY);
         this.sprite = new SpriteComponent(renderSpace, this.entity, 'face');
         this.walker = new SimpleWalkingPhysicsActor(this.entity, loop, 60);
         
@@ -39,7 +52,7 @@ function WalkingActorTestClass() {
         physicsSpace.addPhysicsActor(this.walker, 0);
         this.entity.addComponent(this.sprite);
         this.entity.addComponent(this.walker);
-        this.sprite.setOffset(0, 0);
+        // this.sprite.setOffset(0, 0);
     }
 
     function Ground(leftCoord, topCoord, width, height){
@@ -53,7 +66,7 @@ function WalkingActorTestClass() {
     }
 
     function loadLevel1(){
-        let settings = new LevelSettings(50, 50);
+        let settings = new LevelSettings(250, 250);
         let sheets = [
             new OverlaySheet(renderSpace, physicsSpace, 0, 0),
         ]; 
@@ -70,4 +83,4 @@ function WalkingActorTestClass() {
         });
     }
 }
-let walkingActorTestClass = new WalkingActorTestClass();
+let happrintInstance = new Happrint();

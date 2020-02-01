@@ -7,8 +7,8 @@ const SimpleWalkingPhysicsActor = function (entity, loop, speed = 3) {
     let _fallSpeed = 0;
     let _grounded = false;
     let _onExit = new Action();
-
     let _walkingDirection = 1; // Right: 1. Left: -1
+
     class simpleWalkingPhysicsActor {
         constructor() {
             loop.update.add(update);
@@ -17,6 +17,7 @@ const SimpleWalkingPhysicsActor = function (entity, loop, speed = 3) {
         set speed(value) { _walkSpeed = value; }
         get layer() { return 0; }
         get onExit() { return _onExit; }
+        set moveToLeft(value) { _walkingDirection = value ? -1 : 1; }
         checkCollision(colliders) {
             let geometryLayer = colliders.get("geometry");
             let exitLayer = colliders.get("exit");
