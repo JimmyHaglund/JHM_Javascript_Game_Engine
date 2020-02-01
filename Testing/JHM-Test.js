@@ -5,6 +5,7 @@ function jhm_test(){
     test_loop();
     test_boxColliderComponent();
     test_physicsSpace();
+    test_simpleWalkjngPhysicsActor();
     test_renderSpace();
     test_spriteComponent();
     test_windowManager();

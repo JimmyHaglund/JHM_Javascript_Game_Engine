@@ -53,7 +53,7 @@ const PhysicsSpace = function (originX, originY, width, height, loop) {
         }
         addPhysicsActor(actor, layer) {
             // You can pass either an interface or an object implementing the interface.
-            if (actor[iPhysicsActor] != undefined) actor = actor[iPhysicsActor];
+            // if (actor[iPhysicsActor] != undefined) actor = actor[iPhysicsActor];
             let layerKey = layer.toString();
             if (!_physicsActors.has(layerKey)) {
                 _physicsActors.set(layerKey, []);
@@ -91,8 +91,10 @@ const PhysicsSpace = function (originX, originY, width, height, loop) {
     return myPhysicsSpace;
 
     function update(deltaTime) {
-        _physicsActors.forEach((physicsactor) => {
-            physicsactor.checkCollision(_colliders);
+        _physicsActors.forEach(layer => {
+            layer.forEach(actor => {
+                actor.checkCollision(_colliders)
+            });
         });
     }
 }

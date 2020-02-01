@@ -15,10 +15,11 @@ function BoxColliderTestClass(){
     space.addCollider(collider, 0);
     entity.addComponent(collider);
     loop.update.add(() =>{
-        // console.log("mouse pos:", mouseX, mouseY);
-        if (collider.overlapsPoint(mouseX, mouseY)){
-            console.log("Mouse is inside collider!");
-        }
+         // console.log("mouse pos:", mouseX, mouseY);
+         // console.log("enitty pos: ", entity.transform.worldX, entity.transform.worldY);
+        //if (collider.overlapsPoint(mouseX, mouseY)){
+         //   console.log("Mouse is inside collider!");
+       // }
     });
 }
 let boxColliderTestClass = new BoxColliderTestClass();
