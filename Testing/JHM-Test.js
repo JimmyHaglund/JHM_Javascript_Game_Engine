@@ -3,6 +3,7 @@ function jhm_test(){
     test_actionHandler();
     test_entity();
     test_loop();
+    test_boxColliderComponent();
     test_physicsSpace();
     test_renderSpace();
     test_spriteComponent();

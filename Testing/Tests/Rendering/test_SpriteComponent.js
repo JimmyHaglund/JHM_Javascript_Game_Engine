@@ -25,7 +25,6 @@ let spriteComponentTest = {
                     goLeft = true;
                 }
             }
-            console.log(m.entity.transform.x);
             m.entity.transform.x += goLeft ? -10 : 10;
             m.window.setPosition(m.window.bounds.left + 1, m.window.bounds.bottom);
         });
