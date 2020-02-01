@@ -17,6 +17,9 @@ const OverlaySheet = function(renderSpace, physicsSpace, leftCoord = 0, rightCoo
             _entity.transform.x = x;
             _entity.transform.y = y;
         }
+        destroy(){
+            _entity.destroy();
+        }
     }
     return new overlaySheet();
 }

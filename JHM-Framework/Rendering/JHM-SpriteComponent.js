@@ -19,6 +19,8 @@ const SpriteComponent = function (window, entity, spriteId = "", layer = 0) {
         offsetX: 0,
         offsetY: 0
     };
+    let _offsetX = 0;
+    let _offsetY = 0;
     let _onDestroy = new Action();
 
     class spriteComponent {
@@ -40,6 +42,10 @@ const SpriteComponent = function (window, entity, spriteId = "", layer = 0) {
             _crop.offsetX = 0;
             _crop.offsetY = 0;
         }
+        setOffset(x, y){
+            _offsetX = x;
+            _offsetY = y;
+        }
         get spriteId() { return _spriteId; }
         get layer() { return _layer; }
         get onDestroy() { console.log(_onDestroy); return _onDestroy; }
@@ -51,8 +57,8 @@ const SpriteComponent = function (window, entity, spriteId = "", layer = 0) {
         render(context, originRotation = 0) {
             if (_spriteImage == null) return;
             let contextAlpha = context.globalAlpha;
-            let worldX = _entity.transform.worldX;
-            let worldY = _entity.transform.worldY;
+            let worldX = _entity.transform.worldX + _offsetX;
+            let worldY = _entity.transform.worldY - _offsetY;
             let translationX =
                 worldX * Math.cos(originRotation) -
                 worldY * Math.sin(originRotation);

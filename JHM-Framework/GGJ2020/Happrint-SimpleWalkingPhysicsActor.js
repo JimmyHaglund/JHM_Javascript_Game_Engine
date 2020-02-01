@@ -26,7 +26,7 @@ const SimpleWalkingPhysicsActor = function (entity, loop, speed = 3) {
                 let collisionPointX = _entity.transform.worldX + _walkingDirection * _walkSpeed * _lastDeltaTime / 1000;
                 let collisionPointY = _entity.transform.worldY;
                 let fallPointX = _entity.transform.worldX;
-                let fallPointY = _entity.transform.worldY - _maxFallSpeed * _lastDeltaTime / 1000;
+                let fallPointY = _entity.transform.worldY + _maxFallSpeed * _lastDeltaTime / 1000;
                 _grounded = false;
                 // Check if falling
                 for (let n = 0; n < geometryLayer.length; n++) {
