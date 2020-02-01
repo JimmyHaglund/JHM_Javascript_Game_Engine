@@ -28,12 +28,13 @@ const SpriteComponent = function (window, entity, spriteId = "", layer = 0) {
         set alpha(value) {
             alpha = value;
         }
+        get alpha() { return _alpha; }
         set spriteId(value) {
             _spriteId = value;
-            if (_spriteId == null) return;
             _spriteImage = document.getElementById(_spriteId);
-            _size.width = image.naturalWidth;
-            _size.height = image.naturalHeight;
+            if (_spriteImage == null) return;
+            _size.width = _spriteImage.naturalWidth;
+            _size.height = _spriteImage.naturalHeight;
             _crop.width = _size.width;
             _crop.height = _size.height;
             _crop.offsetX = 0;
@@ -41,52 +42,48 @@ const SpriteComponent = function (window, entity, spriteId = "", layer = 0) {
         }
         get spriteId() { return _spriteId; }
         get layer() { return _layer; }
-        get onDestroy() { console.log(_onDestroy); return _onDestroy;}
+        get onDestroy() { console.log(_onDestroy); return _onDestroy; }
         get size() { return _size; }
         destroy() {
             _onDestroy.invoke();
         }
         // Render image.
-        render(context, originX = 0, originY = 0, originRotation = 0) {
-            // if (animating)
-            //     NextAnimationFrame();
+        render(context, originRotation = 0) {
             if (_spriteImage == null) return;
             let contextAlpha = context.globalAlpha;
-            let offsetX = _size.width / 2 + offsetX;
-            let offsetY = _size.height / 2 + offsetY;
-            let worldOriginToX = _entity.transform.worldX - originX;
-            let worldOriginToY = _entity.transform.worldY - originY;
+            let worldX = _entity.transform.worldX;
+            let worldY = _entity.transform.worldY;
             let translationX =
-                worldOriginToX * Math.cos(originRotation) -
-                worldOriginToY * Math.sin(originRotation);
+                worldX * Math.cos(originRotation) -
+                worldY * Math.sin(originRotation);
             let translationY =
-                worldOriginToX * Math.sin(originRotation) +
-                worldOriginToY * Math.cos(originRotation);
-
+                worldX * Math.sin(originRotation) +
+                worldY * Math.cos(originRotation);
             // Set context settings
             context.translate(translationX, translationY);
-            context.rotate(originRotation);
+            // context.rotate(originRotation);
             context.globalAlpha = _alpha;
-
+            // console.log(entity.transform.worldY);
             // Render image to canvas.
-            context.drawImage(image,
-                _crop.offsetX,
-                _crop.offsetY,
-                _crop.width,
-                _crop.height,
-                -_size.width / 2,
-                -_size.height / 2,
-                _size.width,
-                _size.height);
+            context.drawImage(
+                _spriteImage, // image
+                _crop.offsetX, // left crop rectangle
+                _crop.offsetY, // top crop rectangle
+                _crop.width, // crop rectangle width
+                _crop.height, // crop rectangle height
+                -_size.width / 2, // x coordinate relative to context position
+                -_size.height / 2, // y coordinate relative to context position
+                _size.width, // width of drawn image
+                _size.height // height of drawn image
+                ); 
 
             // Restore context to original settings
             context.globalAlpha = contextAlpha;
-            context.rotate(-originRotation);
-            context.translate(-translationX,
-                -translationY);
+            // context.rotate(-originRotation);
+            context.translate(-translationX, -translationY);
         }
     }
-
+    return new spriteComponent();
     // Set image offset from entity's position.
     /*
     this.SetOffset = function (newOffsetX, newOffsetY) {

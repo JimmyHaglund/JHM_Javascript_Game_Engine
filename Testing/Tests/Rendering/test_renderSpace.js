@@ -1,7 +1,7 @@
-function test_window() {
-    windowTester.added_render_components_should_be_updated_by_calling_render();
-    windowTester.removed_render_components_should_no_longer_be_updated();
-    windowTester.wiped_window_should_no_longer_render();
+function test_renderSpace() {
+    renderSpaceTester.added_render_components_should_be_updated_by_calling_render();
+    renderSpaceTester.removed_render_components_should_no_longer_be_updated();
+    renderSpaceTester.wiped_window_should_no_longer_render();
 }
 function MockLoop(){
     
@@ -32,11 +32,10 @@ class mockRenderComponent {
         this.onDestroy = {add:function(){}}
     }
 }
-let realLoop = new Loop(15);
-const windowTester = {
+const renderSpaceTester = {
     added_render_components_should_be_updated_by_calling_render: function () {
         let loop = new MockLoop();
-        let testWindow = new Window(0, 0, 150, 150, loop);
+        let testWindow = new RenderSpace(0, 0, 150, 150, loop);
         let renderComponent = new mockRenderComponent();
         testWindow.addRenderComponent(renderComponent);
         loop.play();
@@ -49,7 +48,7 @@ const windowTester = {
     removed_render_components_should_no_longer_be_updated: function () {
         let loop = new MockLoop();
         let renderComponent = new mockRenderComponent();
-        let window = new Window(0, 0, 0, 0, loop);
+        let window = new RenderSpace(0, 0, 0, 0, loop);
         window.addRenderComponent(renderComponent);
         loop.play();
         window.removeRenderComponent(renderComponent);
@@ -63,7 +62,7 @@ const windowTester = {
     wiped_window_should_no_longer_render: function () {
         let loop = new MockLoop();
         let renderComponent = new mockRenderComponent();
-        let window = new Window(0, 0, 0, 0, loop);
+        let window = new RenderSpace(0, 0, 0, 0, loop);
         window.addRenderComponent(renderComponent);
         loop.play();
         window.wipe();

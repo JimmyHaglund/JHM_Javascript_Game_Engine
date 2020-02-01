@@ -7,7 +7,7 @@
  * @param {*} height 
  * @param {*} backgroundColor 
  */
-const Window = function (left, top, width, height, loop, backgroundColor = "#B6B6B4") {
+const RenderSpace = function (left, top, width, height, loop, backgroundColor = "#B6B6B4") {
     let _originX = left;
     let _originY = top + height;
     let _rotation = 0;
@@ -34,15 +34,14 @@ const Window = function (left, top, width, height, loop, backgroundColor = "#B6B
         }
     }
     let _bounds = new Bounds();
-
-    class window {
+    let  _moveDelta = null;
+    class renderSpace {
         constructor() {
             _canvas.width = width;
             _canvas.height = height;
             _canvas.style.left = _bounds.left;
             _canvas.style.top = _bounds.top;
             document.body.insertBefore(_canvas, document.body.childNodes[0]);
-
             _loop.update.add(render);
         }
         addRenderComponent(component) {
@@ -67,33 +66,55 @@ const Window = function (left, top, width, height, loop, backgroundColor = "#B6B
         setBackgroundColor(color) {
             _color = color;
         }
+        setPosition(x, y){
+            _moveDelta = {
+                x: x,
+                y: y
+            }
+        }
         get bounds() {
             return _bounds;
         }
         get canvas() {
             return _canvas;
         }
-        wipe(){
+        wipe(removeFromUpdate = true){
             _renderContext.clearRect(_bounds.left, _bounds.top, _width, _height);
-            _loop.update.remove(render);
+            if (removeFromUpdate){
+                _loop.update.remove(render);
+            }
         }
     }
-    return new window();
+    let _renderSpace = new renderSpace();
+    return _renderSpace;
 
-    function render(deltaTime) {
+    function render() {
         // console.log("render array length: " + renderArray.length);
         // console.log("Rendering");
+        if (_moveDelta != null){
+            _renderContext.clearRect(_bounds.left, _bounds.top, _width, _height);
+            updatePosition(_moveDelta.x, _moveDelta.y);
+            _moveDelta = null;
+        }
         clear();
         _renderables.forEach((layer) => {
             layer.forEach((renderable) => {
-                renderable.render(_originX, _originY, _rotation);
+                renderable.render(_renderContext, _rotation);
             });
         });
+        
     }
 
     function clear() {
-        _renderContext.clearRect(_bounds.left, _bounds.top, _width, _height);
+        _renderContext.clearRect(0, 0, _width, _height);
         _renderContext.fillStyle = _color;
-        _renderContext.fillRect( _bounds.left, _bounds.top, _width, _height);
+        _renderContext.fillRect(0, 0, _width, _height);
+    }
+
+    function updatePosition(x, y){
+        _originX = x;
+        _originY = y;
+        _canvas.style.left = _bounds.left + "px";
+        _canvas.style.top = _bounds.top + "px";
     }
 }

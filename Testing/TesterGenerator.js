@@ -77,18 +77,24 @@ function generateTestRunner(){
     let contents = "<!DOCTYPE html>\n";
     contents += "<html>\n";
     contents += "  <head>\n";
+    contents += "  <style>\n";
+    contents += "    srcImg { display: none; }\n";
+    contents += "  </style>\n";
     contents += "    <title>Tests</title>\n";
     contents += "  </head>\n";
     contents += "  <body onload='jhm_test()'>\n";
-    contents += "    <div id = 'preload'>\n";
+    
+    contents += "    <srcImg>\n";
+    // TODO: Auto add each image in Images folder
+    contents += "      <img src = './Images/Face.png' id='face' display='none'>\n";
+    contents += "    </srcImg>\n";
     coreFiles.forEach(path => 
-    contents += `      <script src = "` + path + `"></script>\n`);
-    contents += "      <div id = 'tests'>\n";
-    contents += "        <script src = './Assert.js'></script>\n"
-    contents += "        <script src = './JHM-Test.js'></script>\n"
+    contents += `    <script src = "` + path + `"></script>\n`);
+    contents += "    <div id = 'tests'>\n";
+    contents += "      <script src = './Assert.js'></script>\n"
+    contents += "      <script src = './JHM-Test.js'></script>\n"
     testFiles.forEach(path => 
-    contents += `        <script src = "` + path + `"></script>\n`);
-    contents += "      </div>\n";
+    contents += `      <script src = "` + path + `"></script>\n`);
     contents += "    </div>\n";
     contents += "    <div id = 'Display'>\n";
     contents += "      <button onClick = 'jhm_test()'>Run Test</button>\n";
