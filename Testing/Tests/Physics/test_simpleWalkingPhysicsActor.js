@@ -3,6 +3,8 @@ function test_simpleWalkjngPhysicsActor() {
 }
 
 function WalkingActorTestClass() {
+    let parent = new Entity(0, 0);
+
     let mouseX = 0, mouseY = 0;
 
     let loop = new Loop(30);
@@ -20,14 +22,17 @@ function WalkingActorTestClass() {
     entity.addComponent(walker);
     // entity.addComponent(collider);
     entity.addComponent(image);
+    entity.transform.parent = parent.transform;
     let thickness = 10;
     let testColliders = [
         new VisibleBoxColliderEntity(0, 0, thickness, 1000, window, space),
         new VisibleBoxColliderEntity(0, 0, 1000, thickness, window, space),
         new VisibleBoxColliderEntity(590, 0, thickness, 1000, window, space),
         new VisibleBoxColliderEntity(0, 430, 1000, thickness, window, space),
-        
     ]
+    testColliders.forEach(element => {
+        element.entity.transform.parent = parent.transform;
+    });
 
     loop.update.add(() => {
         // entity.transform.worldX = mouseX;
@@ -39,6 +44,8 @@ function WalkingActorTestClass() {
         mouseX = event.clientX;
         mouseY = event.clientY;
         walker.speed = mouseY * 0.3;
+        parent.transform.x = mouseX;
+        parent.transform.y = mouseY;
         // console.log("mouse pos:", mouseX, mouseY);
         // console.log("enitty pos: ", testCollider.entity.transform.worldX, testCollider.entity.transform.worldY);
         // console.log(testCollider.collider.bounds.left, testCollider.collider.bounds.right);
