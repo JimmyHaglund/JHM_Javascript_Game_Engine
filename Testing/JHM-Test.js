@@ -3,6 +3,7 @@ function jhm_test(){
     test_entity();
     test_loop();
     test_physicsSpace();
+    test_spriteComponent();
     test_window();
     test_windowManager();
     component_test();

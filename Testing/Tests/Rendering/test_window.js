@@ -29,6 +29,7 @@ class mockRenderComponent {
         this.renderCount = 0;
         this.layer = 0;
         this.render = function (renderContext) { this.renderCount++; }
+        this.onDestroy = {add:function(){}}
     }
 }
 let realLoop = new Loop(15);

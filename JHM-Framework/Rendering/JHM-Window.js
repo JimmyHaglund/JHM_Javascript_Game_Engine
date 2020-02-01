@@ -10,6 +10,7 @@
 const Window = function (left, top, width, height, loop, backgroundColor = "#B6B6B4") {
     let _originX = left;
     let _originY = top + height;
+    let _rotation = 0;
     let _width = width;
     let _height = height;
     let _loop = loop;
@@ -47,6 +48,7 @@ const Window = function (left, top, width, height, loop, backgroundColor = "#B6B
         addRenderComponent(component) {
             let layerKey = component.layer.toString();
             let layer = _renderables.get(layerKey);
+            component.onDestroy.add(()=>this.removeRenderComponent(component));
             if (layer == undefined) {
                 layer = [];
                 _renderables.set(layerKey, layer);
@@ -84,7 +86,7 @@ const Window = function (left, top, width, height, loop, backgroundColor = "#B6B
         clear();
         _renderables.forEach((layer) => {
             layer.forEach((renderable) => {
-                renderable.render(_renderContext);
+                renderable.render(_originX, _originY, _rotation);
             });
         });
     }

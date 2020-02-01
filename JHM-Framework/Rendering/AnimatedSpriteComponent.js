@@ -1,6 +1,7 @@
 /**
  * Component to be added to entities.
  */
+/*
 /// <reference path="./JHM-Utility.js" />
 function SpriteComponent(spriteID, layer = 0)
 {
@@ -64,7 +65,7 @@ function SpriteComponent(spriteID, layer = 0)
        {
            return entity;
        }
-       */
+       *//*
        // Render image.
        this.Render = function()
        {
@@ -217,7 +218,7 @@ function SpriteComponent(spriteID, layer = 0)
        {
            return type;
        }
-       */
+       *//*
    }
 
    // Private variables.
@@ -277,4 +278,4 @@ function SpriteComponent(spriteID, layer = 0)
    var returnComponent = new spritecomponent();
    returnComponent.SetType("SpriteComponent");
    return returnComponent;
-}
+}*/
