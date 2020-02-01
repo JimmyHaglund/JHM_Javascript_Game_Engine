@@ -18,29 +18,33 @@ const SimpleWalkingPhysicsActor = function (entity, loop, speed = 3) {
         get layer() { return 0; }
         get onExit() { return _onExit; }
         checkCollision(colliders) {
-            
-            _grounded = false;
             let geometryLayer = colliders.get("geometry");
             let exitLayer = colliders.get("exit");
-            
+
             // Check movement collision
             if (geometryLayer != undefined) {
                 let collisionPointX = _entity.transform.worldX + _walkingDirection * _walkSpeed * _lastDeltaTime / 1000;
                 let collisionPointY = _entity.transform.worldY;
                 let fallPointX = _entity.transform.worldX;
                 let fallPointY = _entity.transform.worldY - _maxFallSpeed * _lastDeltaTime / 1000;
+                _grounded = false;
+                // Check if falling
                 for (let n = 0; n < geometryLayer.length; n++) {
-                    if (!_grounded) {
-                        if (geometryLayer[n].overlapsPoint(fallPointX, fallPointY)) {
-                            _grounded = true;
-                            _fallSpeed = 0;
-                        }
-                    }
-                    if (geometryLayer[n].overlapsPoint(collisionPointX, collisionPointY)) {
-                        _walkingDirection *= -1;
+                    if (geometryLayer[n].overlapsPoint(fallPointX, fallPointY)) {
+                        _grounded = true;
+                        _fallSpeed = 0;
                         break;
                     }
-                };
+                }
+                // Check wall collision if grounded
+                if (_grounded) {
+                    for (let n = 0; n < geometryLayer.length; n++) {
+                        if (geometryLayer[n].overlapsPoint(collisionPointX, collisionPointY)) {
+                            _walkingDirection *= -1;
+                            break;
+                        }
+                    };
+                }
             }
 
             // Check exit collision

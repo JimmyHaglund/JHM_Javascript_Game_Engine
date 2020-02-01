@@ -1,4 +1,4 @@
-function test_simpleWalkjngPhysicsActor() {
+function happrint_start() {
 
 }
 
@@ -6,12 +6,13 @@ function WalkingActorTestClass() {
     let parent = new Entity(0, 0);
 
     let mouseX = 0, mouseY = 0;
-
     let loop = new Loop(30);
     let entity = new Entity(250, 250);
     let space = new PhysicsSpace(100, 100, 640, 480, loop);
     // let collider = new BoxColliderComponent(entity, 50, 20);
     let window = new RenderSpace(10, 200, 640, 480, loop);
+    let testSheet = new OverlaySheet(window, space, 0, 0);
+    testSheet.addWall(0, 0, 10, 1000);
     // window.canvas.style.position = 'absolute';
     window.setPosition(0, 480);
     let image = new SpriteComponent(window, entity, 'face');
@@ -44,24 +45,13 @@ function WalkingActorTestClass() {
         mouseX = event.clientX;
         mouseY = event.clientY;
         // walker.speed = mouseY * 0.3;
-        parent.transform.x = mouseX* 0.1;
-        parent.transform.y = mouseY * 0.1;
+        // parent.transform.x = mouseX* 0.1;
+        // parent.transform.y = mouseY * 0.1;
+        testSheet.move(mouseX, mouseY);
         // console.log("mouse pos:", mouseX, mouseY);
         // console.log("enitty pos: ", testCollider.entity.transform.worldX, testCollider.entity.transform.worldY);
         // console.log(testCollider.collider.bounds.left, testCollider.collider.bounds.right);
         // console.log(testCollider.collider.bounds.bottom, testCollider.collider.bounds.top);
     }
-}
-
-function VisibleBoxColliderEntity(posX, posY, width, height, renderSpace, physicsSpace) {
-    this.entity = new Entity(posX, posY);
-    this.collider = new BoxColliderComponent(this.entity, width, height);
-    this.visual = new BoxColliderRendererComponent(this.collider);
-
-    this.entity.addComponent(this.collider);
-    this.entity.addComponent(this.visual);
-
-    renderSpace.addRenderComponent(this.visual);
-    physicsSpace.addCollider(this.collider, "geometry");
 }
 let walkingActorTestClass = new WalkingActorTestClass();
