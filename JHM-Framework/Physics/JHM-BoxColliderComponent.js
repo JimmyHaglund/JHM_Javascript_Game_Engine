@@ -26,7 +26,7 @@ const BoxColliderComponent = function (entity, width, height, offsetX = 0, offse
         destroy() {
             _onDestroy.invoke();
         }
-        get _onDestroy() { return _onDestroy; }
+        get onDestroy() { return _onDestroy; }
 
         get width() { return _width; }
         set width(value) { _width = value; }

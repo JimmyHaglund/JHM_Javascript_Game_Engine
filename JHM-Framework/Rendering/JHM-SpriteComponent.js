@@ -5,7 +5,7 @@ const SpriteComponent = function (window, entity, spriteId = "", layer = 0) {
     let _layer = layer;
 
     let _alpha = 1;
-    let _spriteId = spriteId;
+    let _spriteId = "";
     let _spriteImage = null;
     let _iRenderable = {
     };
@@ -25,22 +25,25 @@ const SpriteComponent = function (window, entity, spriteId = "", layer = 0) {
 
     class spriteComponent {
         constructor() {
-            this.spriteId = _spriteId;
+            this.spriteId = spriteId;
+            if (_spriteImage != null) {
+                _size.width = _spriteImage.naturalWidth;
+                _size.height = _spriteImage.naturalHeight;
+                _crop.width = _size.width;
+                _crop.height = _size.height;
+            }
+            _crop.offsetX = 0;
+            _crop.offsetY = 0;
         }
         set alpha(value) {
             alpha = value;
         }
         get alpha() { return _alpha; }
         set spriteId(value) {
+            if (_spriteId == value) return;
             _spriteId = value;
             _spriteImage = document.getElementById(_spriteId);
             if (_spriteImage == null) return;
-            _size.width = _spriteImage.naturalWidth;
-            _size.height = _spriteImage.naturalHeight;
-            _crop.width = _size.width;
-            _crop.height = _size.height;
-            _crop.offsetX = 0;
-            _crop.offsetY = 0;
         }
         setOffset(x, y){
             _offsetX = x;
@@ -48,7 +51,7 @@ const SpriteComponent = function (window, entity, spriteId = "", layer = 0) {
         }
         get spriteId() { return _spriteId; }
         get layer() { return _layer; }
-        get onDestroy() { console.log(_onDestroy); return _onDestroy; }
+        get onDestroy() { return _onDestroy; }
         get size() { return _size; }
         destroy() {
             _onDestroy.invoke();

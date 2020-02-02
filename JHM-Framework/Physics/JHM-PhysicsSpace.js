@@ -36,6 +36,7 @@ const PhysicsSpace = function (originX, originY, width, height, loop) {
                 _colliders.set(layerKey, []);
             }
             _colliders.get(layerKey).push(collider);
+            collider.onDestroy.add(()=>this.removeCollider(collider, layer));
             return collider;
         }
         removeCollider(collider, layer) {

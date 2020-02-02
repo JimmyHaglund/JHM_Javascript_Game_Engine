@@ -1,7 +1,7 @@
-function VisibleBoxColliderEntity(posX, posY, width, height, renderSpace, physicsSpace) {
+function VisibleBoxColliderEntity(posX, posY, width, height, renderSpace, physicsSpace, color = 'black') {
     this.entity = new Entity(posX, posY);
     this.collider = new BoxColliderComponent(this.entity, width, height);
-    this.visual = new BoxColliderRendererComponent(this.collider, 0, 'black', true);
+    this.visual = new BoxColliderRendererComponent(this.collider, 0, color, true);
 
     this.entity.addComponent(this.collider);
     this.entity.addComponent(this.visual);
