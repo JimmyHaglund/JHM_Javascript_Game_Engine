@@ -6,10 +6,11 @@ const UiManager = function(){
     this.clear = function(){
         this.uiElements.forEach((element) => {
             element.collider.destroy();
-            console.log(element.sprite);
+            // console.log(element.sprite);
             element.sprite.destroy();
-            console.log(element.entity.transform.x);
+            // console.log(element.entity.transform.x);
         });
+        this.uiElements = [];
     }
 
     document.addEventListener("mousemove", (event) =>{

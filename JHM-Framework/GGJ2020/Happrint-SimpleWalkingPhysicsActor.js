@@ -58,7 +58,7 @@ const SimpleWalkingPhysicsActor = function (entity, loop, speed = 3) {
             }
 
             // Check exit collision
-            if (!exitLayer == undefined) {
+            if (exitLayer != undefined) {
                 if (exitLayer[0].overlapsPoint(_entity.transform.worldX, _entity.transform.worldY)) {
                     _onExit.invoke();
                 }
@@ -68,6 +68,7 @@ const SimpleWalkingPhysicsActor = function (entity, loop, speed = 3) {
     let _simpleWalkingPhysicsActor = new simpleWalkingPhysicsActor();
     return _simpleWalkingPhysicsActor;
     function update(deltaTime) {
+        if (levelComplete) return;
         if (!_simpleWalkingPhysicsActor.shouldMove) return;
         _lastDeltaTime = deltaTime;
         if (_grounded) {

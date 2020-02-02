@@ -29,14 +29,16 @@ const PhysicsSpace = function (originX, originY, width, height, loop) {
         constructor() {
             _loop.update.add(update);
         }
-        addCollider(collider, layer) {
+        addCollider(collider, layer = 'geometry') {
             // Add a collider to physics space
             let layerKey = layer.toString();
-            if (!(_colliders.has(layerKey))) {
+            if (_colliders.has(layerKey) == false) {
                 _colliders.set(layerKey, []);
             }
             _colliders.get(layerKey).push(collider);
-            collider.onDestroy.add(()=>this.removeCollider(collider, layer));
+            collider.onDestroy.add(()=>{
+                this.removeCollider(collider, layer);
+            });
             return collider;
         }
         removeCollider(collider, layer) {
@@ -45,7 +47,7 @@ const PhysicsSpace = function (originX, originY, width, height, loop) {
             let colliders = _colliders.get(layerKey);
             let colliderIndex = colliders.indexOf(collider);
             if (colliderIndex < 0) return;
-            colliders.shift(colliderIndex, 0);
+            colliders.splice(colliderIndex, 1);
         }
         getColliders(layer) {
             let layerKey = layer.toString();
@@ -71,7 +73,7 @@ const PhysicsSpace = function (originX, originY, width, height, loop) {
             let actors = _physicsActors.get(layerKey);
             let index = actors.indexOf(actor);
             if (index < 0) return;
-            actors.shift(index, 0);
+            actors.splice(index, 0);
         }
         getPhysicsActors(layer) {
             let layerKey = layer.toString();
