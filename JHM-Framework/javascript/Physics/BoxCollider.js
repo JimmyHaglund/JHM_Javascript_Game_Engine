@@ -33,6 +33,6 @@ class BoxCollider {
     }
     overlapsPoint(pointX, pointY) {
         return pointX > this.left && pointX < this.right
-            && pointY > this.bottom && pointY < this.top;
+            && pointY < this.bottom && pointY > this.top;
     }
 }

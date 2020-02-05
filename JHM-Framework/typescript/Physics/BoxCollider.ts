@@ -46,6 +46,6 @@ class BoxCollider implements ICollider, IDestroyable {
 
     overlapsPoint(pointX: number, pointY: number): boolean {
         return pointX > this.left && pointX < this.right
-            && pointY > this.bottom && pointY < this.top;
+            && pointY < this.bottom && pointY > this.top;
     }
 }
