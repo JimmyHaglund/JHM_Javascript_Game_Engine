@@ -1,9 +1,9 @@
 function jhm_test() {
     test_entity();
     test_actionHandler();
+    test_loop();
     /*
     component_test();
-    test_loop();
     test_boxColliderComponent();
     test_physicsSpace();
     test_simpleWalkjngPhysicsActor();
