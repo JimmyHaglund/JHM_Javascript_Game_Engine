@@ -1,18 +1,6 @@
 class Loop {
     constructor(ticksPerSecond = 60, startPaused = false) {
-        this._onUpdateEvents = [];
         this._interval = null;
-        this._updateFunctions = {
-            add: function (value) {
-                this._onUpdateEvents.push(value);
-            },
-            remove: function (value) {
-                let index = this._onUpdateEvents.indexOf(value);
-                if (index < 0)
-                    return;
-                this._onUpdateEvents.shift(index, 0);
-            }
-        };
         if (!startPaused)
             this.play();
         this._intervalTime = 1000 / ticksPerSecond;
@@ -24,7 +12,7 @@ class Loop {
         return this._intervalTime > 0 ? Math.round(1000 / this._intervalTime) : 0;
     }
     get onUpdate() {
-        return this._updateFunctions;
+        return this._onUpdate;
     }
     /* Note that when setting a new interval,
     the previous one won't carry over.
@@ -54,10 +42,6 @@ class Loop {
         }
     }
     update() {
-        if (this._onUpdateEvents.length == 0)
-            return;
-        this._onUpdateEvents.forEach((event) => {
-            event(this._intervalTime);
-        });
+        this.onUpdate.invoke(this._intervalTime);
     }
 }

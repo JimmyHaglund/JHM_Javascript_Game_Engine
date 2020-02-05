@@ -1,18 +1,7 @@
 class Loop {
     private _intervalTime: number;
-    private _onUpdateEvents: ((deltaTime: number) => any)[] = [];
+    private _onUpdate: Action;
     private _interval: number = null;
-    private _updateFunctions: object = {
-        add: function (value: ((number) => any)) {
-            this._onUpdateEvents.push(value);
-        },
-        remove: function (value) {
-            let index = this._onUpdateEvents.indexOf(value);
-            if (index < 0) return;
-
-            this._onUpdateEvents.shift(index, 0);
-        }
-    };
 
     get playing() {
         return this._interval != null;
@@ -21,7 +10,7 @@ class Loop {
         return this._intervalTime > 0 ? Math.round(1000 / this._intervalTime) : 0;
     }
     get onUpdate() {
-        return this._updateFunctions;
+        return this._onUpdate;
     }
     /* Note that when setting a new interval,
     the previous one won't carry over.
@@ -60,9 +49,6 @@ class Loop {
 
 
     update(): void {
-        if (this._onUpdateEvents.length == 0) return;
-        this._onUpdateEvents.forEach((event) => {
-            event(this._intervalTime);
-        });
+        this.onUpdate.invoke(this._intervalTime);
     }
 }
