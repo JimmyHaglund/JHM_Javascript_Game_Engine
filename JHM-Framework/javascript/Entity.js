@@ -1,6 +1,3 @@
-/// <reference path="Transform.ts" />
-const iDestroyable = Symbol("IDestroyable");
-// Implements: destroy() & isDestroyed
 class Entity {
     constructor(positionX = 0, positionY = 0, originX = 0, originY = 0) {
         this._transform = new Transform();

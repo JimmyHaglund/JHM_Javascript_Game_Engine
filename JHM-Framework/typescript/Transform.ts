@@ -4,7 +4,7 @@ class Transform {
     private _parent: Transform = null;
     private _rotation: number = null;
 
-    constructor(positionX = 0, positionY = 0, rotation = 0, parent = null){
+    constructor(positionX = 0, positionY = 0, rotation = 0, parent = null) {
         this._x = positionX;
         this._y = positionY;
         this._rotation = rotation;
