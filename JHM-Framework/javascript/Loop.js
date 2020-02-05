@@ -1,5 +1,6 @@
 class Loop {
     constructor(ticksPerSecond = 60, startPaused = false) {
+        this._interval = null;
         this._onUpdate = new Action();
         this._intervalTime = 1000 / ticksPerSecond;
         if (!startPaused)
@@ -38,7 +39,7 @@ class Loop {
     }
     play() {
         if (this._intervalTime > 0 && this._interval == null) {
-            this._interval = setInterval(this.update, this._intervalTime);
+            this._interval = setInterval(() => this.update.call(this), this._intervalTime);
         }
     }
     update() {

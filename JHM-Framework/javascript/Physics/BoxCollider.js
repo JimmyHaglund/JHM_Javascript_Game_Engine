@@ -6,7 +6,6 @@ class BoxCollider {
         this._offsetX = offsetX;
         this._offsetY = offsetY;
         this._onDestroy = new Action();
-        this._entity.onDestroy.add(this.destroy, this);
     }
     get left() {
         return this._entity.transform.x + this._offsetX;

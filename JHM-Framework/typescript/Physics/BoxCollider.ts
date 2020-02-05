@@ -39,7 +39,6 @@ class BoxCollider implements ICollider, IDestroyable {
         this._offsetY = offsetY;
 
         this._onDestroy = new Action();
-        this._entity.onDestroy.add(this.destroy, this);
     }
     destroy(): void {
         this._onDestroy.invoke();

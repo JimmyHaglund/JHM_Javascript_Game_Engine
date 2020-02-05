@@ -1,6 +1,6 @@
 class Loop {
     private _intervalTime: number;
-    private _interval: number;
+    private _interval: number = null;
     private _onUpdate: Action = new Action();
 
     get playing() {
