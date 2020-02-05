@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "ES6",
+        "outDir": "JHM-Framework/javascript",
+        "rootDir": "JHM-Framework/typescript"
+    }
+}
