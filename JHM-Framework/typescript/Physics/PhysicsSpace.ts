@@ -9,13 +9,12 @@ class PhysicsSpace {
            actor.checkCollision(this._colliders); 
         });
     }
-    addCollider(collider): void {
+    addCollider(collider: ICollider): void {
         let index = this._colliders.indexOf(collider);
         if (index < 0) return;
         collider.onDestroy.add(() => {
             this.removeCollider(collider);
         });
-        return collider;
     }
     removeCollider(collider): void {
         let index = this._colliders.indexOf(collider);
