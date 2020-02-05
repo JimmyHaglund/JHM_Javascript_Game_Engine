@@ -1,20 +1,16 @@
-function jhm_test() {
-    test_entity();
+function jhm_test(){
     test_actionHandler();
+    test_entity();
     test_loop();
-    /*
-    component_test();
     test_boxColliderComponent();
     test_physicsSpace();
     test_simpleWalkjngPhysicsActor();
     test_renderSpace();
     test_spriteComponent();
-    test_windowManager();
-    */
-    setTimeout(() => {
-        console.log('Tests executed: ', testsRun);
-        console.log('Tests succeeded: ', testsPassed);
-        console.log('Tests failed: ', testsFailed);
-        resetTestData();
-    }, 1000);
+    setTimeout (() => {
+    console.log('Tests executed: ', testsRun);
+    console.log('Tests succeeded: ', testsPassed);
+    console.log('Tests failed: ', testsFailed);
+    resetTestData();
+}, 1000);
 }

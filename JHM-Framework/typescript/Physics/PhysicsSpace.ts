@@ -1,8 +1,9 @@
 class PhysicsSpace {
-    private _actors: IPhysicsActor[];
-    private _colliders: ICollider[];
+    private _actors: IPhysicsActor[] = [];
+    private _colliders: ICollider[] = [];
+    private _loopActionId = -1;
     constructor(loop: Loop) {
-        loop.onUpdate.add(this.update);
+        this._loopActionId = loop.onUpdate.add(this.update, this);
     }
     update(deltaTime: number) {
         this._actors.forEach((actor) => {
@@ -14,7 +15,7 @@ class PhysicsSpace {
         if (index < 0) return;
         collider.onDestroy.add(() => {
             this.removeCollider(collider);
-        });
+        }, this);
     }
     removeCollider(collider): void {
         let index = this._colliders.indexOf(collider);
@@ -37,6 +38,6 @@ class PhysicsSpace {
         this._actors.splice(index, 1);
     }
     getPhysicsActors() {
-        return this._actors.slice[0];
+        return this._actors.slice(0);
     }
 }

@@ -1,17 +1,32 @@
 class Action {
-    private _actions: ((...args: any[]) => any)[] = [];
-
-    add(delegateFunction: (...args: any[]) => any) {
-        this._actions.push(delegateFunction);
+    private _actions: {
+            id: number,
+            action: ((...args: any[]) => any),
+            invoker: object
+        }[] = [];
+    private _nextId: number = 0;
+    add(delegateFunction: (...args: any[]) => any, invoker: object): number {
+        this._actions.push({
+            id: this._nextId,
+            action: delegateFunction, 
+            invoker: invoker
+        });
+        console.log(invoker);
+        return this._nextId++;
     }
-    remove(delegateFunction: (...args: any[]) => any) {
-        let index: number = this._actions.findIndex((value) => value == delegateFunction);
+    remove(actionId: number) {
+        let index = this._actions.findIndex((value) =>
+            value.id == actionId);
         if (index == -1) return;
         this._actions.splice(index, 1);
     }
     invoke(...args: any[]) {
         for (let n = 0; n < this._actions.length; n++) {
-            this._actions[n](args);
+            console.log(this._actions[n].invoker);
+            let a = this._actions[n].action;
+            this._actions[n].action.call(
+                this._actions[n].invoker, 
+                args);
         }
     }
 }

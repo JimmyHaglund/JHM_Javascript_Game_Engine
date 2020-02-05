@@ -1,6 +1,6 @@
 // TODO: Isolate test using mock objects
 function test_spriteComponent() {
-    spriteComponentTest.base_sprite_alpha_should_be_one();
+    // spriteComponentTest.base_sprite_alpha_should_be_one();
 }
 function SpriteComponentTestMockups() {
     this.loop = new Loop(5);
@@ -8,7 +8,7 @@ function SpriteComponentTestMockups() {
     this.entity = new Entity();
     this.sprite = new SpriteComponent(this.window, this.entity, 'face');
 }
-let spriteComponentMockups = new SpriteComponentTestMockups();
+// let spriteComponentMockups = new SpriteComponentTestMockups();
 let spriteComponentTest = {
     base_sprite_alpha_should_be_one: function () {
         let m = spriteComponentMockups;

@@ -1,5 +1,5 @@
 class RenderSpace {
-    private _layers: { layer: number, renderables: IRenderable[] }[];
+    private _layers: { layer: number, renderables: IRenderable[] }[] = [];
     private _canvas: HTMLCanvasElement;
     private _context: CanvasRenderingContext2D;
     // private _color: string;
@@ -30,20 +30,20 @@ class RenderSpace {
         this._canvas.style.left = left.toString();
         this._canvas.style.top = top.toString();
         document.body.insertBefore(this._canvas, document.body.childNodes[0]);
-        loop.onUpdate.add(this.render);
+        loop.onUpdate.add(this.render, this);
     }
     addRenderComponent(component: IRenderable, toLayer: number): void {
         let layer = this._layers.find((value) => value.layer == toLayer);
         if (layer == undefined) {
-            let newLayer = {
+            layer = {
                 layer: toLayer,
                 renderables: []
             };
-            this._layers.push(newLayer);
+            this._layers.push(layer);
             this._layers.sort((layerA, layerB) => layerB.layer - layerA.layer);
         }
         if (layer.renderables.indexOf(component) != -1) return;
-        component.onDestroy.add(() => this.removeRenderComponent(component, toLayer));
+        component.onDestroy.add(() => this.removeRenderComponent(component, toLayer), this);
         layer.renderables.push(component);
     }
     removeRenderComponent(component: IRenderable, fromLayer: number): void {

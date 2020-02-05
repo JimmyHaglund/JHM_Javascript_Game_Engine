@@ -1,11 +1,11 @@
 function test_loop(){
-    loopTester.default_loop_has_60_ticks_per_second();
-    loopTester.loop_initialized_with_100_ticks_per_second_should_have_100_ticks_per_second();
-    loopTester.default_loop_should_run_at_least_30_updates_in_zero_point_six_seconds();
-    loopTester.should_stop_updating_when_ticks_per_second_is_zero_or_below();
-    loopTester.should_start_updating_when_ticks_per_second_is_increased_above_zero();
-    loopTester.should_return_playing_false_when_not_playing();
-    loopTester.should_return_playing_true_when_playing();
+    // loopTester.default_loop_has_60_ticks_per_second();
+    // loopTester.loop_initialized_with_100_ticks_per_second_should_have_100_ticks_per_second();
+    // loopTester.default_loop_should_run_at_least_30_updates_in_zero_point_six_seconds();
+    // loopTester.should_stop_updating_when_ticks_per_second_is_zero_or_below();
+    // loopTester.should_start_updating_when_ticks_per_second_is_increased_above_zero();
+    // loopTester.should_return_playing_false_when_not_playing();
+    // loopTester.should_return_playing_true_when_playing();
 }
 
 const loopTester = {

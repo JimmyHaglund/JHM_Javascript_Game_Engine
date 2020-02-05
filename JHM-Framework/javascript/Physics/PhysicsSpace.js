@@ -1,6 +1,9 @@
 class PhysicsSpace {
     constructor(loop) {
-        loop.onUpdate.add(this.update);
+        this._actors = [];
+        this._colliders = [];
+        this._loopActionId = -1;
+        this._loopActionId = loop.onUpdate.add(this.update, this);
     }
     update(deltaTime) {
         this._actors.forEach((actor) => {
@@ -13,7 +16,7 @@ class PhysicsSpace {
             return;
         collider.onDestroy.add(() => {
             this.removeCollider(collider);
-        });
+        }, this);
     }
     removeCollider(collider) {
         let index = this._colliders.indexOf(collider);
@@ -37,6 +40,6 @@ class PhysicsSpace {
         this._actors.splice(index, 1);
     }
     getPhysicsActors() {
-        return this._actors.slice[0];
+        return this._actors.slice(0);
     }
 }

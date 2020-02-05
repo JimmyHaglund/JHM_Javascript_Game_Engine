@@ -64,4 +64,4 @@ function VisibleBoxColliderEntity(posX, posY, width, height, renderSpace, physic
     renderSpace.addRenderComponent(this.visual);
     physicsSpace.addCollider(this.collider, "geometry");
 }
-let walkingActorTestClass = new WalkingActorTestClass();
+// let walkingActorTestClass = new WalkingActorTestClass();
