@@ -4,13 +4,11 @@ class Action {
         this._nextId = 0;
     }
     add(delegateFunction, invoker) {
-        console.log(this);
         this._actions.push({
             id: this._nextId,
             action: delegateFunction,
             invoker: invoker
         });
-        console.log("Invoker:", invoker);
         return this._nextId++;
     }
     remove(actionId) {
@@ -21,7 +19,6 @@ class Action {
     }
     invoke(...args) {
         for (let n = 0; n < this._actions.length; n++) {
-            console.log(this._actions[n].invoker);
             let a = this._actions[n].action;
             this._actions[n].action.call(this._actions[n].invoker, args);
         }

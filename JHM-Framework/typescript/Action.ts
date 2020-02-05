@@ -11,7 +11,6 @@ class Action {
             action: delegateFunction, 
             invoker: invoker
         });
-        console.log(invoker);
         return this._nextId++;
     }
     remove(actionId: number) {
@@ -22,7 +21,6 @@ class Action {
     }
     invoke(...args: any[]) {
         for (let n = 0; n < this._actions.length; n++) {
-            console.log(this._actions[n].invoker);
             let a = this._actions[n].action;
             this._actions[n].action.call(
                 this._actions[n].invoker, 

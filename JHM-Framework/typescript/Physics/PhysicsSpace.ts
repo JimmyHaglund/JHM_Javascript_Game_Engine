@@ -12,10 +12,11 @@ class PhysicsSpace {
     }
     addCollider(collider: ICollider): void {
         let index = this._colliders.indexOf(collider);
-        if (index < 0) return;
+        if (index >= 0) return;
         collider.onDestroy.add(() => {
             this.removeCollider(collider);
         }, this);
+        this._colliders.push(collider);
     }
     removeCollider(collider): void {
         let index = this._colliders.indexOf(collider);

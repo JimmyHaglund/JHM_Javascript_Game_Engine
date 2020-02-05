@@ -9,7 +9,6 @@ class RenderSpace {
         this._canvas.style.left = left.toString();
         this._canvas.style.top = top.toString();
         document.body.insertBefore(this._canvas, document.body.childNodes[0]);
-        console.log(this);
         loop.onUpdate.add(this.render, this);
     }
     // private _color: string;
@@ -58,7 +57,7 @@ class RenderSpace {
         this.paintBackground();
         this._layers.forEach((layer) => {
             layer.renderables.forEach((renderable) => {
-                renderable.render.call(renderable, this._context);
+                renderable.render(this._context);
             });
         });
     }

@@ -1,12 +1,12 @@
 function jhm_test(){
-    test_actionHandler();
+    test_action();
     test_entity();
     test_loop();
     test_boxColliderComponent();
     test_physicsSpace();
     test_simpleWalkjngPhysicsActor();
-    test_renderSpace();
     test_spriteComponent();
+    test_renderSpace();
     setTimeout (() => {
     console.log('Tests executed: ', testsRun);
     console.log('Tests succeeded: ', testsPassed);
