@@ -14,7 +14,6 @@ class PhysicsSpace {
         collider.onDestroy.add(() => {
             this.removeCollider(collider);
         });
-        return collider;
     }
     removeCollider(collider) {
         let index = this._colliders.indexOf(collider);

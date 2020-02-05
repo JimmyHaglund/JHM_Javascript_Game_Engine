@@ -1,91 +1,89 @@
 
-class SpriteComponent {
-    private _transform: Transform;
-
-let _alpha = 1;
-let _spriteId = "";
-let _spriteImage = null;
-let _iRenderable = {
-};
-let _size = {
-    width: 0,
-    height: 0
-};
-let _crop = {
-    width: 0,
-    height: 0,
-    offsetX: 0,
-    offsetY: 0
-};
-let _offsetX = 0;
-let _offsetY = 0;
-let _onDestroy = new Action();
-
-constructor(window, entity, spriteId = "", layer = 0) {
-    this.spriteId = spriteId;
-    if (_spriteImage != null) {
-        _size.width = _spriteImage.naturalWidth;
-        _size.height = _spriteImage.naturalHeight;
-        _crop.width = _size.width;
-        _crop.height = _size.height;
+class Sprite implements IRenderable, IDestroyable {
+    private _spriteId: string;
+    private _image: HTMLImageElement;
+    private _width: number;
+    private _height: number;
+    private _entity: Entity;
+    private _crop: {
+        width: number,
+        height: number,
+        offsetX: number,
+        offsetY: number
     }
-    _crop.offsetX = 0;
-    _crop.offsetY = 0;
-}
-set alpha(value) {
-    alpha = value;
-}
-get alpha() { return _alpha; }
-set spriteId(value) {
-    if (_spriteId == value) return;
-    _spriteId = value;
-    _spriteImage = document.getElementById(_spriteId);
-    if (_spriteImage == null) return;
-}
-setOffset(x, y){
-    _offsetX = x;
-    _offsetY = y;
-}
-get spriteId() { return _spriteId; }
-get layer() { return _layer; }
-get onDestroy() { return _onDestroy; }
-get size() { return _size; }
-destroy() {
-    _onDestroy.invoke();
-}
-// Render image.
-render(context, originRotation = 0) {
-    if (_spriteImage == null) return;
-    let contextAlpha = context.globalAlpha;
-    let worldX = _entity.transform.worldX + _offsetX;
-    let worldY = _entity.transform.worldY - _offsetY;
-    let translationX =
-        worldX * Math.cos(originRotation) -
-        worldY * Math.sin(originRotation);
-    let translationY =
-        worldX * Math.sin(originRotation) +
-        worldY * Math.cos(originRotation);
-    // Set context settings
-    context.translate(translationX, translationY);
-    // context.rotate(originRotation);
-    context.globalAlpha = _alpha;
-    // console.log(entity.transform.worldY);
-    // Render image to canvas.
-    context.drawImage(
-        _spriteImage, // image
-        _crop.offsetX, // left crop rectangle
-        _crop.offsetY, // top crop rectangle
-        _crop.width, // crop rectangle width
-        _crop.height, // crop rectangle height
-        -_size.width / 2, // x coordinate relative to context position
-        -_size.height / 2, // y coordinate relative to context position
-        _size.width, // width of drawn image
-        _size.height // height of drawn image
-    );
+    private _alpha: number = 1;
+    private _offsetX: number = 0;
+    private _offsetY: number = 0;
+    private _onDestroy = new Action();
 
-    // Restore context to original settings
-    context.globalAlpha = contextAlpha;
-    context.translate(-translationX, -translationY);
-}
-return new spriteComponent();
+    set alpha(value: number) { this._alpha = value; }
+    get alpha(): number { return this._alpha; }
+    set spriteId(value: string) {
+        if (this._spriteId == value) return;
+        this._spriteId = value;
+        this._image = document.getElementById(this._spriteId) as HTMLImageElement;
+    }
+    set offsetX(value: number) { this._offsetX = value; }
+    set offsetY(value: number) { this._offsetY = value; }
+    get spriteId(): string { return this._spriteId; }
+    get onDestroy(): Action { return this._onDestroy; }
+    get width(): number { return this._width; }
+
+    constructor(entity: Entity, spriteId: string = "", renderSpace: RenderSpace, layer: number = 0) {
+        this._spriteId = spriteId;
+        this._image = document.getElementById(spriteId) as HTMLImageElement;
+        if (this._image != null) {
+            this._width = this._image.naturalWidth;
+            this._height = this._image.naturalHeight;
+            this._crop = {
+                width: this._width,
+                height: this._height,
+                offsetX: 0,
+                offsetY: 0
+            }
+        }
+        else {
+            console.log("Warning: Sprite component with sprite id",
+                spriteId, "failed to find an image.");
+        }
+        this._entity = entity;
+        renderSpace.addRenderComponent(this, layer);
+    }
+
+    destroy(): void {
+        this._onDestroy.invoke();
+    }
+    // Render image.
+    render(context: CanvasRenderingContext2D) {
+        if (this._image == null) return;
+        let contextAlpha = context.globalAlpha;
+        let worldX = this._entity.transform.worldX + this._offsetX;
+        let worldY = this._entity.transform.worldY - this._offsetY;
+        let translationX =
+            worldX * Math.cos(0) - // If we were to rotate render space origin
+            worldY * Math.sin(0);
+        let translationY =
+            worldX * Math.sin(0) +
+            worldY * Math.cos(0);
+        // Set context settings
+        context.translate(translationX, translationY);
+        // context.rotate(originRotation);
+        context.globalAlpha = this._alpha;
+        // console.log(entity.transform.worldY);
+        // Render image to canvas.
+        context.drawImage(
+            this._image, // image
+            this._crop.offsetX, // left crop rectangle
+            this._crop.offsetY, // top crop rectangle
+            this._crop.width, // crop rectangle width
+            this._crop.height, // crop rectangle height
+            -this._width / 2, // x coordinate relative to context position
+            -this._height / 2, // y coordinate relative to context position
+            this._width, // width of drawn image
+            this._height // height of drawn image
+        );
+        // Restore context to original settings
+        context.globalAlpha = contextAlpha;
+        context.translate(-translationX, -translationY);
+    }
 }
