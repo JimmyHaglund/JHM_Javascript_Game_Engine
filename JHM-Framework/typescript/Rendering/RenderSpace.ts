@@ -2,7 +2,7 @@ class RenderSpace {
     private _layers: { layer: number, renderables: IRenderable[] }[] = [];
     private _canvas: HTMLCanvasElement;
     private _context: CanvasRenderingContext2D;
-    // private _color: string;
+    private _color: string;
 
     get canvas() { return this._canvas; }
     get width() { return this._canvas.width; }
@@ -17,13 +17,14 @@ class RenderSpace {
     set top(value: number) { this._canvas.style.top = value + 'px'; }
     get bottom() { return parseInt(this._canvas.style.bottom, 10); }
     set bottom(value: number) { this._canvas.style.bottom = value + 'px'; }
-    set backgroundColor(color: string) { this._context.fillStyle = color; }
+    set backgroundColor(color: string) { this._color = color; }
+    get backgroundColor(): string { return this._color; }
     
     constructor(loop: Loop, width: number, height: number,
-        left: number = 0, top: number = 0, backgroundColor: string = "#B6B6B4") {
+        left: number = 0, top: number = 0, backgroundColor: string = "gray") {
         this._canvas = document.createElement("canvas");
         this._context = this._canvas.getContext("2d");
-        this._context.fillStyle = backgroundColor;
+        this._color = backgroundColor;
 
         this._canvas.width = width;
         this._canvas.height = height;
@@ -70,6 +71,7 @@ class RenderSpace {
 
     paintBackground() {
         this.wipe();
+        this._context.fillStyle = this._color;
         this._context.fillRect(0, 0, this.width, this.height);
     }
 }

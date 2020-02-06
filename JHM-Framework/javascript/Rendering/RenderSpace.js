@@ -1,9 +1,9 @@
 class RenderSpace {
-    constructor(loop, width, height, left = 0, top = 0, backgroundColor = "#B6B6B4") {
+    constructor(loop, width, height, left = 0, top = 0, backgroundColor = "gray") {
         this._layers = [];
         this._canvas = document.createElement("canvas");
         this._context = this._canvas.getContext("2d");
-        this._context.fillStyle = backgroundColor;
+        this._color = backgroundColor;
         this._canvas.width = width;
         this._canvas.height = height;
         this._canvas.style.left = left.toString();
@@ -11,7 +11,6 @@ class RenderSpace {
         document.body.insertBefore(this._canvas, document.body.childNodes[0]);
         loop.onUpdate.add(this.render, this);
     }
-    // private _color: string;
     get canvas() { return this._canvas; }
     get width() { return this._canvas.width; }
     set width(value) { this.canvas.width = value; }
@@ -25,7 +24,8 @@ class RenderSpace {
     set top(value) { this._canvas.style.top = value + 'px'; }
     get bottom() { return parseInt(this._canvas.style.bottom, 10); }
     set bottom(value) { this._canvas.style.bottom = value + 'px'; }
-    set backgroundColor(color) { this._context.fillStyle = color; }
+    set backgroundColor(color) { this._color = color; }
+    get backgroundColor() { return this._color; }
     addRenderComponent(component, toLayer) {
         let layer = this._layers.find((value) => value.layer == toLayer);
         if (layer == undefined) {
@@ -63,6 +63,7 @@ class RenderSpace {
     }
     paintBackground() {
         this.wipe();
+        this._context.fillStyle = this._color;
         this._context.fillRect(0, 0, this.width, this.height);
     }
 }

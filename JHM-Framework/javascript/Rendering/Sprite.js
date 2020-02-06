@@ -59,13 +59,9 @@ class Sprite {
         // console.log(entity.transform.worldY);
         // Render image to canvas.
         context.drawImage(this._image, // image
-        this._crop.offsetX, // left crop rectangle
-        this._crop.offsetY, // top crop rectangle
-        this._crop.width, // crop rectangle width
+        this._crop.offsetX, this._crop.offsetY, this._crop.width, // crop rectangle width
         this._crop.height, // crop rectangle height
-        -this._width / 2, // x coordinate relative to context position
-        -this._height / 2, // y coordinate relative to context position
-        this._width, // width of drawn image
+        this._offsetX, this._offsetY, this._width, // width of drawn image
         this._height // height of drawn image
         );
         // Restore context to original settings
