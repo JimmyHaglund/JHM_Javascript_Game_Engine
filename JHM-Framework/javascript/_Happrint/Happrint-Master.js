@@ -10,4 +10,21 @@ function happrint_start() {
     myAction.add(() => console.log("Action invoked!"), this);
     inputSystem.bindKeyAction(myAction, "w");
     myWindow.addRenderComponent(mySprite, 0);
+    printPage();
+}
+function printPage() {
+    let img = document.getElementById('page1');
+    let canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height);
+    let dataString = "";
+    for (let y = 0; y < img.height; y++) {
+        for (let x = 0; x < img.width; x++) {
+            let pixelData = canvas.getContext('2d').getImageData(x, y, 1, 1).data;
+            dataString += pixelData[0] > 0 ? "." : "X";
+        }
+        dataString += "\n";
+    }
+    console.log(dataString);
 }
