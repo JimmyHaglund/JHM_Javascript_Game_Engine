@@ -11,6 +11,9 @@ function happrint_start() {
     inputSystem.bindKeyAction(myAction, "w");
     myWindow.addRenderComponent(mySprite, 0);
     printPage();
+    let visibleBox = new VisibleBoxCollider(0, 0, 50, 300, myWindow, myPhysics, "red");
+    visibleBox.outlineOnly = true;
+    let testSheet = OverlaySheet.generateFromImage("page1", myPhysics, myWindow, new Entity(0, 0), 'green');
 }
 function printPage() {
     let img = document.getElementById('page1');
