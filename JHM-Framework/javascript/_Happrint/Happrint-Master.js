@@ -1,22 +1,33 @@
 function happrint_start() {
-    let myWindow = new RenderSpace(new Loop(10), 600, 600);
-    let myPhysics = new PhysicsSpace(new Loop(20));
+    let myWindow = new RenderSpace(new Loop(60), 600, 600);
+    // let myPhysics = new PhysicsSpace(new Loop(20));
     // let myEntity = new Entity(0, 0);
     // let mySprite = new Sprite(myEntity, "page1");
     // mySprite.width = 320;
     // mySprite.height = 320;
+    // myWindow.addRenderComponent(mySprite, 0);
     // let myButton = new BoxButton(myWindow, myPhysics, 0, 0, 75, 50, "button_1_normal", "button_1_hover", "button_1_press");
     // let uiLoop = new UiLoop();
     // let inputSystem = new Input();
     // let myAction = new Action();
     // myAction.add(() => console.log("Action invoked!"), this);
     // inputSystem.bindKeyAction(myAction, "w");
-    // myWindow.addRenderComponent(mySprite, 0);
     // printPage();
     // myWindow.canvas.getContext('2d').imageSmoothingEnabled = false; // Disable antialiasing
     // let visibleBox = new VisibleBoxCollider(0, 0, 50, 300, myWindow, myPhysics, "red");
     // visibleBox.outlineOnly = true;
-    let testSheet = OverlaySheet.generateFromImage("page1", myPhysics, myWindow, new Entity(0, 0), 'black');
+    // let testSheet = OverlaySheet.generateFromImage("page1", myPhysics, myWindow, new Entity(0, 0), 'black');
+    let mouseInput = new MouseInput();
+    let uiSpace = new UiSpace(myWindow, 0, mouseInput);
+    let button = uiSpace.createButton(0, 0, 100, 100, "stopButton_normal", "stopButton_hover", "stopButton_press");
+    // button.onClick.add(() => console.log("Button on click called."), this);
+    let buttonColliderOutline = new BoxColliderRenderer(button.collider, 'blue', false);
+    myWindow.addRenderComponent(buttonColliderOutline, 0);
+    // console.log(button.collider);
+    // mouseInput.onMouseDown.add(printMousePosition, this);
+}
+function printMousePosition(event) {
+    console.log("Mouse pos X Y:", event.clientX, event.clientY);
 }
 function printPage() {
     let img = document.getElementById('page1');

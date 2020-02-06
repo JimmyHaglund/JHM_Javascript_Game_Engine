@@ -13,12 +13,14 @@ class BoxButton {
         physicsSpace.addCollider(this._collider);
         this._sprite.width = width;
         this._sprite.height = height;
-        this._sprite.offsetX = width * 0.5;
-        this._sprite.offsetY = height * 0.5;
+        // this._sprite.offsetX = width * 0.5;
+        // this._sprite.offsetY = height * 0.5;
         renderSpace.addRenderComponent(this._sprite, -100);
         this._entity.addComponent(this._sprite);
         this._entity.addComponent(this._collider);
     }
+    get collider() { return this._collider; }
+    get onClick() { return this._onClick; }
     press() {
         if (this._state == BoxButton._buttonStates.pressed)
             return;
@@ -30,17 +32,24 @@ class BoxButton {
             return;
         if (this._collider.overlapsPoint(mouseX, mouseY)) {
             this._onClick.invoke();
-            this.hover();
+            this._state = BoxButton._buttonStates.hovered;
+            this.updateSprite();
             return;
         }
         this._state = BoxButton._buttonStates.passive;
         this.updateSprite();
     }
     hover() {
+        if (this._state == BoxButton._buttonStates.pressed ||
+            this._state == BoxButton._buttonStates.hovered)
+            return;
         this._state = BoxButton._buttonStates.hovered;
         this.updateSprite();
     }
     stopHover() {
+        if (this._state == BoxButton._buttonStates.passive ||
+            this._state == BoxButton._buttonStates.pressed)
+            return;
         this._state = BoxButton._buttonStates.passive;
         this.updateSprite();
     }

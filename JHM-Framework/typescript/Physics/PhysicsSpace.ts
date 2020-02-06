@@ -2,7 +2,7 @@ class PhysicsSpace {
     private _actors: IPhysicsActor[] = [];
     private _colliders: ICollider[] = [];
     private _loopActionId = -1;
-    constructor(loop: Loop) {
+    constructor(loop: ILoop) {
         this._loopActionId = loop.onUpdate.add(this.update, this);
     }
     update(deltaTime: number) {

@@ -1,9 +1,9 @@
-class Input {
+class KeyboardInput {
     private _boundActions: object = Object.create(null);
 
     constructor() {
         document.addEventListener("keydown", event =>
-            this.checkInput.call(this, event));
+            this.checkKeyboardInput.call(this, event));
     }
 
     bindKeyAction(action: Action, key: string, doubleCase: boolean = true) {
@@ -23,7 +23,7 @@ class Input {
         if (otherCase == key) return;
         this.bindKeyAction(action, otherCase, false);
     }
-    checkInput(inputEvent: KeyboardEvent) {
+    checkKeyboardInput(inputEvent: KeyboardEvent) {
         let keyString = this.getUniCode(inputEvent.key).toString();
         let actions = this._boundActions[keyString];
         if (actions == undefined) return;
