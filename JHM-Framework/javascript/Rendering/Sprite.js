@@ -1,5 +1,5 @@
 class Sprite {
-    constructor(entity, spriteId = "", renderSpace, layer = 0) {
+    constructor(entity, spriteId = "") {
         this._alpha = 1;
         this._offsetX = 0;
         this._offsetY = 0;
@@ -20,7 +20,6 @@ class Sprite {
             console.log("Warning: Sprite component with sprite id", spriteId, "failed to find an image.");
         }
         this._entity = entity;
-        renderSpace.addRenderComponent(this, layer);
     }
     set alpha(value) { this._alpha = value; }
     get alpha() { return this._alpha; }
@@ -35,6 +34,10 @@ class Sprite {
     get spriteId() { return this._spriteId; }
     get onDestroy() { return this._onDestroy; }
     get width() { return this._width; }
+    set width(value) { this._width = value; }
+    get height() { return this._width; }
+    set height(value) { this._height = value; }
+    get entity() { return this._entity; }
     destroy() {
         this._onDestroy.invoke();
     }
@@ -44,7 +47,7 @@ class Sprite {
             return;
         let contextAlpha = context.globalAlpha;
         let worldX = this._entity.transform.worldX + this._offsetX;
-        let worldY = this._entity.transform.worldY - this._offsetY;
+        let worldY = this._entity.transform.worldY + this._offsetY;
         let translationX = worldX * Math.cos(0) - // If we were to rotate render space origin
             worldY * Math.sin(0);
         let translationY = worldX * Math.sin(0) +

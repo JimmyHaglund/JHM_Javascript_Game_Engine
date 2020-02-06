@@ -43,10 +43,9 @@ class Loop {
     }
     play() {
         if (this._intervalTime > 0 && this._interval == null) {
-            this._interval = setInterval(this.update, this._intervalTime);
+            this._interval = setInterval(() => this.update.call(this), this._intervalTime);
         }
     }
-
 
     update(): void {
         this._onUpdate.invoke(this._intervalTime);

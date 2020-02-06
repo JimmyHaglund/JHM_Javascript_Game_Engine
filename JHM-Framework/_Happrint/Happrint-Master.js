@@ -1,6 +1,8 @@
 function happrint_start() {
-
+    console.log("Master started!");
+    let startWindow = 
 }
+/*
 function happrint_checkInput(event) {
     // R
     switch (event.keyCode) {
@@ -69,7 +71,7 @@ function Happrint() {
     testColliders.forEach(element => {
         element.entity.transform.parent = parent.transform;
     });
-    */
+    *//*
     
     this.getCharacter = function () { return character; }
 
@@ -227,3 +229,4 @@ function Happrint() {
 }
 let uiManager = new UiManager();
 let happrintInstance = new Happrint();
+*/

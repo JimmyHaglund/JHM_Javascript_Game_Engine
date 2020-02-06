@@ -1,5 +1,5 @@
 
-class Sprite implements IRenderable, IDestroyable {
+class Sprite implements IRenderable, IDestroyable, IComponent {
     private _spriteId: string;
     private _image: HTMLImageElement;
     private _width: number;
@@ -28,8 +28,12 @@ class Sprite implements IRenderable, IDestroyable {
     get spriteId(): string { return this._spriteId; }
     get onDestroy(): Action { return this._onDestroy; }
     get width(): number { return this._width; }
+    set width(value: number) { this._width = value; }
+    get height(): number { return this._width; }
+    set height(value: number) { this._height = value; }
+    get entity(): Entity { return this._entity; }
 
-    constructor(entity: Entity, spriteId: string = "", renderSpace: RenderSpace, layer: number = 0) {
+    constructor(entity: Entity, spriteId: string = "") {
         this._spriteId = spriteId;
         this._image = document.getElementById(spriteId) as HTMLImageElement;
         if (this._image != null) {
@@ -47,7 +51,6 @@ class Sprite implements IRenderable, IDestroyable {
                 spriteId, "failed to find an image.");
         }
         this._entity = entity;
-        renderSpace.addRenderComponent(this, layer);
     }
 
     destroy(): void {
@@ -58,7 +61,7 @@ class Sprite implements IRenderable, IDestroyable {
         if (this._image == null) return;
         let contextAlpha = context.globalAlpha;
         let worldX = this._entity.transform.worldX + this._offsetX;
-        let worldY = this._entity.transform.worldY - this._offsetY;
+        let worldY = this._entity.transform.worldY + this._offsetY;
         let translationX =
             worldX * Math.cos(0) - // If we were to rotate render space origin
             worldY * Math.sin(0);
