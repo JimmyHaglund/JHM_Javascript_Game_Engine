@@ -1,15 +1,15 @@
-class Loop {
+class Loop implements ILoop {
     private _intervalTime: number;
     private _interval: number = null;
     private _onUpdate: Action = new Action();
 
-    get playing() {
+    get playing(): boolean {
         return this._interval != null;
     }
-    get ticksPerSecond() {
+    get ticksPerSecond(): number {
         return this._intervalTime > 0 ? Math.round(1000 / this._intervalTime) : 0;
     }
-    get onUpdate() {
+    get onUpdate(): Action {
         return this._onUpdate;
     }
     /* Note that when setting a new interval,

@@ -6,8 +6,7 @@
   </style>
     <title>Happrint</title>
   </head>
-  <body onload='happrint_start()'
-    onkeypress = 'happrint_checkInput(event)'>
+  <body onload='happrint_start()'>
     <srcImg>
       <img src = '../../Images/character_idle.png' id='character_idle' display='none'>
       <img src = '../../Images/character_walk_1.png' id='character_walk_right_1' display='none'>
@@ -70,7 +69,9 @@
     <script src = "../Rendering/RenderSpace.js"></script>
     <script src = "../Rendering/Sprite.js"></script>
 
+    <script src = "../UserInterface/UiLoop.js"></script>
     <script src = "../UserInterface/BoxButton.js"></script>
+    <script src = "../UserInterface/Input.js"></script>
 
     <div id = 'master'>
       <script src = './Happrint-Master.js'></script>
