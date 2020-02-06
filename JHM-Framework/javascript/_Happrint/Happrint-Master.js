@@ -16,7 +16,7 @@ function happrint_start() {
     // myWindow.canvas.getContext('2d').imageSmoothingEnabled = false; // Disable antialiasing
     // let visibleBox = new VisibleBoxCollider(0, 0, 50, 300, myWindow, myPhysics, "red");
     // visibleBox.outlineOnly = true;
-    let testSheet = OverlaySheet.generateFromImage("page1", myPhysics, myWindow, new Entity(0, 0));
+    let testSheet = OverlaySheet.generateFromImage("page1", myPhysics, myWindow, new Entity(0, 0), 'black');
 }
 function printPage() {
     let img = document.getElementById('page1');
