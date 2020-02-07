@@ -1,10 +1,13 @@
 class PointRigidBody implements IPhysicsActor, IComponent, IDestroyable {
     private _velocityX: number = 0;
     private _velocityY: number = 0;
+    private _previousX: number;
+    private _previousY: number;
     private _entity: Entity;
     private _onDestroy: Action = new Action();
     private _loopAction: Action;
     private _updateActionId: number;
+    private _deltaTime: number;
 
     get velocityX(): number { return this._velocityX; }
     get velocityY(): number { return this._velocityY; }
@@ -15,6 +18,8 @@ class PointRigidBody implements IPhysicsActor, IComponent, IDestroyable {
         this._entity = entity;
         this._loopAction = loop.onUpdate;
         this._updateActionId = loop.onUpdate.add(this.update, this);
+        this._previousX = entity.transform.x;
+        this._previousY = entity.transform.y;
     }
     get onDestroy() { return this._onDestroy; }
     get entity() { return this._entity; }
@@ -24,9 +29,7 @@ class PointRigidBody implements IPhysicsActor, IComponent, IDestroyable {
     }
 
     update(deltaTime: number) {
-        if (deltaTime == undefined || deltaTime <= 0) return;
-        this._entity.transform.x += deltaTime * this._velocityX;
-        this._entity.transform.y += deltaTime * this._velocityY;
+        this._deltaTime = deltaTime;
     }
 
     destroy() {
@@ -34,12 +37,36 @@ class PointRigidBody implements IPhysicsActor, IComponent, IDestroyable {
         this._onDestroy.invoke();
     }
 
-    checkCollision(colliders: ICollider[]) {
+    checkCollision(colliders: ICollider[]): void {
+        this.move(this._deltaTime);
         colliders.forEach(collider => {
             if (collider.overlapsPoint(this._entity.transform.x, this._entity.transform.y)) {
-                
+                let x0 = this._previousX;
+                let y0 = this._previousY;
+                let x1 = this._entity.transform.x;
+                let y1 = this._entity.transform.y;
+                let dX = this._entity.transform.x - this._previousX;
+                let dY = this._entity.transform.y - this._previousY;
+                let lean = dY / dX;
+                if (dX == 0) lean = 100000;
+                let collisionData = collider.getCollisionPointWithRay(x0, y0, lean);
+                let deltaColX = collisionData.x - x1;
+                let deltaColY = collisionData.y - y1;
+                this._velocityX -= collisionData.normalX * this._velocityX * -Math.sign(dX);
+                this._velocityY -= collisionData.normalY * this._velocityY * -Math.sign(dY);
+                this._entity.transform.x -= collisionData.normalX * deltaColX * -Math.sign(deltaColX);
+                this._entity.transform.y -= collisionData.normalY * deltaColY * -Math.sign(deltaColY);
+                // this._entity.transform.x = collisionData.x;
+                // this._entity.transform.y = collisionData.y;
             }
         });
+    }
+    private move(deltaTime: number): void {
+        if (deltaTime == undefined || deltaTime <= 0) return;
+        this._previousX = this._entity.transform.x;
+        this._previousY = this._entity.transform.y;
+        this._entity.transform.x += deltaTime * this._velocityX;
+        this._entity.transform.y += deltaTime * this._velocityY;
     }
 }
 

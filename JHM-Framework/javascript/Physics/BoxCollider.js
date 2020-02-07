@@ -34,18 +34,27 @@ class BoxCollider {
         let foundHorizontal = false;
         let foundVertical = false;
         let intersectPoint = null;
-        if (intersectVertical != null
-            && insideRange(intersectVertical.y, this.top, this.bottom)) {
-            foundVertical = true;
-            intersectPoint = intersectVertical;
-        }
         if (intersectHorizontal != null
             && insideRange(intersectHorizontal.x, this.left, this.right)) {
             foundHorizontal = true;
             intersectPoint = intersectHorizontal;
+            intersectHorizontal.normalX = 0;
+            intersectHorizontal.normalY = 1;
+            if (corner.y == this.top) {
+                intersectHorizontal.normalY = -1;
+            }
+        }
+        if (intersectVertical != null
+            && insideRange(intersectVertical.y, this.top, this.bottom)) {
+            foundVertical = true;
+            intersectPoint = intersectVertical;
+            intersectVertical.normalY = 0;
+            intersectVertical.normalX = 1;
+            if (corner.x == this.left) {
+                intersectVertical.normalX = -1;
+            }
         }
         if (foundHorizontal && foundVertical) {
-            console.log("Intersect: ", intersectPoint);
             if (squareDistance(intersectVertical.x, intersectVertical.y, x0, y0) <
                 squareDistance(intersectHorizontal.x, intersectHorizontal.y, x0, y0)) {
                 intersectPoint = intersectVertical;

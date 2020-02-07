@@ -22,8 +22,8 @@ class BoxColliderRenderer {
         else {
             this.renderOutline(context, left, right, top, bottom);
         }
-        context.fillStyle = contextColor;
-        context.strokeStyle = contextColor;
+        // context.fillStyle = contextColor;
+        // context.strokeStyle = contextColor;
     }
     destroy() {
         this._onDestroy.invoke();

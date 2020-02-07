@@ -1,7 +1,7 @@
 function happrint_start() {
     let myLoop = new Loop(60);
     let myWindow = new RenderSpace(myLoop, 600, 600);
-    let myPhysics = new PhysicsSpace(new Loop(20));
+    let myPhysics = new PhysicsSpace(myLoop);
     // let myEntity = new Entity(0, 0);
     // let mySprite = new Sprite(myEntity, "page1");
     // mySprite.width = 320;
@@ -29,27 +29,36 @@ function happrint_start() {
     // console.log(button.collider);
     // mouseInput.onMouseDown.add(printMousePosition, this);
     // testRb(myWindow);
-    let testLoop = new Loop(30);
-    let testEntity = new Entity(200, 20);
-    let testRb = new PointRigidBody(testEntity, testLoop);
-    testRb.setVelocity(10, 0);
+    // let testLoop = new Loop(30);
+    let testEntity = new Entity(200, 40);
+    let testRb = new PointRigidBody(testEntity, myLoop);
+    testRb.setVelocity(15, 100);
     let testSprite = new Sprite(testEntity, "character_idle");
     testSprite.width = 30;
     testSprite.height = 45;
+    testSprite.offsetX = -testSprite.width / 2;
+    testSprite.offsetY = - testSprite.height;
     testEntity.addComponent(testSprite);
     testEntity.addComponent(testRb);
     myWindow.addRenderComponent(testSprite, 0);
-    let time = 0;
-    let testBox = new VisibleBoxCollider(50, 50, 100, 100, myWindow, myPhysics);
-    testLoop.onUpdate.add((deltaTime)=> {
-        time += deltaTime;
-        testRb.velocityY = 100 * Math.sin(time * 10);
+    myWindow.canvas.getContext("2d").imageSmoothingEnabled=false;
+    // let time = 0;
+    let testBox = new VisibleBoxCollider(50, 50, 500, 50, myWindow, myPhysics, 'blue');
+
+    myPhysics.addPhysicsActor(testRb);
+    myPhysics.addCollider(testBox.collider);
+    
+    
+    myLoop.onUpdate.add((deltaTime)=> {
+        console.log(testRb.velocityX);
+        testRb.velocityY += 100 * deltaTime;
+        // time += deltaTime;
+        // testRb.velocityY = 300 * Math.sin(time * 10);
     }, this);
     // testLoop.onUpdate.add((deltaTime)=> console.log(deltaTime, testEntity.transform.x, testEntity.transform.y), this);
     mouseInput.onMouseMove.add((event) =>{
         let ray = lineToRay(0, 0, event.clientX, event.clientY);
         let intersect = testBox.collider.getCollisionPointWithRay(ray.x0, ray.y0, ray.lean);
-        console.log(intersect);
         if (intersect != null){
             let intersectRay = lineToRay(0, 0, intersect.x, intersect.y);
             new RayRender(myWindow, intersectRay.x0, 
@@ -71,7 +80,7 @@ function testRb(window: RenderSpace){
     let testLoop = new Loop(5);
     let testEntity = new Entity(20, 20);
     let testRb = new PointRigidBody(testEntity, testLoop);
-    testRb.setVelocity(5, 0);
+    testRb.setVelocity(15, 0);
     let testSprite = new Sprite(testEntity, "character_idle");
     testSprite.width = 10;
     testSprite.height = 15;

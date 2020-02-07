@@ -37,26 +37,38 @@ class BoxCollider implements ICollider, IComponent, IDestroyable {
         return pointX > this.left && pointX < this.right
             && pointY < this.bottom && pointY > this.top;
     }
-    getCollisionPointWithRay(x0: number, y0: number, lean: number): { x: number, y: number } {
+    getCollisionPointWithRay(x0: number, y0: number, lean: number): { x: number, y: number, normalX: number, normalY: number } {
         // let corners = this.corners;
         let corner = this.getNearestCorner(x0, y0);
-        let intersectVertical = getLineOverlapPoint(corner.x, corner.y, 100000, x0, y0, lean);
-        let intersectHorizontal = getLineOverlapPoint(corner.x, corner.y, 0, x0, y0, lean);
+        let intersectVertical: any = getLineOverlapPoint(corner.x, corner.y, 100000, x0, y0, lean);
+        let intersectHorizontal: any = getLineOverlapPoint(corner.x, corner.y, 0, x0, y0, lean);
         let foundHorizontal = false;
         let foundVertical = false;
         let intersectPoint = null;
-        if (intersectVertical != null
-            && insideRange(intersectVertical.y, this.top, this.bottom)) {
-            foundVertical = true;
-            intersectPoint = intersectVertical;
-        }
+
         if (intersectHorizontal != null
             && insideRange(intersectHorizontal.x, this.left, this.right)) {
             foundHorizontal = true;
             intersectPoint = intersectHorizontal;
+            intersectHorizontal.normalX = 0;
+            intersectHorizontal.normalY = 1;
+            if (corner.y == this.top) {
+                intersectHorizontal.normalY = -1;
+            }
         }
+
+        if (intersectVertical != null
+            && insideRange(intersectVertical.y, this.top, this.bottom)) {
+            foundVertical = true;
+            intersectPoint = intersectVertical;
+            intersectVertical.normalY = 0;
+            intersectVertical.normalX = 1;
+            if (corner.x == this.left) {
+                intersectVertical.normalX = -1;
+            }
+        }
+
         if (foundHorizontal && foundVertical) {
-            console.log("Intersect: ", intersectPoint);
             if (squareDistance(intersectVertical.x, intersectVertical.y, x0, y0) <
                 squareDistance(intersectHorizontal.x, intersectHorizontal.y, x0, y0)) {
                 intersectPoint = intersectVertical;

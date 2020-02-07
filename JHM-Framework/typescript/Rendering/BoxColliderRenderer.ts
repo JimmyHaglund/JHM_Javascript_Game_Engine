@@ -27,8 +27,8 @@ class BoxColliderRenderer implements IRenderable, IDestroyable {
         } else {
             this.renderOutline(context, left, right, top, bottom);
         }
-        context.fillStyle = contextColor;
-        context.strokeStyle = contextColor;
+        // context.fillStyle = contextColor;
+        // context.strokeStyle = contextColor;
     }
     destroy(): void {
         this._onDestroy.invoke();

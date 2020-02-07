@@ -1,11 +1,22 @@
 <!DOCTYPE html>
 <html>
+  <!--
+  canvas {
+    image-rendering: optimizeSpeed;
+    image-rendering: -moz-crisp-edges;        
+    image-rendering: -webkit-optimize-contrast; 
+    image-rendering: -o-crisp-edges;            
+    image-rendering: pixelated;                 
+    -ms-interpolation-mode: nearest-neighbor;   
+  }
+  -->
   <head>
   <style>
     srcImg { display: none; }
   </style>
     <title>Happrint</title>
   </head>
+  
   <body onload='happrint_start()'>
     <srcImg>
       <img src = '../../Images/character_idle.png' id='character_idle' display='none'>
