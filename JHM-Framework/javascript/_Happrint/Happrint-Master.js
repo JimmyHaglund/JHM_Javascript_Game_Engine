@@ -1,6 +1,7 @@
 function happrint_start() {
-    let myWindow = new RenderSpace(new Loop(60), 600, 600);
-    // let myPhysics = new PhysicsSpace(new Loop(20));
+    let myLoop = new Loop(60);
+    let myWindow = new RenderSpace(myLoop, 600, 600);
+    let myPhysics = new PhysicsSpace(new Loop(20));
     // let myEntity = new Entity(0, 0);
     // let mySprite = new Sprite(myEntity, "page1");
     // mySprite.width = 320;
@@ -19,7 +20,7 @@ function happrint_start() {
     // let testSheet = OverlaySheet.generateFromImage("page1", myPhysics, myWindow, new Entity(0, 0), 'black');
     let mouseInput = new MouseInput();
     let uiSpace = new UiSpace(myWindow, 0, mouseInput);
-    let button = uiSpace.createButton(0, 0, 100, 100, "stopButton_normal", "stopButton_hover", "stopButton_press");
+    let button = uiSpace.createButton(50, 50, 100, 100, "stopButton_normal", "stopButton_hover", "stopButton_press");
     // button.onClick.add(() => console.log("Button on click called."), this);
     let buttonColliderOutline = new BoxColliderRenderer(button.collider, 'blue', false);
     myWindow.addRenderComponent(buttonColliderOutline, 0);
@@ -37,11 +38,23 @@ function happrint_start() {
     testEntity.addComponent(testRb);
     myWindow.addRenderComponent(testSprite, 0);
     let time = 0;
+    let testBox = new VisibleBoxCollider(50, 50, 100, 100, myWindow, myPhysics);
     testLoop.onUpdate.add((deltaTime) => {
         time += deltaTime;
         testRb.velocityY = 100 * Math.sin(time * 10);
     }, this);
     // testLoop.onUpdate.add((deltaTime)=> console.log(deltaTime, testEntity.transform.x, testEntity.transform.y), this);
+    mouseInput.onMouseMove.add((event) => {
+        let ray = lineToRay(0, 0, event.clientX, event.clientY);
+        let intersect = testBox.collider.getCollisionPointWithRay(ray.x0, ray.y0, ray.lean);
+        console.log(intersect);
+        if (intersect != null) {
+            let intersectRay = lineToRay(0, 0, intersect.x, intersect.y);
+            new RayRender(myWindow, intersectRay.x0, intersectRay.y0, intersectRay.lean, intersectRay.length, 'green');
+        }
+    }, this);
+    // new RayRender(myWindow, 300, 300, 0, 200, 'black', 50000);
+    // myLoop.onUpdate.add(() => drawRay(myWindow.canvas.getContext("2d"), 300, 300, 2, 50), this);
 }
 function printMousePosition(event) {
     console.log("Mouse pos X Y:", event.clientX, event.clientY);

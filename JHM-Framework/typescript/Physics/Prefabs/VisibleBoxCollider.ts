@@ -5,6 +5,7 @@ class VisibleBoxCollider {
 
     set outlineOnly(value: boolean) { this._visual.outlineOnly = value; }
     get entity(): Entity { return this._entity; }
+    get collider(): BoxCollider { return this._collider; }
 
     constructor(posX: number, posY: number, width: number, height: number, renderSpace: RenderSpace, physicsSpace: PhysicsSpace, color: string = 'black') {
         this._entity = new Entity(posX, posY);

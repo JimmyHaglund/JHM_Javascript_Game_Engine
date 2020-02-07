@@ -4,7 +4,7 @@ class RenderSpace {
     private _context: CanvasRenderingContext2D;
     private _color: string;
 
-    get canvas() { return this._canvas; }
+    get canvas(): HTMLCanvasElement { return this._canvas; }
     get width() { return this._canvas.width; }
     set width(value: number) { this.canvas.width = value; }
     set height(value: number) { this.canvas.height = value; }

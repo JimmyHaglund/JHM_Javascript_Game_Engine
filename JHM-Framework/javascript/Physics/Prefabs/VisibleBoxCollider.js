@@ -10,4 +10,5 @@ class VisibleBoxCollider {
     }
     set outlineOnly(value) { this._visual.outlineOnly = value; }
     get entity() { return this._entity; }
+    get collider() { return this._collider; }
 }
