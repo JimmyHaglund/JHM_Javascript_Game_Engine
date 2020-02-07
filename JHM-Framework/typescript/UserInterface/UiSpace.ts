@@ -27,23 +27,34 @@ class MousePointer implements IPhysicsActor {
     private _mouseWasPressed: boolean = false;
     private _mouseWasReleased: boolean = false;
     private _buttonMap = new Map();
+    private _onDestroy: Action = new Action();
+
+    get onDestroy() { return this._onDestroy; }
+
     constructor(mouseInput: MouseInput, loop: ILoop, physicsSpace: PhysicsSpace) {
-        mouseInput.onMouseDown.add(() => {
+        let mouseDownId = mouseInput.onMouseDown.add(() => {
             this._mouseWasPressed = true;
             loop.update();
             this._mouseWasPressed = false;
         }, this);
-        mouseInput.onMouseUp.add(() => {
+        let mouseUpId = mouseInput.onMouseUp.add(() => {
             this._mouseWasReleased = true;
             loop.update();
             this._mouseWasReleased = false;
         }, this);
-        mouseInput.onMouseMove.add((event: MouseEvent) => {
+        let mouseMoveId = mouseInput.onMouseMove.add((event: MouseEvent) => {
             this._mouseX = event.clientX;
             this._mouseY = event.clientY;
             loop.update();
         }, this);
         physicsSpace.addPhysicsActor(this);
+        this._onDestroy.add(() => mouseInput.onMouseDown.remove(mouseDownId), this);
+        this._onDestroy.add(() => mouseInput.onMouseUp.remove(mouseUpId), this);
+        this._onDestroy.add(() => mouseInput.onMouseMove.remove(mouseMoveId), this);
+        this._onDestroy.add(() => physicsSpace.removePhysicsActor(this), this);
+    }
+    destroy() {
+        this._onDestroy.invoke();
     }
     addButton(button: BoxButton) {
         this._buttonMap.set(button.collider, button);

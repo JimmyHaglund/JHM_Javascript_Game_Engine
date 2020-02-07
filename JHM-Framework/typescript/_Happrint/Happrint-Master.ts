@@ -27,11 +27,40 @@ function happrint_start() {
     myWindow.addRenderComponent(buttonColliderOutline, 0);
     // console.log(button.collider);
     // mouseInput.onMouseDown.add(printMousePosition, this);
-
+    // testRb(myWindow);
+    let testLoop = new Loop(30);
+    let testEntity = new Entity(200, 20);
+    let testRb = new PointRigidBody(testEntity, testLoop);
+    testRb.setVelocity(10, 0);
+    let testSprite = new Sprite(testEntity, "character_idle");
+    testSprite.width = 30;
+    testSprite.height = 45;
+    testEntity.addComponent(testSprite);
+    testEntity.addComponent(testRb);
+    myWindow.addRenderComponent(testSprite, 0);
+    let time = 0;
+    testLoop.onUpdate.add((deltaTime)=> {
+        time += deltaTime;
+        testRb.velocityY = 100 * Math.sin(time * 10);
+    }, this);
+    // testLoop.onUpdate.add((deltaTime)=> console.log(deltaTime, testEntity.transform.x, testEntity.transform.y), this);
 }
 
 function printMousePosition(event: MouseEvent) {
     console.log("Mouse pos X Y:", event.clientX, event.clientY);
+}
+
+function testRb(window: RenderSpace){
+    let testLoop = new Loop(5);
+    let testEntity = new Entity(20, 20);
+    let testRb = new PointRigidBody(testEntity, testLoop);
+    testRb.setVelocity(5, 0);
+    let testSprite = new Sprite(testEntity, "character_idle");
+    testSprite.width = 10;
+    testSprite.height = 15;
+    testEntity.addComponent(testSprite);
+    testEntity.addComponent(testRb);
+    window.addRenderComponent(testSprite, 0);
 }
 
 function printPage() {

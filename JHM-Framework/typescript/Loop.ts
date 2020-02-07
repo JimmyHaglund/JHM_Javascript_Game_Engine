@@ -48,6 +48,6 @@ class Loop implements ILoop {
     }
 
     update(): void {
-        this._onUpdate.invoke(this._intervalTime);
+        this._onUpdate.invoke(this._intervalTime / 1000);
     }
 }

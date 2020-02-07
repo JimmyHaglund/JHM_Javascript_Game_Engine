@@ -18,22 +18,31 @@ class MousePointer {
         this._mouseWasPressed = false;
         this._mouseWasReleased = false;
         this._buttonMap = new Map();
-        mouseInput.onMouseDown.add(() => {
+        this._onDestroy = new Action();
+        let mouseDownId = mouseInput.onMouseDown.add(() => {
             this._mouseWasPressed = true;
             loop.update();
             this._mouseWasPressed = false;
         }, this);
-        mouseInput.onMouseUp.add(() => {
+        let mouseUpId = mouseInput.onMouseUp.add(() => {
             this._mouseWasReleased = true;
             loop.update();
             this._mouseWasReleased = false;
         }, this);
-        mouseInput.onMouseMove.add((event) => {
+        let mouseMoveId = mouseInput.onMouseMove.add((event) => {
             this._mouseX = event.clientX;
             this._mouseY = event.clientY;
             loop.update();
         }, this);
         physicsSpace.addPhysicsActor(this);
+        this._onDestroy.add(() => mouseInput.onMouseDown.remove(mouseDownId), this);
+        this._onDestroy.add(() => mouseInput.onMouseUp.remove(mouseUpId), this);
+        this._onDestroy.add(() => mouseInput.onMouseMove.remove(mouseMoveId), this);
+        this._onDestroy.add(() => physicsSpace.removePhysicsActor(this), this);
+    }
+    get onDestroy() { return this._onDestroy; }
+    destroy() {
+        this._onDestroy.invoke();
     }
     addButton(button) {
         this._buttonMap.set(button.collider, button);

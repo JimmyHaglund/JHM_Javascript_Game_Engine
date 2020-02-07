@@ -43,6 +43,6 @@ class Loop {
         }
     }
     update() {
-        this._onUpdate.invoke(this._intervalTime);
+        this._onUpdate.invoke(this._intervalTime / 1000);
     }
 }
