@@ -24,41 +24,56 @@ function happrint_start() {
     // button.onClick.add(() => console.log("Button on click called."), this);
     let buttonColliderOutline = new BoxColliderRenderer(button.collider, 'blue', false);
     myWindow.addRenderComponent(buttonColliderOutline, 0);
+    let sheetEntity = new Entity(50, 100);
+    let testSheet = OverlaySheet.generateFromImage("page1", myPhysics, myWindow, sheetEntity, 'red', 20);
     // console.log(button.collider);
     // mouseInput.onMouseDown.add(printMousePosition, this);
     // testRb(myWindow);
     // let testLoop = new Loop(30);
     let testEntity = new Entity(200, 40);
+    let testWalker = new WalkingCharacter(testEntity, myLoop, 800, myWindow, myPhysics);
+    let testBoxA = new VisibleBoxCollider(50, 50, 250, 5, myWindow, myPhysics, 'blue');
+    myPhysics.addCollider(testBoxA.collider);
+    let testBoxB = new VisibleBoxCollider(250, 60, 500, 10, myWindow, myPhysics, 'blue');
+    myPhysics.addCollider(testBoxB.collider);
+    let testBoxC = new VisibleBoxCollider(350, 0, 10, 100, myWindow, myPhysics, 'blue');
+    myPhysics.addCollider(testBoxC.collider);
+    testWalker.shouldMove = true;
+    /*
     let testRb = new PointRigidBody(testEntity, myLoop);
     testRb.setVelocity(15, 100);
     let testSprite = new Sprite(testEntity, "character_idle");
     testSprite.width = 30;
     testSprite.height = 45;
     testSprite.offsetX = -testSprite.width / 2;
-    testSprite.offsetY = -testSprite.height;
+    testSprite.offsetY = - testSprite.height;
     testEntity.addComponent(testSprite);
     testEntity.addComponent(testRb);
     myWindow.addRenderComponent(testSprite, 0);
-    myWindow.canvas.getContext("2d").imageSmoothingEnabled = false;
+    myWindow.canvas.getContext("2d").imageSmoothingEnabled=false;
     // let time = 0;
-    let testBox = new VisibleBoxCollider(50, 50, 500, 50, myWindow, myPhysics, 'blue');
     myPhysics.addPhysicsActor(testRb);
-    myPhysics.addCollider(testBox.collider);
-    myLoop.onUpdate.add((deltaTime) => {
-        console.log(testRb.velocityX);
+    
+    
+    myLoop.onUpdate.add((deltaTime)=> {
+        // console.log(testRb.velocityX);
         testRb.velocityY += 100 * deltaTime;
         // time += deltaTime;
         // testRb.velocityY = 300 * Math.sin(time * 10);
     }, this);
+       */
     // testLoop.onUpdate.add((deltaTime)=> console.log(deltaTime, testEntity.transform.x, testEntity.transform.y), this);
-    mouseInput.onMouseMove.add((event) => {
+    /*
+    mouseInput.onMouseMove.add((event) =>{
         let ray = lineToRay(0, 0, event.clientX, event.clientY);
         let intersect = testBox.collider.getCollisionPointWithRay(ray.x0, ray.y0, ray.lean);
-        if (intersect != null) {
+        if (intersect != null){
             let intersectRay = lineToRay(0, 0, intersect.x, intersect.y);
-            new RayRender(myWindow, intersectRay.x0, intersectRay.y0, intersectRay.lean, intersectRay.length, 'green');
+            new RayRender(myWindow, intersectRay.x0,
+                intersectRay.y0, intersectRay.lean, intersectRay.length, 'green');
         }
     }, this);
+    */
     // new RayRender(myWindow, 300, 300, 0, 200, 'black', 50000);
     // myLoop.onUpdate.add(() => drawRay(myWindow.canvas.getContext("2d"), 300, 300, 2, 50), this);
 }

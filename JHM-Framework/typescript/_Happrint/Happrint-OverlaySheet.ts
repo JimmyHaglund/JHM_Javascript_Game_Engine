@@ -22,7 +22,7 @@ class OverlaySheet {
         this._entity.onDestroy.add(this.destroy, this);
     }
 
-    static generateFromImage(imageId: string, physicsSpace: PhysicsSpace, renderSpace: RenderSpace, parentEntity: Entity, color: string = 'black'): OverlaySheet {
+    static generateFromImage(imageId: string, physicsSpace: PhysicsSpace, renderSpace: RenderSpace, parentEntity: Entity, color: string = 'black', thickness = 10): OverlaySheet {
         let blueprint: HTMLImageElement = document.getElementById(imageId) as HTMLImageElement;
         if (blueprint == null) return null;
         let canvas: HTMLCanvasElement = document.createElement('canvas');
@@ -31,10 +31,11 @@ class OverlaySheet {
         canvas.style.left = -2 * canvas.width + 'px';
         canvas.style.top = -2 * canvas.height + 'px';
         canvas.style.position = 'absolute';
+        let oX = parentEntity.transform.x;
+        let oY = parentEntity.transform.y;
         let context: CanvasRenderingContext2D = canvas.getContext('2d');
         context.drawImage(blueprint, 0, 0, blueprint.width, blueprint.height);
         let sheet = new OverlaySheet(renderSpace, physicsSpace, parentEntity, color);
-        let thickness = 10;
         // let dataString = "";
         for (let y = 0; y < blueprint.height; y++) {
             for (let x = 0; x < blueprint.width; x++) {
@@ -42,7 +43,7 @@ class OverlaySheet {
                 if (pixelData[0] == 0) {
                     // let box = new VisibleBoxCollider(x * 10, y * 10, 10, 10, renderSpace, physicsSpace, color);
                     // box.entity.transform.parent = parentEntity.transform;
-                    sheet.addWall(x * thickness, y * thickness, thickness, thickness);
+                    sheet.addWall(oX + x * thickness, oY + y * thickness, thickness, thickness);
                 }
             }
         }

@@ -41,6 +41,9 @@ class MousePointer {
         this._onDestroy.add(() => physicsSpace.removePhysicsActor(this), this);
     }
     get onDestroy() { return this._onDestroy; }
+    get onCollisionEnter() { return null; }
+    get onCollisionExit() { return null; }
+    get onCollisionStay() { return null; }
     destroy() {
         this._onDestroy.invoke();
     }

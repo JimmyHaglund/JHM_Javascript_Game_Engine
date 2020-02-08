@@ -60,8 +60,8 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
     render(context: CanvasRenderingContext2D) {
         if (this._image == null) return;
         let contextAlpha = context.globalAlpha;
-        let worldX = this._entity.transform.worldX + this._offsetX;
-        let worldY = this._entity.transform.worldY + this._offsetY;
+        let worldX = this._entity.transform.worldX;
+        let worldY = this._entity.transform.worldY;
         let translationX =
             worldX * Math.cos(0) - // If we were to rotate render space origin
             worldY * Math.sin(0);

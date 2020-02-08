@@ -3,16 +3,30 @@ class PointRigidBody {
         this._velocityX = 0;
         this._velocityY = 0;
         this._onDestroy = new Action();
+        this._onCollisionEnter = new Action();
+        this._onCollisionExit = new Action();
+        this._onCollisionStay = new Action();
         this._entity = entity;
         this._loopAction = loop.onUpdate;
         this._updateActionId = loop.onUpdate.add(this.update, this);
         this._previousX = entity.transform.x;
         this._previousY = entity.transform.y;
     }
+    /*
+    // TODO: Implement collision stay & triggers
+    private readonly _activeCollisionData: {
+        collider: ICollider,
+        updateCount: number,
+        lastUpdateCount: number
+    }[] = [];
+    */
     get velocityX() { return this._velocityX; }
     get velocityY() { return this._velocityY; }
     set velocityX(value) { this._velocityX = value; }
     set velocityY(value) { this._velocityY = value; }
+    get onCollisionEnter() { return this._onCollisionEnter; }
+    get onCollisionExit() { return this._onCollisionExit; }
+    get onCollisionStay() { return this._onCollisionStay; }
     get onDestroy() { return this._onDestroy; }
     get entity() { return this._entity; }
     setVelocity(velocityX, velocityY) {
@@ -46,8 +60,7 @@ class PointRigidBody {
                 this._velocityY -= collisionData.normalY * this._velocityY * -Math.sign(dY);
                 this._entity.transform.x -= collisionData.normalX * deltaColX * -Math.sign(deltaColX);
                 this._entity.transform.y -= collisionData.normalY * deltaColY * -Math.sign(deltaColY);
-                // this._entity.transform.x = collisionData.x;
-                // this._entity.transform.y = collisionData.y;
+                this._onCollisionEnter.invoke.call(this._onCollisionEnter, collisionData, collider);
             }
         });
     }

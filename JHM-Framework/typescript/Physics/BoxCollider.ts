@@ -37,9 +37,11 @@ class BoxCollider implements ICollider, IComponent, IDestroyable {
         return pointX > this.left && pointX < this.right
             && pointY < this.bottom && pointY > this.top;
     }
-    getCollisionPointWithRay(x0: number, y0: number, lean: number): { x: number, y: number, normalX: number, normalY: number } {
+    getCollisionPointWithRay(x0: number, y0: number, xDir: number, yDir: number): { x: number, y: number, normalX: number, normalY: number } {
         // let corners = this.corners;
         let corner = this.getNearestCorner(x0, y0);
+        let lean = Math.sign(xDir) * (yDir / xDir);
+        if (lean == undefined) lean = 100000;
         let intersectVertical: any = getLineOverlapPoint(corner.x, corner.y, 100000, x0, y0, lean);
         let intersectHorizontal: any = getLineOverlapPoint(corner.x, corner.y, 0, x0, y0, lean);
         let foundHorizontal = false;

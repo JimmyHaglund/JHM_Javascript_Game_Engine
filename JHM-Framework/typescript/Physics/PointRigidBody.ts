@@ -4,15 +4,29 @@ class PointRigidBody implements IPhysicsActor, IComponent, IDestroyable {
     private _previousX: number;
     private _previousY: number;
     private _entity: Entity;
-    private _onDestroy: Action = new Action();
-    private _loopAction: Action;
+    private readonly _onDestroy: Action = new Action();
+    private readonly _loopAction: Action;
     private _updateActionId: number;
     private _deltaTime: number;
-
+    private readonly _onCollisionEnter: Action = new Action();
+    
+    private readonly _onCollisionExit: Action = new Action();
+    private readonly _onCollisionStay: Action = new Action();
+    /*
+    // TODO: Implement collision stay & triggers
+    private readonly _activeCollisionData: {
+        collider: ICollider,
+        updateCount: number,
+        lastUpdateCount: number
+    }[] = [];
+    */
     get velocityX(): number { return this._velocityX; }
     get velocityY(): number { return this._velocityY; }
     set velocityX(value: number) { this._velocityX = value; }
     set velocityY(value: number) { this._velocityY = value; }
+    get onCollisionEnter(): Action { return this._onCollisionEnter; }
+    get onCollisionExit(): Action { return this._onCollisionExit; }
+    get onCollisionStay(): Action { return this._onCollisionStay; }
 
     constructor(entity: Entity, loop: ILoop) {
         this._entity = entity;
@@ -56,8 +70,7 @@ class PointRigidBody implements IPhysicsActor, IComponent, IDestroyable {
                 this._velocityY -= collisionData.normalY * this._velocityY * -Math.sign(dY);
                 this._entity.transform.x -= collisionData.normalX * deltaColX * -Math.sign(deltaColX);
                 this._entity.transform.y -= collisionData.normalY * deltaColY * -Math.sign(deltaColY);
-                // this._entity.transform.x = collisionData.x;
-                // this._entity.transform.y = collisionData.y;
+                this._onCollisionEnter.invoke.call(this._onCollisionEnter, collisionData, collider);
             }
         });
     }

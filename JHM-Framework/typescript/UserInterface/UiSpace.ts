@@ -30,6 +30,9 @@ class MousePointer implements IPhysicsActor {
     private _onDestroy: Action = new Action();
 
     get onDestroy() { return this._onDestroy; }
+    get onCollisionEnter(): Action{return null;}
+    get onCollisionExit(): Action{return null;}
+    get onCollisionStay(): Action{return null;}
 
     constructor(mouseInput: MouseInput, loop: ILoop, physicsSpace: PhysicsSpace) {
         let mouseDownId = mouseInput.onMouseDown.add(() => {
