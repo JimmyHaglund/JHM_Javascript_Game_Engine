@@ -26,11 +26,20 @@ class BoxCollider {
         return pointX > this.left && pointX < this.right
             && pointY < this.bottom && pointY > this.top;
     }
-    getCollisionPointWithRay(x0, y0, lean) {
-        // let corners = this.corners;
+    getCollisionPointWithRay(x0, y0, xDir, yDir) {
         let corner = this.getNearestCorner(x0, y0);
-        let intersectVertical = getLineOverlapPoint(corner.x, corner.y, 100000, x0, y0, lean);
-        let intersectHorizontal = getLineOverlapPoint(corner.x, corner.y, 0, x0, y0, lean);
+        let lean = yDir / xDir;
+        if (xDir == 0)
+            lean = Math.sign(yDir) * 100000;
+        let intersectVertical = null;
+        let intersectHorizontal = null;
+        // Only check for collision if ray has a chance of hitting the box
+        let pointingAtBox = (corner.x > x0 && xDir > 0 || corner.x < x0 && xDir < 0 || insideRange(x0, this.left, this.right))
+            && (corner.y > y0 && yDir > 0 || corner.y < y0 && yDir < 0 || insideRange(y0, this.top, this.bottom));
+        if (pointingAtBox) {
+            intersectVertical = getLineOverlapPoint(corner.x, corner.y, 100000, x0, y0, lean);
+            intersectHorizontal = getLineOverlapPoint(corner.x, corner.y, 0, x0, y0, lean);
+        }
         let foundHorizontal = false;
         let foundVertical = false;
         let intersectPoint = null;
@@ -77,7 +86,7 @@ class BoxCollider {
         let deltaLeft = Math.abs(this.left - x);
         let deltaRight = Math.abs(this.right - x);
         let deltaTop = Math.abs(this.top - y);
-        let deltaBottom = Math.abs(this.bottom - x);
+        let deltaBottom = Math.abs(this.bottom - y);
         return {
             x: deltaLeft < deltaRight ? this.left : this.right,
             y: deltaTop < deltaBottom ? this.top : this.bottom

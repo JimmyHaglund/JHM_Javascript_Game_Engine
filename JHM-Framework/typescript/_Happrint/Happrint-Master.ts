@@ -1,5 +1,5 @@
 function happrint_start() {
-    let myLoop = new Loop(60);
+    let myLoop = new Loop(20);
     let myWindow = new RenderSpace(myLoop, 600, 600);
     let myPhysics = new PhysicsSpace(myLoop);
     // let myEntity = new Entity(0, 0);
@@ -18,30 +18,31 @@ function happrint_start() {
 
     // let visibleBox = new VisibleBoxCollider(0, 0, 50, 300, myWindow, myPhysics, "red");
     // visibleBox.outlineOnly = true;
-    // let testSheet = OverlaySheet.generateFromImage("page1", myPhysics, myWindow, new Entity(0, 0), 'black');
     let mouseInput = new MouseInput();
     let uiSpace = new UiSpace(myWindow, 0, mouseInput);
-    let button = uiSpace.createButton(50, 50, 100, 100, "stopButton_normal", 
-    "stopButton_hover", "stopButton_press"); 
+    // let button = uiSpace.createButton(50, 50, 100, 100, "stopButton_normal", 
+    // "stopButton_hover", "stopButton_press"); 
     // button.onClick.add(() => console.log("Button on click called."), this);
-    let buttonColliderOutline = new BoxColliderRenderer(button.collider, 'blue', false);
-    myWindow.addRenderComponent(buttonColliderOutline, 0);
-    let sheetEntity = new Entity(50, 100);
-    let testSheet = OverlaySheet.generateFromImage("page1", myPhysics, myWindow, sheetEntity, 'red', 2.0);
+    // let buttonColliderOutline = new BoxColliderRenderer(button.collider, 'blue', false);
+    // myWindow.addRenderComponent(buttonColliderOutline, 0);
+    // let testSheet = OverlaySheet.generateFromImage("page1", myPhysics, myWindow, sheetEntity, 'red', 20);
     // console.log(button.collider);
     // mouseInput.onMouseDown.add(printMousePosition, this);
     // testRb(myWindow);
     // let testLoop = new Loop(30);
-    let testEntity = new Entity(200, 40);
-    let testWalker = new WalkingCharacter(testEntity, myLoop, 800, myWindow, myPhysics);
-    
-    let testBoxA = new VisibleBoxCollider(50, 50, 250, 5, myWindow, myPhysics, 'blue');
-    myPhysics.addCollider(testBoxA.collider);
-    let testBoxB = new VisibleBoxCollider(250, 60, 500, 10, myWindow, myPhysics, 'blue');
-    myPhysics.addCollider(testBoxB.collider);
-    let testBoxC = new VisibleBoxCollider(350, 0, 10, 100, myWindow, myPhysics, 'blue');
-    myPhysics.addCollider(testBoxC.collider);
+    let testEntity = new Entity(200, 50);
+    let testWalker = new WalkingCharacter(testEntity, myLoop, 760, myWindow, myPhysics);
     testWalker.shouldMove = true;
+    let sheetEntity = new Entity(100, 100);
+    let testSheet = OverlaySheet.generateFromImage("page1", myPhysics, myWindow, sheetEntity, 'black');
+    // let testBoxA = new VisibleBoxCollider(300, 300, 10, 10, myWindow, myPhysics, 'blue');
+    // myPhysics.addCollider(testBoxA.collider);
+    /*
+    let testBoxB = new VisibleBoxCollider(150, 0, 5, 100, myWindow, myPhysics, 'blue');
+    myPhysics.addCollider(testBoxB.collider);
+    let testBoxC = new VisibleBoxCollider(250, 0, 10, 100, myWindow, myPhysics, 'blue');
+    myPhysics.addCollider(testBoxC.collider);
+    */
     /*
     let testRb = new PointRigidBody(testEntity, myLoop);
     testRb.setVelocity(15, 100);
@@ -68,16 +69,21 @@ function happrint_start() {
     // testLoop.onUpdate.add((deltaTime)=> console.log(deltaTime, testEntity.transform.x, testEntity.transform.y), this);
     /*
     mouseInput.onMouseMove.add((event) =>{
-        let ray = lineToRay(0, 0, event.clientX, event.clientY);
-        let intersect = testBox.collider.getCollisionPointWithRay(ray.x0, ray.y0, ray.lean);
+        let x = 50;
+        let y = 0;
+        let ray = lineToRay(x, y, event.clientX, event.clientY);
+        
+        // let intersect = testBoxA.collider.getCollisionPointWithRay(x, y, event.clientX, event.clientY);
+        let intersect = testBoxA.collider.getCollisionPointWithRay(50, 10, 0, 1);
         if (intersect != null){
-            let intersectRay = lineToRay(0, 0, intersect.x, intersect.y);
+            let intersectRay = lineToRay(x, y, intersect.x, intersect.y);
             new RayRender(myWindow, intersectRay.x0, 
                 intersectRay.y0, intersectRay.lean, intersectRay.length, 'green');
+        } else{
+            new RayRender(myWindow, x, y, ray.lean, Math.sqrt(event.clientX * event.clientX + event.clientY * event.clientY), 'red');
         }
     }, this);
     */
-
 
     // new RayRender(myWindow, 300, 300, 0, 200, 'black', 50000);
     

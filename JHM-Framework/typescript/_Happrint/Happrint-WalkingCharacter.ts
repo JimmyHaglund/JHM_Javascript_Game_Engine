@@ -4,9 +4,8 @@ class WalkingCharacter implements IPhysicsActor, IDestroyable {
 
     private _shouldMove: boolean = false;
     private _deltaTime: number = 1.0;
-    private _falling: boolean = false;
     private readonly _maxFallSpeed: number = 250;
-    private _fallSpeed: number = 0;
+    private _fallSpeed: number = 5;
     private _grounded: boolean = false;
     private readonly _onExit: Action = new Action();
     private readonly _onGroundedChanged: Action = new Action();
@@ -23,7 +22,6 @@ class WalkingCharacter implements IPhysicsActor, IDestroyable {
     set shouldMove(value: boolean) { this._shouldMove = value; }
     get walkSpeed(): number { return this._walkSpeed; }
     set walkSpeed(value: number) { this._walkSpeed = value; }
-    // get layer() { return 0; }
     set shouldMoveLeft(value: boolean) {
         this._walkingDirection = value ? this._direction.left : this._direction.right;
     }
@@ -41,16 +39,11 @@ class WalkingCharacter implements IPhysicsActor, IDestroyable {
         this._entity = entity;
         this._shouldMove = false;
         this._walkSpeed = walkingSpeed;
-        // this._rigidBody = new PointRigidBody(entity, loop);
         this._sprite = new Sprite(entity, "character_idle");
         this._sprite.width = 30;
         this._sprite.height = 45;
         this._sprite.offsetX = -15// -this._sprite.width * 0.5;
         this._sprite.offsetY = -45// -this._sprite.height;
-        this._grounded = false;
-
-        // this._rigidBody.onCollisionEnter.add(this.checkCollision, this);
-        // loop.onUpdate.add(this.update, this);
 
         renderSpace.addRenderComponent(this._sprite, -100);
         physicsSpace.addPhysicsActor(this);
@@ -64,10 +57,8 @@ class WalkingCharacter implements IPhysicsActor, IDestroyable {
             this._entity.transform.x += this._walkSpeed
                 * this._walkingDirection * deltaTime / 1000;
         } else {
-            let fallSpeed = 5000 * deltaTime;
-            this._entity.transform.y += fallSpeed * deltaTime / 1000;
+            this._entity.transform.y += this._fallSpeed * deltaTime;
         }
-        // Gravitational force
     }
 
     checkCollision(colliders: ICollider[]): void {
@@ -75,8 +66,10 @@ class WalkingCharacter implements IPhysicsActor, IDestroyable {
         let x0 = this._entity.transform.x;
         let y0 = this._entity.transform.y;
         this.move(this._deltaTime);
+
+        let fallDistance = this._fallSpeed * this._deltaTime;
         let x1 = this._entity.transform.x;
-        let y1 = this._entity.transform.y;
+        let y1 = y0 + fallDistance;
         let dX = x1 - x0;
         let dY = y1 - y0;
         let lean = dY / dX;
@@ -84,37 +77,50 @@ class WalkingCharacter implements IPhysicsActor, IDestroyable {
         let moveDistanceSquared = (dX * dX + dY * dY);
         let grounded = false;
         let collidedWithWall = false;
+        let tallestFloorY = 10000000;
+        // console.log(this._entity.transform.y);
+
+        console.log("Start")
         colliders.forEach(collider => {
+            let corner = collider.getNearestCorner(x0, y0);
+            let verticalCollisionData = null;
+            let horizontalCollisionData = null;
             // Interpolate collision checking by raycasting
-            let verticalCollisionData = collider.getCollisionPointWithRay(x0, y0, 0, 10);
-            let horizontalCollisionData = collider.getCollisionPointWithRay(x0, y0, (x1 - x0), 0);
+            if (insideRange(corner.y, y0, y1)){
+                horizontalCollisionData = collider.getCollisionPointWithRay(x0, y0, 0, 1);
+                // console.log("In Range: ", corner)
+            }
+            if (this._grounded && insideRange(corner.x, x0, x1)){
+                verticalCollisionData = collider.getCollisionPointWithRay(x0, y0, dX, 0);
+            if (corner.x == 230) console.log(corner.y, y0, y1);
+            }
             // Floor collision found
-            if (verticalCollisionData != null) {
+            if (horizontalCollisionData != null) {
+                let moveTo = horizontalCollisionData.y - 1;
+                if (moveTo < tallestFloorY){
+                    tallestFloorY = moveTo;
+                }
                 grounded = true;
-                let deltaColY = y1 - verticalCollisionData.y;
-                this._entity.transform.y += Math.ceil(verticalCollisionData.normalY
-                    + verticalCollisionData.normalY * Math.abs(deltaColY));
             }
             // Wall collision found
-            if (horizontalCollisionData != null) {
-                let deltaColX = x1 - horizontalCollisionData.x;
-                // Move entity back to 1 pixel next to colliding point
-                this._entity.transform.x += Math.ceil(horizontalCollisionData.normalX
-                    + horizontalCollisionData.normalX * Math.abs(deltaColX));
-                this._onCollisionEnter.invoke.call(this._onCollisionEnter,
-                    horizontalCollisionData, collider);
+            if (verticalCollisionData != null) {
+                let deltaColX = x1 - verticalCollisionData.x;
+                this._entity.transform.x = verticalCollisionData.x - Math.sign(dX);
                 collidedWithWall = true;
-                // Switch movement direction if collided with wall & grounded
-            }
-            if (this._grounded != grounded){
-                this._grounded = grounded;
-                this.onGroundedChanged.invoke.call(this._onGroundedChanged, grounded);
-            }
-            if (grounded) {
-                if (collidedWithWall) {
-                    this.shouldMoveLeft = !this.isMovingLeft;
-                }
             }
         });
+        if (this._grounded) {
+            if (collidedWithWall) {
+                this.shouldMoveLeft = !this.isMovingLeft;
+            }
+        } 
+        if (this._grounded != grounded){
+            console.log(grounded, x0, x1, dX, y0, y1, dY);
+            this._grounded = grounded;
+            this.onGroundedChanged.invoke.call(this._onGroundedChanged, grounded);
+        }
+        if (grounded) {
+            this._entity.transform.y = tallestFloorY;
+        }
     }
 }

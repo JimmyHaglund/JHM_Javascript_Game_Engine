@@ -63,7 +63,7 @@ class PointRigidBody implements IPhysicsActor, IComponent, IDestroyable {
                 let dY = this._entity.transform.y - this._previousY;
                 let lean = dY / dX;
                 if (dX == 0) lean = 100000;
-                let collisionData = collider.getCollisionPointWithRay(x0, y0, lean);
+                let collisionData = collider.getCollisionPointWithRay(x0, y0, dX, dY);
                 let deltaColX = collisionData.x - x1;
                 let deltaColY = collisionData.y - y1;
                 this._velocityX -= collisionData.normalX * this._velocityX * -Math.sign(dX);
