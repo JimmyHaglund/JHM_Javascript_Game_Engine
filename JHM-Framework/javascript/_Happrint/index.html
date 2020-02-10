@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <!--
+<!--
   canvas {
     image-rendering: optimizeSpeed;
     image-rendering: -moz-crisp-edges;        
@@ -10,50 +10,53 @@
     -ms-interpolation-mode: nearest-neighbor;   
   }
   -->
-  <head>
+
+<head>
+  <title>Happrint</title>
   <style>
-    srcImg { display: none; }
+    srcImg {
+      display: none;
+    }
   </style>
-    <title>Happrint</title>
-  </head>
-  
-  <body onload='happrint_start()'>
-    <srcImg>
-      <img src = '../../Images/character_idle.png' id='character_idle' display='none'>
-      <img src = '../../Images/character_walk_1.png' id='character_walk_right_1' display='none'>
-      <img src = '../../Images/character_walk_2.png' id='character_walk_right_2' display='none'>
-      <img src = '../../Images/character_walk_1_left.png' id='character_walk_left_1' display='none'>
-      <img src = '../../Images/character_walk_2_left.png' id='character_walk_left_2' display='none'>
-      <img src = '../../Images/character_falling.png' id='character_fall' display='none'>
-      
-      <img src = '../../Images/button_1_normal.png' id='button_1_normal' display='none'>
-      <img src = '../../Images/button_1_hover.png' id='button_1_hover' display='none'>
-      <img src = '../../Images/button_1_press.png' id='button_1_press' display='none'>
-      <img src = '../../Images/button_2_normal.png' id='button_2_normal' display='none'>
-      <img src = '../../Images/button_2_hover.png' id='button_2_hover' display='none'>
-      <img src = '../../Images/button_2_press.png' id='button_2_press' display='none'>
-      <img src = '../../Images/button_3_normal.png' id='button_3_normal' display='none'>
-      <img src = '../../Images/button_3_hover.png' id='button_3_hover' display='none'>
-      <img src = '../../Images/button_3_press.png' id='button_3_press' display='none'>
-      <img src = '../../Images/button_4_normal.png' id='button_4_normal' display='none'>
-      <img src = '../../Images/button_4_hover.png' id='button_4_hover' display='none'>
-      <img src = '../../Images/button_4_press.png' id='button_4_press' display='none'>
-      <img src = '../../Images/button_5_normal.png' id='button_5_normal' display='none'>
-      <img src = '../../Images/button_5_hover.png' id='button_5_hover' display='none'>
-      <img src = '../../Images/button_5_press.png' id='button_5_press' display='none'>
-      <img src = '../../Images/playButton_normal.png' id='playButton_normal' display='none'>
-      <img src = '../../Images/playButton_hover.png' id='playButton_hover' display='none'>
-      <img src = '../../Images/playButton_press.png' id='playButton_press' display='none'>
-      <img src = '../../Images/stopButton_normal.png' id='stopButton_normal' display='none'>
-      <img src = '../../Images/stopButton_hover.png' id='stopButton_hover' display='none'>
-      <img src = '../../Images/stopButton_press.png' id='stopButton_press' display='none'>
-      <img src = '../../Images/buttonNext_normal.png' id='nextButton_normal' display='none'>
-      <img src = '../../Images/buttonNext_hover.png' id='nextButton_hover' display='none'>
-      <img src = '../../Images/buttonNext_press.png' id='nextButton_press' display='none'>
-      <img src = '../../Images/door.png' id='door' display='none'>
-      <img src = '../../Images/Page1.png' id='page1' display='none'>
-    </srcImg>
-    <!--
+</head>
+
+<body onload='happrint_start()'>
+  <srcImg>
+    <img src='../../Images/character_idle.png' id='character_idle' display='none'>
+    <img src='../../Images/character_walk_1.png' id='character_walk_right_1' display='none'>
+    <img src='../../Images/character_walk_2.png' id='character_walk_right_2' display='none'>
+    <img src='../../Images/character_walk_1_left.png' id='character_walk_left_1' display='none'>
+    <img src='../../Images/character_walk_2_left.png' id='character_walk_left_2' display='none'>
+    <img src='../../Images/character_falling.png' id='character_fall' display='none'>
+
+    <img src='../../Images/button_1_normal.png' id='button_1_normal' display='none'>
+    <img src='../../Images/button_1_hover.png' id='button_1_hover' display='none'>
+    <img src='../../Images/button_1_press.png' id='button_1_press' display='none'>
+    <img src='../../Images/button_2_normal.png' id='button_2_normal' display='none'>
+    <img src='../../Images/button_2_hover.png' id='button_2_hover' display='none'>
+    <img src='../../Images/button_2_press.png' id='button_2_press' display='none'>
+    <img src='../../Images/button_3_normal.png' id='button_3_normal' display='none'>
+    <img src='../../Images/button_3_hover.png' id='button_3_hover' display='none'>
+    <img src='../../Images/button_3_press.png' id='button_3_press' display='none'>
+    <img src='../../Images/button_4_normal.png' id='button_4_normal' display='none'>
+    <img src='../../Images/button_4_hover.png' id='button_4_hover' display='none'>
+    <img src='../../Images/button_4_press.png' id='button_4_press' display='none'>
+    <img src='../../Images/button_5_normal.png' id='button_5_normal' display='none'>
+    <img src='../../Images/button_5_hover.png' id='button_5_hover' display='none'>
+    <img src='../../Images/button_5_press.png' id='button_5_press' display='none'>
+    <img src='../../Images/playButton_normal.png' id='playButton_normal' display='none'>
+    <img src='../../Images/playButton_hover.png' id='playButton_hover' display='none'>
+    <img src='../../Images/playButton_press.png' id='playButton_press' display='none'>
+    <img src='../../Images/stopButton_normal.png' id='stopButton_normal' display='none'>
+    <img src='../../Images/stopButton_hover.png' id='stopButton_hover' display='none'>
+    <img src='../../Images/stopButton_press.png' id='stopButton_press' display='none'>
+    <img src='../../Images/buttonNext_normal.png' id='nextButton_normal' display='none'>
+    <img src='../../Images/buttonNext_hover.png' id='nextButton_hover' display='none'>
+    <img src='../../Images/buttonNext_press.png' id='nextButton_press' display='none'>
+    <img src='../../Images/door.png' id='door' display='none'>
+    <img src='../../Images/Page1.png' id='page1' display='none'>
+  </srcImg>
+  <!--
     <script src = "../Audio/JHM-AudioComponent.js"></script>
     <script src = "../Core/JHM-Action.js"></script>
     <script src = "../Core/JHM-Component.js"></script>
@@ -70,37 +73,38 @@
     <script src = "../GGJ2020/Happrint-PlayAndStop.js"></script>
     <script src = "../GGJ2020/Happrint-SimpleWalkingPhysicsActor.js"></script>
     -->
-    <script src = "../Action.js"></script>
-    <script src = "../Entity.js"></script>
-    <script src = "../Loop.js"></script>
-    <script src = "../Transform.js"></script>
-    <script src = "../Algebra.js"></script>
-    
-    <script src = "../Physics/PhysicsSpace.js"></script>
-    <script src = "../Physics/BoxCollider.js"></script>
-    <script src = "../Physics/PointRigidBody.js"></script>
-    <script src = "../Physics/Raycasting.js"></script>
-    <script src = "../Physics/Prefabs/VisibleBoxCollider.js"></script>
+  <script src="../Action.js"></script>
+  <script src="../Entity.js"></script>
+  <script src="../Loop.js"></script>
+  <script src="../Transform.js"></script>
+  <script src="../Algebra.js"></script>
 
-    <script src = "../Rendering/RenderSpace.js"></script>
-    <script src = "../Rendering/Sprite.js"></script>
-    <script src = "../Rendering/BoxColliderRenderer.js"></script>
+  <script src="../Physics/PhysicsSpace.js"></script>
+  <script src="../Physics/BoxCollider.js"></script>
+  <script src="../Physics/PointRigidBody.js"></script>
+  <script src="../Physics/Raycasting.js"></script>
+  <script src="../Physics/Prefabs/VisibleBoxCollider.js"></script>
 
-    <script src = "../UserInterface/UiLoop.js"></script>
-    <script src = "../UserInterface/BoxButton.js"></script>
-    <script src = "../UserInterface/KeyboardInput.js"></script>
-    <script src = "../UserInterface/MouseInput.js"></script>
-    <script src = "../UserInterface/UiSpace.js"></script>
+  <script src="../Rendering/RenderSpace.js"></script>
+  <script src="../Rendering/Sprite.js"></script>
+  <script src="../Rendering/BoxColliderRenderer.js"></script>
 
-    <script src = "./Happrint-OverlaySheet.js"></script>
-    <script src = "./Happrint-WalkingCharacter.js"></script>
+  <script src="../UserInterface/UiLoop.js"></script>
+  <script src="../UserInterface/BoxButton.js"></script>
+  <script src="../UserInterface/KeyboardInput.js"></script>
+  <script src="../UserInterface/MouseInput.js"></script>
+  <script src="../UserInterface/UiSpace.js"></script>
 
-    <div id = 'master'>
-      <script src = './Happrint-Master.js'></script>
-    </div>
-    <div id = 'Display'>
-      <button onClick = 'playGame()'>Play</button>
-      <button onClick = 'resetGame()'>Reset</button>
-    </div>
-  </body>
+  <script src="./Happrint-OverlaySheet.js"></script>
+  <script src="./Happrint-WalkingCharacter.js"></script>
+
+  <div id='master'>
+    <script src='./Happrint-Master.js'></script>
+  </div>
+  <div id='Display'>
+    <button onClick='playGame()'>Play</button>
+    <button onClick='resetGame()'>Reset</button>
+  </div>
+</body>
+
 </html>

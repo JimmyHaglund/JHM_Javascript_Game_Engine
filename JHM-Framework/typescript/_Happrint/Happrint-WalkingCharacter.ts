@@ -71,40 +71,30 @@ class WalkingCharacter implements IPhysicsActor, IDestroyable {
         let x1 = this._entity.transform.x;
         let y1 = y0 + fallDistance;
         let dX = x1 - x0;
-        let dY = y1 - y0;
-        let lean = dY / dX;
-        if (dX == 0) lean = Math.sign(dY) * 10000;
-        let moveDistanceSquared = (dX * dX + dY * dY);
         let grounded = false;
         let collidedWithWall = false;
         let tallestFloorY = 10000000;
-        // console.log(this._entity.transform.y);
-
-        console.log("Start")
         colliders.forEach(collider => {
             let corner = collider.getNearestCorner(x0, y0);
             let verticalCollisionData = null;
             let horizontalCollisionData = null;
             // Interpolate collision checking by raycasting
-            if (insideRange(corner.y, y0, y1)){
+            if (insideRange(corner.y, y0, y1)) {
                 horizontalCollisionData = collider.getCollisionPointWithRay(x0, y0, 0, 1);
-                // console.log("In Range: ", corner)
             }
-            if (this._grounded && insideRange(corner.x, x0, x1)){
+            if (this._grounded && insideRange(corner.x, x0, x1)) {
                 verticalCollisionData = collider.getCollisionPointWithRay(x0, y0, dX, 0);
-            if (corner.x == 230) console.log(corner.y, y0, y1);
             }
             // Floor collision found
             if (horizontalCollisionData != null) {
                 let moveTo = horizontalCollisionData.y - 1;
-                if (moveTo < tallestFloorY){
+                if (moveTo < tallestFloorY) {
                     tallestFloorY = moveTo;
                 }
                 grounded = true;
             }
             // Wall collision found
             if (verticalCollisionData != null) {
-                let deltaColX = x1 - verticalCollisionData.x;
                 this._entity.transform.x = verticalCollisionData.x - Math.sign(dX);
                 collidedWithWall = true;
             }
@@ -113,9 +103,8 @@ class WalkingCharacter implements IPhysicsActor, IDestroyable {
             if (collidedWithWall) {
                 this.shouldMoveLeft = !this.isMovingLeft;
             }
-        } 
-        if (this._grounded != grounded){
-            console.log(grounded, x0, x1, dX, y0, y1, dY);
+        }
+        if (this._grounded != grounded) {
             this._grounded = grounded;
             this.onGroundedChanged.invoke.call(this._onGroundedChanged, grounded);
         }

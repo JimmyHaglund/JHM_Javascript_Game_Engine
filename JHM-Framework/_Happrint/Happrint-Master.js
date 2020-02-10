@@ -1,6 +1,6 @@
 function happrint_start() {
     console.log("Master started!");
-    let startWindow = 
+    let startWindow = null;
 }
 /*
 function happrint_checkInput(event) {
