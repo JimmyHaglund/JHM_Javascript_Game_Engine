@@ -2,6 +2,7 @@ class BoxButton {
     constructor(renderSpace, physicsSpace, left, top, width, height, normalSprite = "", hoverSprite = "", pressSprite = "") {
         this._state = BoxButton._buttonStates.passive;
         this._onClick = new Action();
+        this.onDestroy = new Action();
         this._spritesIds = {
             normal: normalSprite,
             hover: hoverSprite,
@@ -21,6 +22,9 @@ class BoxButton {
     }
     get collider() { return this._collider; }
     get onClick() { return this._onClick; }
+    destroy() {
+        this._entity.destroy();
+    }
     press() {
         if (this._state == BoxButton._buttonStates.pressed)
             return;

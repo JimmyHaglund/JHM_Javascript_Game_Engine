@@ -34,13 +34,15 @@ function happrint_start() {
     testWalker.shouldMove = true;
     let sheetEntity = new Entity(100, 100);
     // let testSheet = OverlaySheet.generateFromImage("page1", myPhysics, myWindow, sheetEntity, 'black');
-    let levelManager = new LevelManager(myWindow, myPhysics);
+    let levelManager = new LevelManager(myWindow, myPhysics, uiSpace, mouseInput);
     levelManager.loadLevel(0);
+    /*
     setTimeout(() => levelManager.unloadCurrentLevel(), 1000);
     setTimeout(() => levelManager.loadLevel(0), 2000);
     setTimeout(() => levelManager.unloadCurrentLevel(), 3000);
     setTimeout(() => levelManager.loadLevel(0), 4000);
     setTimeout(() => levelManager.unloadCurrentLevel(), 5000);
+    */
     // let testBoxA = new VisibleBoxCollider(300, 300, 10, 10, myWindow, myPhysics, 'blue');
     // myPhysics.addCollider(testBoxA.collider);
     /*

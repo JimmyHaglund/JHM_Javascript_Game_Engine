@@ -13,16 +13,22 @@ class OverlaySheet {
     private _physicsSpace: PhysicsSpace;
     private _entity: Entity;
     private _color: string;
+    private _mouseInput: MouseInput;
+    private _moveEventId: number = -1;
 
-    private constructor(renderSpace: RenderSpace, physicsSpace: PhysicsSpace, entity: Entity, color: string = 'black') {
+    get walls() { return this._walls; }
+
+    private constructor(renderSpace: RenderSpace, physicsSpace: PhysicsSpace, input: MouseInput, entity: Entity, color: string = 'black') {
         this._renderSpace = renderSpace;
         this._physicsSpace = physicsSpace;
         this._entity = entity;
         this._color = color;
         this._entity.onDestroy.add(this.destroy, this);
+        this._mouseInput = input;
     }
 
-    static generateFromImage(imageId: string, physicsSpace: PhysicsSpace, renderSpace: RenderSpace, parentEntity: Entity, color: string = 'black', thickness = 10): OverlaySheet {
+    static generateFromImage(imageId: string, renderSpace: RenderSpace, physicsSpace: PhysicsSpace,
+        input: MouseInput, parentEntity: Entity, color: string = 'black', thickness = 10): OverlaySheet {
         let blueprint: HTMLImageElement = document.getElementById(imageId) as HTMLImageElement;
         if (blueprint == null) return null;
         let canvas: HTMLCanvasElement = document.createElement('canvas');
@@ -35,7 +41,7 @@ class OverlaySheet {
         let oY = parentEntity.transform.y;
         let context: CanvasRenderingContext2D = canvas.getContext('2d');
         context.drawImage(blueprint, 0, 0, blueprint.width, blueprint.height);
-        let sheet = new OverlaySheet(renderSpace, physicsSpace, parentEntity, color);
+        let sheet = new OverlaySheet(renderSpace, physicsSpace, input, parentEntity, color);
         // let dataString = "";
         for (let y = 0; y < blueprint.height; y++) {
             for (let x = 0; x < blueprint.width; x++) {
@@ -49,7 +55,18 @@ class OverlaySheet {
         }
         return sheet;
     }
-    get walls() { return this._walls; }
+
+    grab(): void {
+        this._mouseInput.onMouseMove.add((event: MouseEvent) => {
+            this._entity.transform.x = event.clientX;
+            this._entity.transform.y = event.clientY;
+            console.log("Mouse moved", this._entity.transform);
+        }, this);
+    }
+    release(): void {
+        this._mouseInput.onMouseMove.remove(this._moveEventId);
+    }
+
     addWall(left: number, top: number, width: number, height: number) {
         let wall = new VisibleBoxCollider(left, top, width, height, this._renderSpace, this._physicsSpace, this._color);
         wall.entity.transform.parent = this._entity.transform;

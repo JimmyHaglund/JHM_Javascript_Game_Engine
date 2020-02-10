@@ -8,15 +8,18 @@ const overlayColors = [
 ]
 */
 class OverlaySheet {
-    constructor(renderSpace, physicsSpace, entity, color = 'black') {
+    constructor(renderSpace, physicsSpace, input, entity, color = 'black') {
         this._walls = [];
+        this._moveEventId = -1;
         this._renderSpace = renderSpace;
         this._physicsSpace = physicsSpace;
         this._entity = entity;
         this._color = color;
         this._entity.onDestroy.add(this.destroy, this);
+        this._mouseInput = input;
     }
-    static generateFromImage(imageId, physicsSpace, renderSpace, parentEntity, color = 'black', thickness = 10) {
+    get walls() { return this._walls; }
+    static generateFromImage(imageId, renderSpace, physicsSpace, input, parentEntity, color = 'black', thickness = 10) {
         let blueprint = document.getElementById(imageId);
         if (blueprint == null)
             return null;
@@ -30,7 +33,7 @@ class OverlaySheet {
         let oY = parentEntity.transform.y;
         let context = canvas.getContext('2d');
         context.drawImage(blueprint, 0, 0, blueprint.width, blueprint.height);
-        let sheet = new OverlaySheet(renderSpace, physicsSpace, parentEntity, color);
+        let sheet = new OverlaySheet(renderSpace, physicsSpace, input, parentEntity, color);
         // let dataString = "";
         for (let y = 0; y < blueprint.height; y++) {
             for (let x = 0; x < blueprint.width; x++) {
@@ -44,7 +47,16 @@ class OverlaySheet {
         }
         return sheet;
     }
-    get walls() { return this._walls; }
+    grab() {
+        this._mouseInput.onMouseMove.add((event) => {
+            this._entity.transform.x = event.clientX;
+            this._entity.transform.y = event.clientY;
+            console.log("Mouse moved", this._entity.transform);
+        }, this);
+    }
+    release() {
+        this._mouseInput.onMouseMove.remove(this._moveEventId);
+    }
     addWall(left, top, width, height) {
         let wall = new VisibleBoxCollider(left, top, width, height, this._renderSpace, this._physicsSpace, this._color);
         wall.entity.transform.parent = this._entity.transform;
