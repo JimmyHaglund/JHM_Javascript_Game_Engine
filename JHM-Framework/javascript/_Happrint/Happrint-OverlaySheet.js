@@ -11,6 +11,7 @@ class OverlaySheet {
     constructor(renderSpace, physicsSpace, input, entity, color = 'black') {
         this._walls = [];
         this._moveEventId = -1;
+        this._grabbedThisFrame = false;
         this._renderSpace = renderSpace;
         this._physicsSpace = physicsSpace;
         this._entity = entity;
@@ -48,13 +49,17 @@ class OverlaySheet {
         return sheet;
     }
     grab() {
-        this._mouseInput.onMouseMove.add((event) => {
+        this._grabbedThisFrame = true;
+        this._moveEventId = this._mouseInput.onMouseMove.add((event) => {
+            this._grabbedThisFrame = false;
             this._entity.transform.x = event.clientX;
             this._entity.transform.y = event.clientY;
             console.log("Mouse moved", this._entity.transform);
         }, this);
     }
     release() {
+        if (this._grabbedThisFrame)
+            return;
         this._mouseInput.onMouseMove.remove(this._moveEventId);
     }
     addWall(left, top, width, height) {

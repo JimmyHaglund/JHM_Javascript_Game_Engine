@@ -1,5 +1,5 @@
 class WalkingCharacter {
-    constructor(entity, loop, walkingSpeed = 3, renderSpace, physicsSpace) {
+    constructor(entity, walkingSpeed = 3, renderSpace, physicsSpace) {
         this._shouldMove = false;
         this._deltaTime = 1.0;
         this._maxFallSpeed = 250;
@@ -13,6 +13,7 @@ class WalkingCharacter {
             right: 1
         };
         this._onCollisionEnter = new Action();
+        this._onDestroy = new Action();
         this._entity = entity;
         this._shouldMove = false;
         this._walkSpeed = walkingSpeed;
@@ -21,8 +22,11 @@ class WalkingCharacter {
         this._sprite.height = 45;
         this._sprite.offsetX = -15; // -this._sprite.width * 0.5;
         this._sprite.offsetY = -45; // -this._sprite.height;
+        this._entity.addComponent(this._sprite);
         renderSpace.addRenderComponent(this._sprite, -100);
         physicsSpace.addPhysicsActor(this);
+        this._onDestroy.add(() => renderSpace.removeRenderComponent(this._sprite, -100), this);
+        this._onDestroy.add(() => physicsSpace.removePhysicsActor(this), this);
     }
     get shouldMove() { return this._shouldMove; }
     set shouldMove(value) { this._shouldMove = value; }
@@ -35,11 +39,15 @@ class WalkingCharacter {
     get falling() { return !this._grounded; }
     get onGroundedChanged() { return this._onGroundedChanged; }
     get onExit() { return this._onExit; }
+    get entity() { return this._entity; }
     get onCollisionEnter() { return this._onCollisionEnter; }
     get onCollisionStay() { return null; }
     get onCollisionExit() { return null; }
-    get onDestroy() { return null; }
-    destroy() { }
+    get onDestroy() { return this._onDestroy; }
+    destroy() {
+        this._entity.destroy();
+        this._onDestroy.invoke.call(this._onDestroy);
+    }
     move(deltaTime) {
         if (!this.shouldMove)
             return;

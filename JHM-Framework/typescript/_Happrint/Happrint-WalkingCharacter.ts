@@ -14,9 +14,9 @@ class WalkingCharacter implements IPhysicsActor, IDestroyable {
         left: -1,
         right: 1
     };
-    private _rigidBody: PointRigidBody;
     private _sprite: Sprite;
-    private _onCollisionEnter: Action = new Action();
+    private readonly _onCollisionEnter: Action = new Action();
+    private readonly _onDestroy: Action = new Action();
 
     get shouldMove(): boolean { return this._shouldMove; }
     set shouldMove(value: boolean) { this._shouldMove = value; }
@@ -29,13 +29,14 @@ class WalkingCharacter implements IPhysicsActor, IDestroyable {
     get falling(): boolean { return !this._grounded; }
     get onGroundedChanged(): Action { return this._onGroundedChanged; }
     get onExit(): Action { return this._onExit; }
+    get entity(): Entity { return this._entity; }
 
     get onCollisionEnter(): Action { return this._onCollisionEnter; }
     get onCollisionStay(): Action { return null; }
     get onCollisionExit(): Action { return null; }
-    get onDestroy(): Action { return null; }
+    get onDestroy(): Action { return this._onDestroy; }
 
-    constructor(entity: Entity, loop: ILoop, walkingSpeed: number = 3, renderSpace: RenderSpace, physicsSpace: PhysicsSpace) {
+    constructor(entity: Entity, walkingSpeed: number = 3, renderSpace: RenderSpace, physicsSpace: PhysicsSpace) {
         this._entity = entity;
         this._shouldMove = false;
         this._walkSpeed = walkingSpeed;
@@ -45,10 +46,17 @@ class WalkingCharacter implements IPhysicsActor, IDestroyable {
         this._sprite.offsetX = -15// -this._sprite.width * 0.5;
         this._sprite.offsetY = -45// -this._sprite.height;
 
+        this._entity.addComponent(this._sprite);
+
         renderSpace.addRenderComponent(this._sprite, -100);
         physicsSpace.addPhysicsActor(this);
+        this._onDestroy.add(() => renderSpace.removeRenderComponent(this._sprite, -100), this);
+        this._onDestroy.add(() => physicsSpace.removePhysicsActor(this), this);
     }
-    destroy(): void { }
+    destroy(): void {
+        this._entity.destroy();
+        this._onDestroy.invoke.call(this._onDestroy);
+    }
 
     move(deltaTime: number): void {
         if (!this.shouldMove) return;

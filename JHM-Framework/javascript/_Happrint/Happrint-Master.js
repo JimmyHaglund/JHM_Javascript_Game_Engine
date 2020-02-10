@@ -1,7 +1,8 @@
 function happrint_start() {
-    let myLoop = new Loop(20);
-    let myWindow = new RenderSpace(myLoop, 600, 600);
-    let myPhysics = new PhysicsSpace(myLoop);
+    let Game = new GameManager(0);
+    // let myLoop = new Loop(20);
+    // let myWindow = new RenderSpace(myLoop, 600, 600);
+    // let myPhysics = new PhysicsSpace(myLoop);
     // let myEntity = new Entity(0, 0);
     // let mySprite = new Sprite(myEntity, "page1");
     // mySprite.width = 320;
@@ -17,8 +18,8 @@ function happrint_start() {
     // myWindow.canvas.getContext('2d').imageSmoothingEnabled = false; // Disable antialiasing
     // let visibleBox = new VisibleBoxCollider(0, 0, 50, 300, myWindow, myPhysics, "red");
     // visibleBox.outlineOnly = true;
-    let mouseInput = new MouseInput();
-    let uiSpace = new UiSpace(myWindow, 0, mouseInput);
+    // let mouseInput = new MouseInput();
+    // let uiSpace = new UiSpace(myWindow, 0, mouseInput);
     // let button = uiSpace.createButton(50, 50, 100, 100, "stopButton_normal", 
     // "stopButton_hover", "stopButton_press"); 
     // button.onClick.add(() => console.log("Button on click called."), this);
@@ -29,13 +30,13 @@ function happrint_start() {
     // mouseInput.onMouseDown.add(printMousePosition, this);
     // testRb(myWindow);
     // let testLoop = new Loop(30);
-    let testEntity = new Entity(200, 50);
-    let testWalker = new WalkingCharacter(testEntity, myLoop, 760, myWindow, myPhysics);
-    testWalker.shouldMove = true;
-    let sheetEntity = new Entity(100, 100);
+    // let testEntity = new Entity(200, 50);
+    // let testWalker = new WalkingCharacter(testEntity, myLoop, 760, myWindow, myPhysics);
+    // testWalker.shouldMove = true;
+    // let sheetEntity = new Entity(100, 100);
     // let testSheet = OverlaySheet.generateFromImage("page1", myPhysics, myWindow, sheetEntity, 'black');
-    let levelManager = new LevelManager(myWindow, myPhysics, uiSpace, mouseInput);
-    levelManager.loadLevel(0);
+    // let levelManager = new LevelManager(myWindow, myPhysics, uiSpace, mouseInput);
+    // levelManager.loadLevel(0);
     /*
     setTimeout(() => levelManager.unloadCurrentLevel(), 1000);
     setTimeout(() => levelManager.loadLevel(0), 2000);

@@ -15,6 +15,7 @@ class OverlaySheet {
     private _color: string;
     private _mouseInput: MouseInput;
     private _moveEventId: number = -1;
+    private _grabbedThisFrame: boolean = false;
 
     get walls() { return this._walls; }
 
@@ -57,13 +58,16 @@ class OverlaySheet {
     }
 
     grab(): void {
-        this._mouseInput.onMouseMove.add((event: MouseEvent) => {
+        this._grabbedThisFrame = true;
+        this._moveEventId = this._mouseInput.onMouseMove.add((event: MouseEvent) => {
+            this._grabbedThisFrame = false;
             this._entity.transform.x = event.clientX;
             this._entity.transform.y = event.clientY;
             console.log("Mouse moved", this._entity.transform);
         }, this);
     }
     release(): void {
+        if (this._grabbedThisFrame) return;
         this._mouseInput.onMouseMove.remove(this._moveEventId);
     }
 

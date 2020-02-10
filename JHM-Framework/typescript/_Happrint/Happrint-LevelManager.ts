@@ -13,7 +13,10 @@ class LevelManager {
     private _currentLevelIndex: number = -1;
     private _currentLevelSettings: LevelSettings = null;
     private _levelButtons: BoxButton[] = [];
+    private _walkers: WalkingCharacter[] = [];
     private _mouseInput: MouseInput;
+    private _stopButton: BoxButton;
+    private _playButton: BoxButton;
 
     readonly levels: LevelSettings[] = happrint_levels;
     readonly sheetColors: string[] = happrint_sheetColors;
@@ -45,26 +48,13 @@ class LevelManager {
         this.currentLevelIndex = levelNumber;
         if (levelSettings == undefined) return null;
         for (let n = 0; n < levelSettings.sheetCount; n++) {
-            // Set up sheet
-            let sheetEntity = new Entity(0, 0);
-            let imageName = "level_" + levelNumber + "_sheet_" + n;
-            let sheet = new SheetBuilder(
-                this._renderSpace, this._physicsSpace, this._mouseInput)
-                .withColor('black')
-                .withThickness(10)
-                .buildFromImage(sheetEntity, imageName);
+            let sheet = this.generateSheet(levelNumber, n);
             levelSettings.addSheet(sheet);
-            // Set up selection button
-            let buttonNormalName = "button_" + n + "_normal";
-            let buttonHoverName = "button_" + n + "_hover";
-            let buttonPressName = "button_" + n + "_press";
-            let button = this._uiSpace.createButton(20, 20, 100, 100, 
-                buttonNormalName, buttonHoverName, buttonPressName);
-            button.onClick.add(() => {
-                sheet.grab();
-            }, sheet);
-            this._levelButtons.push(button);
+            this._levelButtons.push(this.generateGrabButton(sheet, n));
         }
+        this._stopButton = this.generateStopButton();
+        this._playButton = this.generatePlayButton();
+        this.generateWalkers(levelSettings.walkerCount, this._playButton, this._stopButton);
         this._currentLevelSettings = levelSettings;
         return levelSettings;
     }
@@ -76,8 +66,61 @@ class LevelManager {
         });
         this._currentLevelSettings = null;
         this._currentLevelIndex = -1;
-        this._levelButtons.forEach(button => {
-            button.destroy();
-        });
+        this._levelButtons.forEach(button => button.destroy());
+        this.clearWalkers();
+        this._stopButton.destroy();
+        this._playButton.destroy();
+    }
+    private generateWalkers(count: number, playButton: BoxButton, stopButton: BoxButton): void {
+        for (let n = 0; n < count; n++) {
+            let entity = new Entity(100, 50);
+            this._walkers.push(new WalkingCharacter(entity, 1500, this._renderSpace, this._physicsSpace));
+            playButton.onClick.add(() => {
+                this._walkers.forEach(walker => {
+                    walker.shouldMove = true;
+                });
+            }, this);
+            stopButton.onClick.add(() => {
+                this._walkers.forEach(walker => {
+                    walker.entity.transform.x = 50;
+                    walker.entity.transform.y = 50;
+                    walker.shouldMove = false;
+                });
+            }, this);
+        }
+    }
+    private clearWalkers() {
+        this._walkers.forEach(walker => walker.destroy());
+        this._walkers = [];
+    }
+    private generateSheet(levelIndex: number, sheetIndex: number): OverlaySheet {
+        let sheetEntity = new Entity(0, 0);
+        let imageName = "level_" + levelIndex + "_sheet_" + sheetIndex;
+        let sheet = new SheetBuilder(
+            this._renderSpace, this._physicsSpace, this._mouseInput)
+            .withColor('black')
+            .withThickness(10)
+            .buildFromImage(sheetEntity, imageName);
+        this._mouseInput.onMouseUp.add(() => sheet.release(), sheet);
+        return sheet;
+    }
+    private generateGrabButton(sheet: OverlaySheet, sheetIndex: number): BoxButton {
+        let buttonNormalName = "button_" + sheetIndex + "_normal";
+        let buttonHoverName = "button_" + sheetIndex + "_hover";
+        let buttonPressName = "button_" + sheetIndex + "_press";
+        let button = this._uiSpace.createButton(20, 20, 100, 100,
+            buttonNormalName, buttonHoverName, buttonPressName);
+        button.onClick.add(() => {
+            sheet.grab();
+        }, sheet);
+        return button;
+    }
+    private generatePlayButton(): BoxButton {
+        return this._uiSpace.createButton(150, 0, 90, 90,
+            "playButton_normal", "playButton_hover", "playButton_press");
+    }
+    private generateStopButton(): BoxButton {
+        return this._uiSpace.createButton(250, 0, 90, 90,
+            "stopButton_normal", "stopButton_hover", "stopButton_press");
     }
 }
