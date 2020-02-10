@@ -6,7 +6,7 @@ class GameManager {
     private _uiSpace: UiSpace;
     private _mouseInput = new MouseInput();
 
-    private _nextLevelButton: BoxButton;
+    
     private _previousLevelButton: BoxButton;
     private _backToMenuButton: BoxButton;
 
@@ -16,10 +16,7 @@ class GameManager {
         this._simulationSpace = new PhysicsSpace(this._gameLoop);
         this._uiSpace = new UiSpace(this._renderSpace, -1000, this._mouseInput);
         this._levelManager = new LevelManager(this._renderSpace,
-            this._simulationSpace, this._uiSpace, this._mouseInput);
+            this._simulationSpace, this._uiSpace, this._mouseInput, this._gameLoop);
         this._levelManager.loadLevel(startLevelindex);
-        
-        this._nextLevelButton = this._uiSpace.createButton(0, 0, 50, 30, 
-            "nextButton_normal", "nextButton_hover", "nextButton_press");
     }
 }

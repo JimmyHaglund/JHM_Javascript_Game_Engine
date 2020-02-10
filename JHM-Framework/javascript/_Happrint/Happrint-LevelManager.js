@@ -1,5 +1,5 @@
 class LevelManager {
-    constructor(renderSpace, physicsSpace, uiSpace, input) {
+    constructor(renderSpace, physicsSpace, uiSpace, input, loop) {
         this._sheetButtonPositions = [
             { x: 10, y: 20 },
             { x: 10, y: 40 },
@@ -11,12 +11,15 @@ class LevelManager {
         this._currentLevelSettings = null;
         this._levelButtons = [];
         this._walkers = [];
+        this._nextLevelButton = null;
+        this.onLevelComplete = new Action();
         this.levels = happrint_levels;
         this.sheetColors = happrint_sheetColors;
         this._renderSpace = renderSpace;
         this._physicsSpace = physicsSpace;
         this._mouseInput = input;
         this._uiSpace = uiSpace;
+        this._loop = loop;
     }
     set currentLevelIndex(value) {
         if (value < -1)
@@ -48,10 +51,24 @@ class LevelManager {
         this._playButton = this.generatePlayButton();
         this.generateWalkers(levelSettings.walkerCount, this._playButton, this._stopButton);
         this._currentLevelSettings = levelSettings;
+        this._exit = this.generateExit();
+        this._stopButton.onClick.add(() => {
+            this._exit.destroy();
+            this._exit = this.generateExit();
+        }, this);
+        this.onLevelComplete.add(() => {
+            if (this._nextLevelButton != null)
+                return;
+            this._nextLevelButton = this._uiSpace.createButton(0, 0, 50, 30, "nextButton_normal", "nextButton_hover", "nextButton_press");
+            this._nextLevelButton.onClick.add(() => {
+                this._nextLevelButton.destroy();
+                this._nextLevelButton = null;
+            }, this);
+        }, this);
         return levelSettings;
     }
     unloadCurrentLevel() {
-        console.log("Unload called.", this._currentLevelIndex);
+        // console.log("Unload called.", this._currentLevelIndex);
         if (this._currentLevelIndex < 0)
             return;
         this._currentLevelSettings.sheets.forEach(sheet => {
@@ -105,6 +122,11 @@ class LevelManager {
             sheet.grab();
         }, sheet);
         return button;
+    }
+    generateExit() {
+        let exit = new LevelExit(this._loop, this._walkers.slice(0), this._renderSpace);
+        exit.onWalkersEmpty.add(this.onLevelComplete.invoke, this.onLevelComplete);
+        return exit;
     }
     generatePlayButton() {
         return this._uiSpace.createButton(150, 0, 90, 90, "playButton_normal", "playButton_hover", "playButton_press");

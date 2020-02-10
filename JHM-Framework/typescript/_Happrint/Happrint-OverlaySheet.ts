@@ -63,7 +63,6 @@ class OverlaySheet {
             this._grabbedThisFrame = false;
             this._entity.transform.x = event.clientX;
             this._entity.transform.y = event.clientY;
-            console.log("Mouse moved", this._entity.transform);
         }, this);
     }
     release(): void {

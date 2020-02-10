@@ -5,8 +5,7 @@ class GameManager {
         this._renderSpace = new RenderSpace(this._gameLoop, 1200, 900, 0, 0);
         this._simulationSpace = new PhysicsSpace(this._gameLoop);
         this._uiSpace = new UiSpace(this._renderSpace, -1000, this._mouseInput);
-        this._levelManager = new LevelManager(this._renderSpace, this._simulationSpace, this._uiSpace, this._mouseInput);
+        this._levelManager = new LevelManager(this._renderSpace, this._simulationSpace, this._uiSpace, this._mouseInput, this._gameLoop);
         this._levelManager.loadLevel(startLevelindex);
-        this._nextLevelButton = this._uiSpace.createButton(0, 0, 50, 30, "nextButton_normal", "nextButton_hover", "nextButton_press");
     }
 }
