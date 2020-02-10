@@ -51,6 +51,7 @@ class OverlaySheet {
         this._walls.push(wall);
     }
     destroy() {
+        console.log("destroy called on overlay sheet.");
         this._walls.forEach(wall => {
             wall.entity.destroy();
         });
