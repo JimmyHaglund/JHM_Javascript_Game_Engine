@@ -61,6 +61,7 @@ class LevelManager {
                 return;
             this._nextLevelButton = this._uiSpace.createButton(0, 0, 50, 30, "nextButton_normal", "nextButton_hover", "nextButton_press");
             this._nextLevelButton.onClick.add(() => {
+                this.nextLevel();
                 this._nextLevelButton.destroy();
                 this._nextLevelButton = null;
             }, this);

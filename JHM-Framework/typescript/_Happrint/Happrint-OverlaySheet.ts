@@ -43,13 +43,10 @@ class OverlaySheet {
         let context: CanvasRenderingContext2D = canvas.getContext('2d');
         context.drawImage(blueprint, 0, 0, blueprint.width, blueprint.height);
         let sheet = new OverlaySheet(renderSpace, physicsSpace, input, parentEntity, color);
-        // let dataString = "";
         for (let y = 0; y < blueprint.height; y++) {
             for (let x = 0; x < blueprint.width; x++) {
                 let pixelData = canvas.getContext('2d').getImageData(x, y, 1, 1).data;
                 if (pixelData[0] == 0) {
-                    // let box = new VisibleBoxCollider(x * 10, y * 10, 10, 10, renderSpace, physicsSpace, color);
-                    // box.entity.transform.parent = parentEntity.transform;
                     sheet.addWall(oX + x * thickness, oY + y * thickness, thickness, thickness);
                 }
             }
@@ -58,6 +55,7 @@ class OverlaySheet {
     }
 
     grab(): void {
+        if (this._moveEventId != -1) return;
         this._grabbedThisFrame = true;
         this._moveEventId = this._mouseInput.onMouseMove.add((event: MouseEvent) => {
             this._grabbedThisFrame = false;
@@ -68,6 +66,7 @@ class OverlaySheet {
     release(): void {
         if (this._grabbedThisFrame) return;
         this._mouseInput.onMouseMove.remove(this._moveEventId);
+        this._moveEventId = -1;
     }
 
     addWall(left: number, top: number, width: number, height: number) {
@@ -76,7 +75,6 @@ class OverlaySheet {
         this._walls.push(wall);
     }
     destroy() {
-        console.log("destroy called on overlay sheet.");
         this._walls.forEach(wall => {
             wall.entity.destroy();
         });

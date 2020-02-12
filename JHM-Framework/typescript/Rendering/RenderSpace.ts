@@ -20,7 +20,7 @@ class RenderSpace {
     set backgroundColor(color: string) { this._color = color; }
     get backgroundColor(): string { return this._color; }
     
-    constructor(loop: Loop, width: number, height: number,
+    constructor(loop: ILoop, width: number, height: number,
         left: number = 0, top: number = 0, backgroundColor: string = "gray") {
         this._canvas = document.createElement("canvas");
         this._context = this._canvas.getContext("2d");

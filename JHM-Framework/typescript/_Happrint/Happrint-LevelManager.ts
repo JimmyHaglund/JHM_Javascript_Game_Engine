@@ -20,7 +20,7 @@ class LevelManager {
     private _loop: ILoop;
     private _exit: LevelExit;
     private _nextLevelButton: BoxButton = null;
-    
+
     readonly onLevelComplete: Action = new Action();
     readonly levels: LevelSettings[] = happrint_levels;
     readonly sheetColors: string[] = happrint_sheetColors;
@@ -71,6 +71,7 @@ class LevelManager {
             this._nextLevelButton = this._uiSpace.createButton(0, 0, 50, 30,
                 "nextButton_normal", "nextButton_hover", "nextButton_press");
             this._nextLevelButton.onClick.add(() => {
+                this.nextLevel();
                 this._nextLevelButton.destroy();
                 this._nextLevelButton = null;
             }, this);
@@ -134,7 +135,7 @@ class LevelManager {
         }, sheet);
         return button;
     }
-    private generateExit(): LevelExit{
+    private generateExit(): LevelExit {
         let exit = new LevelExit(this._loop, this._walkers.slice(0), this._renderSpace);
         exit.onWalkersEmpty.add(this.onLevelComplete.invoke, this.onLevelComplete);
         return exit;

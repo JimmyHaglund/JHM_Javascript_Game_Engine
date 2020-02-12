@@ -1,5 +1,9 @@
 function happrint_start() {
-    let Game = new GameManager(0);
+    let menu = new MainMenu();
+    let game = null;
+    menu.onStartGame.add(() => game = new GameManager(0), this);
+    menu.onDestroy.add(() => menu = null, this);
+    // let Game = new GameManager(0);
     // let myLoop = new Loop(20);
     // let myWindow = new RenderSpace(myLoop, 600, 600);
     // let myPhysics = new PhysicsSpace(myLoop);

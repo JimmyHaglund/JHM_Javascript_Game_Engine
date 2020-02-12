@@ -1,7 +1,7 @@
 class UiSpace {
     constructor(renderSpace, renderLayer = -1000, mouseInput, keyboarInput = null) {
         this._renderer = renderSpace;
-        this._loop = new UiLoop();
+        this._loop = new UiLoop(mouseInput);
         this._physics = new PhysicsSpace(this._loop);
         this._mousePointer = new MousePointer(mouseInput, this._loop, this._physics);
     }
