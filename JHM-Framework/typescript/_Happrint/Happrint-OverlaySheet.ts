@@ -47,7 +47,7 @@ class OverlaySheet {
             for (let x = 0; x < blueprint.width; x++) {
                 let pixelData = canvas.getContext('2d').getImageData(x, y, 1, 1).data;
                 if (pixelData[0] == 0) {
-                    sheet.addWall(oX + x * thickness, oY + y * thickness, thickness, thickness);
+                    sheet.addWall(0 + x * thickness, 0 + y * thickness, thickness, thickness);
                 }
             }
         }

@@ -28,5 +28,6 @@ class MainMenu implements IDestroyable {
     private startGame() {
         this.onStartGame.invoke.call(this.onStartGame);
         this.destroy();
+        this._renderSpace.destroy();
     }
 }

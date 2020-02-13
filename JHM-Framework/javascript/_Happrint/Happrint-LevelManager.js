@@ -1,13 +1,20 @@
 class LevelManager {
     constructor(renderSpace, physicsSpace, uiSpace, input, loop) {
         this._sheetButtonPositions = [
-            { x: 10, y: 20 },
-            { x: 10, y: 40 },
-            { x: 10, y: 60 },
-            { x: 10, y: 80 },
-            { x: 10, y: 100 }
+            { x: 410, y: 20 },
+            { x: 410, y: 90 },
+            { x: 410, y: 160 },
+            { x: 410, y: 230 },
+            { x: 410, y: 300 }
         ];
-        this._currentLevelIndex = -1;
+        this._sheetPositions = [
+            { x: 470, y: 10 },
+            { x: 640, y: 20 },
+            { x: 470, y: 190 },
+            { x: 640, y: 200 },
+            { x: 470, y: 270 }
+        ];
+        this._currentLevelNumber = 0;
         this._currentLevelSettings = null;
         this._levelButtons = [];
         this._walkers = [];
@@ -22,28 +29,32 @@ class LevelManager {
         this._loop = loop;
     }
     set currentLevelIndex(value) {
-        if (value < -1)
-            value = -1;
+        console.log("Setting currentLevelIndex to", value);
+        if (value <= 0)
+            value = 0;
         if (value > this.levels.length)
-            value = -1;
-        this._currentLevelIndex = value;
+            value = 0;
+        this._currentLevelNumber = value + 1;
     }
-    get currentLevelIndex() { return this._currentLevelIndex; }
+    get currentLevelIndex() { return this._currentLevelNumber - 1; }
     nextLevel() {
-        this.unloadCurrentLevel();
-        this.loadLevel(++this._currentLevelIndex);
+        this.loadLevel(++this.currentLevelIndex);
+        if (this.currentLevelIndex == -1) {
+            console.log("Game complete!");
+        }
     }
     previousLevel() {
-        this.unloadCurrentLevel();
-        this.loadLevel(--this._currentLevelIndex);
+        this.loadLevel(--this.currentLevelIndex);
     }
-    loadLevel(levelNumber) {
-        let levelSettings = this.levels[levelNumber];
-        this.currentLevelIndex = levelNumber;
+    loadLevel(levelIndex) {
+        this.unloadCurrentLevel();
+        let levelSettings = this.levels[levelIndex];
+        this.currentLevelIndex = levelIndex;
+        console.log("Loading level", this._currentLevelNumber);
         if (levelSettings == undefined)
             return null;
         for (let n = 0; n < levelSettings.sheetCount; n++) {
-            let sheet = this.generateSheet(levelNumber, n);
+            let sheet = this.generateSheet(this._currentLevelNumber, n + 1);
             levelSettings.addSheet(sheet);
             this._levelButtons.push(this.generateGrabButton(sheet, n));
         }
@@ -59,7 +70,7 @@ class LevelManager {
         this.onLevelComplete.add(() => {
             if (this._nextLevelButton != null)
                 return;
-            this._nextLevelButton = this._uiSpace.createButton(0, 0, 50, 30, "nextButton_normal", "nextButton_hover", "nextButton_press");
+            this._nextLevelButton = this._uiSpace.createButton(340, 410, 60, 40, "nextButton_normal", "nextButton_hover", "nextButton_press");
             this._nextLevelButton.onClick.add(() => {
                 this.nextLevel();
                 this._nextLevelButton.destroy();
@@ -70,13 +81,13 @@ class LevelManager {
     }
     unloadCurrentLevel() {
         // console.log("Unload called.", this._currentLevelIndex);
-        if (this._currentLevelIndex < 0)
+        if (this.currentLevelIndex < 0)
             return;
         this._currentLevelSettings.sheets.forEach(sheet => {
             sheet.destroy();
         });
         this._currentLevelSettings = null;
-        this._currentLevelIndex = -1;
+        this.currentLevelIndex = -1;
         this._levelButtons.forEach(button => button.destroy());
         this.clearWalkers();
         this._stopButton.destroy();
@@ -104,21 +115,24 @@ class LevelManager {
         this._walkers.forEach(walker => walker.destroy());
         this._walkers = [];
     }
-    generateSheet(levelIndex, sheetIndex) {
-        let sheetEntity = new Entity(0, 0);
-        let imageName = "level_" + levelIndex + "_sheet_" + sheetIndex;
+    generateSheet(levelNumber, sheetNumber) {
+        let sheetIndex = sheetNumber - 1;
+        let imageName = "level_" + levelNumber + "_sheet_" + sheetNumber;
+        let sheetX = this._sheetPositions[sheetIndex].x; // * window.innerWidth;
+        let sheetY = this._sheetPositions[sheetIndex].y; // * window.innerHeight;
+        let sheetEntity = new Entity(sheetX, sheetY);
         let sheet = new SheetBuilder(this._renderSpace, this._physicsSpace, this._mouseInput)
             .withColor('black')
-            .withThickness(10)
+            .withThickness(5)
             .buildFromImage(sheetEntity, imageName);
         this._mouseInput.onMouseUp.add(() => sheet.release(), sheet);
         return sheet;
     }
     generateGrabButton(sheet, sheetIndex) {
-        let buttonNormalName = "button_" + sheetIndex + "_normal";
-        let buttonHoverName = "button_" + sheetIndex + "_hover";
-        let buttonPressName = "button_" + sheetIndex + "_press";
-        let button = this._uiSpace.createButton(20, 20, 100, 100, buttonNormalName, buttonHoverName, buttonPressName);
+        let buttonNormalName = "button_" + (sheetIndex + 1) + "_normal";
+        let buttonHoverName = "button_" + (sheetIndex + 1) + "_hover";
+        let buttonPressName = "button_" + (sheetIndex + 1) + "_press";
+        let button = this._uiSpace.createButton(this._sheetButtonPositions[sheetIndex].x, this._sheetButtonPositions[sheetIndex].y, 60, 60, buttonNormalName, buttonHoverName, buttonPressName);
         button.onClick.add(() => {
             sheet.grab();
         }, sheet);
@@ -130,9 +144,9 @@ class LevelManager {
         return exit;
     }
     generatePlayButton() {
-        return this._uiSpace.createButton(150, 0, 90, 90, "playButton_normal", "playButton_hover", "playButton_press");
+        return this._uiSpace.createButton(30, 410, 60, 60, "playButton_normal", "playButton_hover", "playButton_press");
     }
     generateStopButton() {
-        return this._uiSpace.createButton(250, 0, 90, 90, "stopButton_normal", "stopButton_hover", "stopButton_press");
+        return this._uiSpace.createButton(100, 410, 60, 60, "stopButton_normal", "stopButton_hover", "stopButton_press");
     }
 }

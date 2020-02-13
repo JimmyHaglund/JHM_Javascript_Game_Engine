@@ -26,6 +26,9 @@ class RenderSpace {
     set bottom(value) { this._canvas.style.bottom = value + 'px'; }
     set backgroundColor(color) { this._color = color; }
     get backgroundColor() { return this._color; }
+    destroy() {
+        this._canvas.remove();
+    }
     addRenderComponent(component, toLayer) {
         let layer = this._layers.find((value) => value.layer == toLayer);
         if (layer == undefined) {

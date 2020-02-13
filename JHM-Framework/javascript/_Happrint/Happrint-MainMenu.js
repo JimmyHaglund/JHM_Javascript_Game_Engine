@@ -19,5 +19,6 @@ class MainMenu {
     startGame() {
         this.onStartGame.invoke.call(this.onStartGame);
         this.destroy();
+        this._renderSpace.destroy();
     }
 }

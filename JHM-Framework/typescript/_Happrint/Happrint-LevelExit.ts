@@ -9,7 +9,7 @@ class LevelExit implements IPhysicsSpace, IDestroyable {
     get onWalkersEmpty(): Action { return this._walkersEmpty; }
 
     constructor(loop: ILoop, walkers: WalkingCharacter[], renderSpace: RenderSpace) {
-        let myCollider = new VisibleBoxCollider(25, 200, 500, 50, renderSpace, this);
+        let myCollider = new VisibleBoxCollider(250, 200, 25, 25, renderSpace, this);
         this._onDestroy.add(myCollider.entity.destroy, myCollider.entity);
         loop.onUpdate.add(this.update, this);
         this._walkers = walkers;
