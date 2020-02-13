@@ -22,6 +22,7 @@ class LevelManager {
         this.onLevelComplete = new Action();
         this.levels = happrint_levels;
         this.sheetColors = happrint_sheetColors;
+        this.onLastLevelExit = new Action();
         this._renderSpace = renderSpace;
         this._physicsSpace = physicsSpace;
         this._mouseInput = input;
@@ -29,28 +30,28 @@ class LevelManager {
         this._loop = loop;
     }
     set currentLevelIndex(value) {
-        console.log("Setting currentLevelIndex to", value);
-        if (value <= 0)
-            value = 0;
-        if (value > this.levels.length)
-            value = 0;
+        if (value < 0)
+            value = -1;
+        if (value >= this.levels.length)
+            value = -1;
         this._currentLevelNumber = value + 1;
     }
     get currentLevelIndex() { return this._currentLevelNumber - 1; }
     nextLevel() {
-        this.loadLevel(++this.currentLevelIndex);
+        this.loadLevel(this.currentLevelIndex + 1);
         if (this.currentLevelIndex == -1) {
-            console.log("Game complete!");
+            this.onLastLevelExit.invoke.call(this.onLastLevelExit);
         }
     }
     previousLevel() {
-        this.loadLevel(--this.currentLevelIndex);
+        this.loadLevel(this.currentLevelIndex - 1);
     }
     loadLevel(levelIndex) {
         this.unloadCurrentLevel();
         let levelSettings = this.levels[levelIndex];
         this.currentLevelIndex = levelIndex;
-        console.log("Loading level", this._currentLevelNumber);
+        if (this.currentLevelIndex < 0)
+            return null;
         if (levelSettings == undefined)
             return null;
         for (let n = 0; n < levelSettings.sheetCount; n++) {
@@ -80,7 +81,6 @@ class LevelManager {
         return levelSettings;
     }
     unloadCurrentLevel() {
-        // console.log("Unload called.", this._currentLevelIndex);
         if (this.currentLevelIndex < 0)
             return;
         this._currentLevelSettings.sheets.forEach(sheet => {

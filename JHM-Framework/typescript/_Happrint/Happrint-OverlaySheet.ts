@@ -70,7 +70,8 @@ class OverlaySheet {
     }
 
     addWall(left: number, top: number, width: number, height: number) {
-        let wall = new VisibleBoxCollider(left, top, width, height, this._renderSpace, this._physicsSpace, this._color);
+        let wall = new VisibleBoxCollider(left, top, width, height,
+            this._renderSpace, this._physicsSpace, this._color, true);
         wall.entity.transform.parent = this._entity.transform;
         this._walls.push(wall);
     }

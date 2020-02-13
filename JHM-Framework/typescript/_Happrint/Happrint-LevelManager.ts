@@ -31,11 +31,11 @@ class LevelManager {
     readonly onLevelComplete: Action = new Action();
     readonly levels: LevelSettings[] = happrint_levels;
     readonly sheetColors: string[] = happrint_sheetColors;
+    readonly onLastLevelExit: Action = new Action();
 
     private set currentLevelIndex(value: number) {
-        console.log("Setting currentLevelIndex to", value);
-        if (value <= 0) value = 0;
-        if (value > this.levels.length) value = 0;
+        if (value < 0) value = -1;
+        if (value >= this.levels.length) value = -1;
         this._currentLevelNumber = value + 1;
     }
     private get currentLevelIndex(): number { return this._currentLevelNumber - 1; }
@@ -48,20 +48,20 @@ class LevelManager {
         this._uiSpace = uiSpace;
         this._loop = loop;
     }
-    nextLevel() {
-        this.loadLevel(++this.currentLevelIndex);
+    nextLevel(): void {
+        this.loadLevel(this.currentLevelIndex + 1);
         if (this.currentLevelIndex == -1){
-            console.log("Game complete!");
+            this.onLastLevelExit.invoke.call(this.onLastLevelExit);
         }
     }
-    previousLevel() {
-        this.loadLevel(--this.currentLevelIndex);
+    previousLevel(): void {
+        this.loadLevel(this.currentLevelIndex - 1);
     }
     loadLevel(levelIndex: number): LevelSettings {
         this.unloadCurrentLevel();
         let levelSettings = this.levels[levelIndex];
         this.currentLevelIndex = levelIndex;
-        console.log("Loading level", this._currentLevelNumber);
+        if (this.currentLevelIndex < 0) return null;
         if (levelSettings == undefined) return null;
         for (let n = 0; n < levelSettings.sheetCount; n++) {
             let sheet = this.generateSheet(this._currentLevelNumber, n + 1);
@@ -90,7 +90,6 @@ class LevelManager {
         return levelSettings;
     }
     unloadCurrentLevel(): void {
-        // console.log("Unload called.", this._currentLevelIndex);
         if (this.currentLevelIndex < 0) return;
         this._currentLevelSettings.sheets.forEach(sheet => {
             sheet.destroy();
@@ -120,7 +119,7 @@ class LevelManager {
             }, this);
         }
     }
-    private clearWalkers() {
+    private clearWalkers(): void {
         this._walkers.forEach(walker => walker.destroy());
         this._walkers = [];
     }

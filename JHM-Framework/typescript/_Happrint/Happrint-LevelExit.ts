@@ -24,9 +24,7 @@ class LevelExit implements IPhysicsSpace, IDestroyable {
             let y = walker.entity.transform.y;
             if (this._collider.overlapsPoint(x, y)) {
                 walker.shouldMove = false;
-                console.log(this._walkers);
                 this._walkers.splice(n, 1);
-                console.log(this._walkers);
                 if (this._walkers.length == 0) {
                     this.onWalkersEmpty.invoke.call(this.onWalkersEmpty);
                 }

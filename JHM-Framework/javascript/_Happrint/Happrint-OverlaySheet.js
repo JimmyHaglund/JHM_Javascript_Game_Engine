@@ -62,7 +62,7 @@ class OverlaySheet {
         this._moveEventId = -1;
     }
     addWall(left, top, width, height) {
-        let wall = new VisibleBoxCollider(left, top, width, height, this._renderSpace, this._physicsSpace, this._color);
+        let wall = new VisibleBoxCollider(left, top, width, height, this._renderSpace, this._physicsSpace, this._color, true);
         wall.entity.transform.parent = this._entity.transform;
         this._walls.push(wall);
     }
