@@ -34,7 +34,7 @@ class OverlaySheet {
         // let dataString = "";
         for (let y = 0; y < blueprint.height; y++) {
             for (let x = 0; x < blueprint.width; x++) {
-                let pixelData = canvas.getContext('2d').getImageData(x, y, 1, 1).data;
+                let pixelData = [0]; // context.getImageData(x, y, 1, 1).data;
                 if (pixelData[0] == 0) {
                     // let box = new VisibleBoxCollider(x * 10, y * 10, 10, 10, renderSpace, physicsSpace, color);
                     // box.entity.transform.parent = parentEntity.transform;

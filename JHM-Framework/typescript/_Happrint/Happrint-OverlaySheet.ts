@@ -25,7 +25,7 @@ class OverlaySheet {
     static generateFromImage(imageId: string, physicsSpace: PhysicsSpace, renderSpace: RenderSpace, parentEntity: Entity, color: string = 'black', thickness = 10): OverlaySheet {
         let blueprint: HTMLImageElement = document.getElementById(imageId) as HTMLImageElement;
         if (blueprint == null) return null;
-        let canvas: HTMLCanvasElement = document.createElement('canvas');
+        let canvas:HTMLCanvasElement = document.createElement('canvas');
         canvas.width = blueprint.width;
         canvas.height = blueprint.height;
         canvas.style.left = -2 * canvas.width + 'px';
@@ -33,13 +33,13 @@ class OverlaySheet {
         canvas.style.position = 'absolute';
         let oX = parentEntity.transform.x;
         let oY = parentEntity.transform.y;
-        let context: CanvasRenderingContext2D = canvas.getContext('2d');
+        let context:CanvasRenderingContext2D = canvas.getContext('2d');
         context.drawImage(blueprint, 0, 0, blueprint.width, blueprint.height);
         let sheet = new OverlaySheet(renderSpace, physicsSpace, parentEntity, color);
         // let dataString = "";
         for (let y = 0; y < blueprint.height; y++) {
             for (let x = 0; x < blueprint.width; x++) {
-                let pixelData = canvas.getContext('2d').getImageData(x, y, 1, 1).data;
+                let pixelData = [0]; // context.getImageData(x, y, 1, 1).data;
                 if (pixelData[0] == 0) {
                     // let box = new VisibleBoxCollider(x * 10, y * 10, 10, 10, renderSpace, physicsSpace, color);
                     // box.entity.transform.parent = parentEntity.transform;

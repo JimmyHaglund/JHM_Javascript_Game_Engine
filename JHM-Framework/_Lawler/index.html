@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <style>
+    srcImg { display: none; }
+  </style>
+    <title>Lawler</title>
+  </head>
+  <body onload='LawlerStart()'
+  onkeypress = 'CheckLawlerInput(event)'
+  >
+    <srcImg>
+      <img src = '../Images/character_idle.png' id='character_idle' display='none'>
+      
+    </srcImg>
+    <script src = "../Javascript/Action.js"></script>
+    <script src = "../Javascript/Entity.js"></script>
+    <script src = "../Javascript/Loop.js"></script>
+    <script src = "../Javascript/Transform.js"></script>
+    
+    <script src = "../Javascript/Physics/PhysicsSpace.js"></script>
+    <script src = "../Javascript/Physics/BoxCollider.js"></script>
+    <script src = "../Javascript/Physics/PointRigidBody.js"></script>
+    
+    <script src = "../Javascript/Rendering/RenderSpace.js"></script>
+    <script src = "../Javascript/Rendering/Sprite.js"></script>
+    <script src = "../Javascript/Rendering/BoxColliderRenderer.js"></script>
+
+    <script src = "../Javascript/UserInterface/BoxButton.js"></script>
+    
+    <script src = "../Javascript/_Lawler/LawlerInput.js"></script>
+    
+    <div id = 'master'>
+      <script src = "../javascript/_Lawler/LawlerStart.js"></script>
+    </div>
+    <div id = 'Display'>
+    </div>
+  </body>
+</html>
