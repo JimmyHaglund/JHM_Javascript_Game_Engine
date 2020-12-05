@@ -1,4 +1,4 @@
-class Transform {
+class Transform implements ITransform {
     private _x: number = 0;
     private _y: number = 0;
     private _parent: Transform = null;
@@ -11,23 +11,23 @@ class Transform {
         this._parent = parent;
     }
 
-    set x(value) { this._x = value; }
-    get x() { return this._x; }
+    set x(value:number) { this._x = value; }
+    get x():number { return this._x; }
 
-    set y(value) { this._y = value; }
-    get y() { return this._y; }
+    set y(value:number) { this._y = value; }
+    get y():number { return this._y; }
 
-    get worldX() { return this._parent == null ? this._x : this._parent.worldX + this._x; }
-    set worldX(value) {
+    get worldX():number { return this._parent == null ? this._x : this._parent.worldX + this._x; }
+    set worldX(value:number) {
         this._x = this._parent == null ? value : value - this._parent.worldX;
     }
-    get worldY() { return this._parent == null ? this._y : this._parent.worldY + this._y; }
-    set worldY(value) {
+    get worldY():number { return this._parent == null ? this._y : this._parent.worldY + this._y; }
+    set worldY(value:number) {
         this._y = this._parent == null ? value : value - this._parent.worldY;
     }
 
-    set parent(value) { this._parent = value }
-    get parent() { return this._parent; }
-    set rotation(value) { this._rotation = value; }
-    get rotation() { return this._rotation; }
+    set parent(value:Transform) { this._parent = value }
+    get parent():Transform { return this._parent; }
+    set rotation(value:number) { this._rotation = value; }
+    get rotation():number { return this._rotation; }
 }
