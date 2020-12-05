@@ -1,4 +1,4 @@
-class Entity implements IDestroyable {
+class Entity implements IDestroyable, ITransform {
     private _transform: Transform = new Transform();
     private _components: IComponent[] = [];
     private _onDestroy: Action = new Action();
@@ -26,4 +26,19 @@ class Entity implements IDestroyable {
         if (index == -1) return;
         this._components.splice(index, 1);
     }
+    
+    get x(): number { return this._transform.x; }
+    set x(value: number) { this._transform.x = value; }
+    get y(): number { return this._transform.y; }
+    set y(value: number) { this._transform.y = value; }
+
+    get worldX(): number { return this._transform.x; }
+    set worldX(value: number) { this._transform.x = value; }
+    get worldY(): number { return this._transform.worldX; }
+    set worldY(value: number) { this._transform.worldY = value; }
+
+    get rotation(): number { return this._transform.rotation; }
+    set rotation(value: number) { this._transform.rotation = value; }
+    get parent(): Transform { return this._transform.parent; }
+    set parent(value: Transform) { this._transform.parent = value; }
 }

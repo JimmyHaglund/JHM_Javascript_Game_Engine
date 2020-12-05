@@ -4,10 +4,11 @@
   <style>
     srcImg { display: none; }
   </style>
-    <title>Lawler</title>
+    <title>Caprica</title>
   </head>
-  <body onload='LawlerStart()'
-  onkeypress = 'CheckLawlerInput(event)'
+  <body onload='CapricaStart()'
+  onkeydown = 'CheckInputPressed(event)'
+  onkeyup = 'CheckInputReleased(event)'
   >
     <srcImg>
       <img src = '../Images/character_idle.png' id='character_idle' display='none'>
@@ -24,14 +25,19 @@
     
     <script src = "../Javascript/Rendering/RenderSpace.js"></script>
     <script src = "../Javascript/Rendering/Sprite.js"></script>
+    <script src = "../Javascript/Rendering/RotatedSprite.js"></script>
+    
     <script src = "../Javascript/Rendering/BoxColliderRenderer.js"></script>
 
     <script src = "../Javascript/UserInterface/BoxButton.js"></script>
     
-    <script src = "../Javascript/_Lawler/LawlerInput.js"></script>
+    <script src = "../Javascript/_Caprica/Binding.js"></script>
+    <script src = "../Javascript/_Caprica/CapricaMovementInput.js"></script>
+    <script src = "../Javascript/_Caprica/Composites/CapricaMainCharacter.js"></script>
     
+
     <div id = 'master'>
-      <script src = "../javascript/_Lawler/LawlerStart.js"></script>
+      <script src = "../javascript/_Caprica/CapricaStart.js"></script>
     </div>
     <div id = 'Display'>
     </div>

@@ -1,30 +1,26 @@
 class MovementInput {
-    private upBinding = new Binding("KeyW");
-    private rightBinding = new Binding("KeyD");
-    private downBinding = new Binding("KeyS");
-    private leftBinding = new Binding("KeyA");
-
-    public get up(): Binding { return this.upBinding; }
-    public get right(): Binding { return this.rightBinding; }
-    public get down(): Binding { return this.downBinding; }
-    public get left(): Binding { return this.leftBinding; }
-
     constructor() {
+        this.upBinding = new Binding("KeyW");
+        this.rightBinding = new Binding("KeyD");
+        this.downBinding = new Binding("KeyS");
+        this.leftBinding = new Binding("KeyA");
         this.up.onPressed.push(() => console.log("Up pressed"));
         this.up.onReleased.push(() => console.log("Up released"));
         this.right.onPressed.push(() => console.log("Right pressed"));
         this.down.onPressed.push(() => console.log("Down pressed"));
         this.left.onPressed.push(() => console.log("Left pressed"));
     }
-
-    public CheckPressed(event:KeyboardEvent): void {
+    get up() { return this.upBinding; }
+    get right() { return this.rightBinding; }
+    get down() { return this.downBinding; }
+    get left() { return this.leftBinding; }
+    CheckPressed(event) {
         this.up.checkPressed(event);
         this.right.checkPressed(event);
         this.down.checkPressed(event);
         this.left.checkPressed(event);
     }
-
-    public CheckReleased(event:KeyboardEvent):void {
+    CheckReleased(event) {
         this.up.checkReleased(event);
     }
 }

@@ -1,23 +1,18 @@
 let input = new MovementInput();
 function CapricaStart() {
-  let capricaLoop = new Loop(60);
-  let renderSpace = new RenderSpace(capricaLoop, 800, 600);
-  let physicsSpace = new PhysicsSpace(capricaLoop);
-  let mainCharacter = new CapricaMainCharacter(50, 50, 
-    capricaLoop, renderSpace, physicsSpace);
-  renderSpace.render();
-
-  console.log("Caprica Started");
+    let capricaLoop = new Loop(60);
+    let renderSpace = new RenderSpace(capricaLoop, 800, 600);
+    let physicsSpace = new PhysicsSpace(capricaLoop);
+    let mainCharacter = new CapricaMainCharacter(50, 50, capricaLoop, renderSpace, physicsSpace);
+    renderSpace.render();
+    console.log("Caprica Started");
 }
-
-function CheckInputPressed(event:KeyboardEvent) {
-  input.CheckPressed(event);// CheckMovementInput(event);
+function CheckInputPressed(event) {
+    input.CheckPressed(event); // CheckMovementInput(event);
 }
-
-function CheckInputReleased(event:KeyboardEvent) {
-  input.CheckReleased(event);
+function CheckInputReleased(event) {
+    input.CheckReleased(event);
 }
-
 /*
 Canvas settings for disabling anti alisasing
 https://stackoverflow.com/questions/7615009/disable-interpolation-when-scaling-a-canvas
@@ -29,4 +24,4 @@ canvas {
   image-rendering: pixelated;                 // Awesome future-browsers (?)
   -ms-interpolation-mode: nearest-neighbor;   // IE
 }
-*/
+*/ 

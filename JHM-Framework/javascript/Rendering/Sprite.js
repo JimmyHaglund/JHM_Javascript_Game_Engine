@@ -45,27 +45,32 @@ class Sprite {
     render(context) {
         if (this._image == null)
             return;
-        let contextAlpha = context.globalAlpha;
+        let contextSettings = this.applyContextSettings(context);
+        context.drawImage(this._image, this._crop.offsetX, this._crop.offsetY, this._crop.width, this._crop.height, this._offsetX, this._offsetY, this._width, this._height);
+        contextSettings.reset();
+    }
+    getTranslation() {
         let worldX = this._entity.transform.worldX;
         let worldY = this._entity.transform.worldY;
         let translationX = worldX * Math.cos(0) - // If we were to rotate render space origin
             worldY * Math.sin(0);
         let translationY = worldX * Math.sin(0) +
             worldY * Math.cos(0);
-        // Set context settings
-        context.translate(translationX, translationY);
-        // context.rotate(originRotation);
-        context.globalAlpha = this._alpha;
-        // console.log(entity.transform.worldY);
-        // Render image to canvas.
-        context.drawImage(this._image, // image
-        this._crop.offsetX, this._crop.offsetY, this._crop.width, // crop rectangle width
-        this._crop.height, // crop rectangle height
-        this._offsetX, this._offsetY, this._width, // width of drawn image
-        this._height // height of drawn image
-        );
-        // Restore context to original settings
-        context.globalAlpha = contextAlpha;
-        context.translate(-translationX, -translationY);
+        return {
+            x: translationX,
+            y: translationY
+        };
+    }
+    applyContextSettings(renderContext) {
+        let contextAlpha = renderContext.globalAlpha;
+        let translation = this.getTranslation();
+        renderContext.globalAlpha = this._alpha;
+        renderContext.translate(translation.x, translation.y);
+        return {
+            reset() {
+                renderContext.globalAlpha = contextAlpha;
+                renderContext.translate(-translation.x, -translation.y);
+            }
+        };
     }
 }

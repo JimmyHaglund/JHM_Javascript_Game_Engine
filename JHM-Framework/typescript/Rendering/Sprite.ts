@@ -1,19 +1,18 @@
-
 class Sprite implements IRenderable, IDestroyable, IComponent {
-    private _spriteId: string;
-    private _image: HTMLImageElement;
-    private _width: number;
-    private _height: number;
-    private _entity: Entity;
-    private _crop: {
+    protected _spriteId: string;
+    protected _image: HTMLImageElement;
+    protected _width: number;
+    protected _height: number;
+    protected _entity: Entity;
+    protected _crop: {
         width: number,
         height: number,
         offsetX: number,
         offsetY: number
     }
-    private _alpha: number = 1;
-    private _offsetX: number = 0;
-    private _offsetY: number = 0;
+    protected _alpha: number = 1;
+    protected _offsetX: number = 0;
+    protected _offsetY: number = 0;
     private _onDestroy = new Action();
 
     set alpha(value: number) { this._alpha = value; }
@@ -53,13 +52,30 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
         this._entity = entity;
     }
 
-    destroy(): void {
+    public destroy(): void {
         this._onDestroy.invoke();
     }
     // Render image.
-    render(context: CanvasRenderingContext2D) {
+    public render(context: CanvasRenderingContext2D) {
         if (this._image == null) return;
-        let contextAlpha = context.globalAlpha;
+
+        let contextSettings = this.applyContextSettings(context);
+
+        context.drawImage(
+            this._image,
+            this._crop.offsetX,
+            this._crop.offsetY,
+            this._crop.width,
+            this._crop.height,
+            this._offsetX,
+            this._offsetY,
+            this._width,
+            this._height
+        );
+        contextSettings.reset();
+    }
+
+    protected getTranslation(): { x: number, y: number } {
         let worldX = this._entity.transform.worldX;
         let worldY = this._entity.transform.worldY;
         let translationX =
@@ -68,25 +84,24 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
         let translationY =
             worldX * Math.sin(0) +
             worldY * Math.cos(0);
-        // Set context settings
-        context.translate(translationX, translationY);
-        // context.rotate(originRotation);
-        context.globalAlpha = this._alpha;
-        // console.log(entity.transform.worldY);
-        // Render image to canvas.
-        context.drawImage(
-            this._image, // image
-            this._crop.offsetX,
-            this._crop.offsetY,
-            this._crop.width, // crop rectangle width
-            this._crop.height, // crop rectangle height
-            this._offsetX, 
-            this._offsetY,
-            this._width, // width of drawn image
-            this._height // height of drawn image
-        );
-        // Restore context to original settings
-        context.globalAlpha = contextAlpha;
-        context.translate(-translationX, -translationY);
+        return {
+            x: translationX,
+            y: translationY
+        };
+    }
+
+    protected applyContextSettings(renderContext: CanvasRenderingContext2D): { reset(): void } {
+        let contextAlpha = renderContext.globalAlpha;
+        let translation = this.getTranslation();
+        
+        renderContext.globalAlpha = this._alpha;
+        renderContext.translate(translation.x, translation.y);
+
+        return {
+            reset() { 
+                renderContext.globalAlpha = contextAlpha;
+                renderContext.translate(-translation.x, -translation.y);
+            }
+        };
     }
 }
