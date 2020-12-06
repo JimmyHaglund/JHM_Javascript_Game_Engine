@@ -40,10 +40,10 @@ class CapricaMainCharacter {
     }
 
     private SetupInputLog(input: CapricaMovementInput) {
-        input.up.onPressed.add(() => console.log("Up pressed, velocity: " + this._rigidbody.Velocity.y), this);
-        input.up.onReleased.add(() => console.log("Up released"), this);
-        input.right.onPressed.add(() => console.log("Right pressed"), this);
-        input.down.onPressed.add(() => console.log("Down pressed"), this);
-        input.left.onPressed.add(() => console.log("Left pressed"), this);
+        input.Up.OnPressed.add(() => console.log("Up pressed, velocity: " + this._rigidbody.Velocity.y), this);
+        input.Up.OnReleased.add(() => console.log("Up released"), this);
+        input.Right.OnPressed.add(() => console.log("Right pressed"), this);
+        input.Down.OnPressed.add(() => console.log("Down pressed"), this);
+        input.Left.OnPressed.add(() => console.log("Left pressed"), this);
     }
 }

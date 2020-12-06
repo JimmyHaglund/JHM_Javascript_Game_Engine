@@ -27,7 +27,6 @@ class CapricaMovementController {
         let deltaX = this._accelleration * deltaSeconds * this._inputX;
         let deltaY = this._accelleration * deltaSeconds * this._inputY;
         let velocity = this._character.Rigidbody.Velocity;
-        console.log(this._inputY);
         if (velocity.x > this._maxSpeed) {
             velocity.x = this._maxSpeed;
         }
@@ -47,14 +46,14 @@ class CapricaMovementController {
     }
     // TODO: Automatically decelerate when no input is given. Here or in rigidbody.
     InitialiseInput(input) {
-        input.up.onPressed.add(AddInputUp, this);
-        input.right.onPressed.add(AddInputRight, this);
-        input.down.onPressed.add(AddInputDown, this);
-        input.left.onPressed.add(AddInputLeft, this);
-        input.up.onReleased.add(AddInputDown, this);
-        input.right.onReleased.add(AddInputLeft, this);
-        input.down.onReleased.add(AddInputUp, this);
-        input.left.onReleased.add(AddInputRight, this);
+        input.Up.OnPressed.add(AddInputUp, this);
+        input.Right.OnPressed.add(AddInputRight, this);
+        input.Down.OnPressed.add(AddInputDown, this);
+        input.Left.OnPressed.add(AddInputLeft, this);
+        input.Up.OnReleased.add(AddInputDown, this);
+        input.Right.OnReleased.add(AddInputLeft, this);
+        input.Down.OnReleased.add(AddInputUp, this);
+        input.Left.OnReleased.add(AddInputRight, this);
         function AddInputUp() { this.InputY -= 1; }
         function AddInputDown() { this.InputY += 1; }
         function AddInputRight() { this.InputX += 1; }

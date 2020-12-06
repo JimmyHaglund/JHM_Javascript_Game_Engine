@@ -1,9 +1,10 @@
-let movementInput: CapricaMovementInput;
-let gameData: {
+let MovementInput: CapricaMovementInput;
+let GameData: {
   playLoop: Loop,
   render: RenderSpace,
   physics: PhysicsSpace,
-  mainCharacter: CapricaMainCharacter
+  mainCharacter: CapricaMainCharacter,
+  lookController: CapricaLookController
 }
 function CapricaStart() {
   let loop = new Loop(60);
@@ -11,23 +12,25 @@ function CapricaStart() {
   let physicsSpace = new PhysicsSpace(loop);
   let mainCharacter =  new CapricaMainCharacter(50, 50,
     loop, renderSpace, physicsSpace);
-  gameData = {
+  let lookController = new CapricaLookController(OnMouseMoved);
+  GameData = {
     playLoop: loop,
     render: renderSpace,
     physics: physicsSpace,
-    mainCharacter: mainCharacter
+    mainCharacter: mainCharacter,
+    lookController: lookController
   };
   renderSpace.render();
-  movementInput = mainCharacter.Input;
+  MovementInput = mainCharacter.Input;
   console.log("Caprica Started");
 }
 
 function CheckInputPressed(event: KeyboardEvent) {
-  movementInput.CheckPressed(event);
+  MovementInput.CheckPressed(event);
 }
 
 function CheckInputReleased(event: KeyboardEvent) {
-  movementInput.CheckReleased(event);
+  MovementInput.CheckReleased(event);
 }
 
 /*

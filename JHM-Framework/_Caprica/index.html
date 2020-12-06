@@ -9,6 +9,7 @@
   <body onload='CapricaStart()'
   onkeydown = 'CheckInputPressed(event)'
   onkeyup = 'CheckInputReleased(event)'
+  onmousemove = 'MouseMoved(event)'
   >
     <srcImg>
       <img src = '../Images/character_idle.png' id='character_idle' display='none'>
@@ -32,9 +33,12 @@
 
     <script src = "../Javascript/UserInterface/BoxButton.js"></script>
     
-    <script src = "../Javascript/_Caprica/Binding.js"></script>
+    <script src = "../Javascript/Input/MouseMoveAction.js"></script>
+    <script src = "../Javascript/Input/Binding.js"></script>
+
     <script src = "../Javascript/_Caprica/CapricaMovementInput.js"></script>
     <script src = "../Javascript/_Caprica/CapricaMovementController.js"></script>
+    <script src = "../Javascript/_Caprica/CapricaLookController.js"></script>
     <script src = "../Javascript/_Caprica/Composites/CapricaMainCharacter.js"></script>
     
 

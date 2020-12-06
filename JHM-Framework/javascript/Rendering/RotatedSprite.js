@@ -3,6 +3,8 @@ class RotatedSprite extends Sprite {
         super(...arguments);
         this._rotation = 3.14 * 0.25;
     }
+    set Rotation(value) { this._rotation = value; }
+    get Rotation() { return this._rotation; }
     applyContextSettings(renderContext) {
         let contextAlpha = renderContext.globalAlpha;
         let translation = this.getTranslation();
