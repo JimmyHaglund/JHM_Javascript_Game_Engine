@@ -29,7 +29,7 @@ class BoxCollider implements ICollider, IComponent, IDestroyable {
 
         this._onDestroy = new Action();
     }
-    destroy(): void {
+    Destroy(): void {
         this._onDestroy.invoke();
     }
 

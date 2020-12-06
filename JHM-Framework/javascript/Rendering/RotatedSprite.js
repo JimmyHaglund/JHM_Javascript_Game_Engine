@@ -1,7 +1,7 @@
 class RotatedSprite extends Sprite {
     constructor() {
         super(...arguments);
-        this._rotation = 0; //3.14 * 0.25;
+        this._rotation = 3.14 * 0.25;
     }
     applyContextSettings(renderContext) {
         let contextAlpha = renderContext.globalAlpha;
@@ -13,8 +13,8 @@ class RotatedSprite extends Sprite {
         return {
             reset() {
                 renderContext.globalAlpha = contextAlpha;
-                renderContext.translate(-translation.x, -translation.y);
                 renderContext.rotate(-rotation);
+                renderContext.translate(-translation.x, -translation.y);
             }
         };
     }

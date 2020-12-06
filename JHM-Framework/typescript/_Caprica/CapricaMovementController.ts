@@ -1,0 +1,66 @@
+class CapricaMovementController {
+    private _character: CapricaMainCharacter;
+    private _inputX: number = 0;
+    private _inputY: number = 0;
+    private _accelleration: number = 5000;
+    private _maxSpeed:number = 250;
+
+    private get InputX(): number { return this._inputX; }
+    private set InputX(value: number) {
+        this._inputX = value;
+        if (this._inputX > 1) this._inputX = 1;
+        else if (this._inputX < -1) this._inputX = -1;
+    }
+
+    private get InputY(): number { return this._inputY; }
+    private set InputY(value: number) {
+        this._inputY = value;
+        if (this._inputY > 1) this._inputY = 1;
+        else if (this._inputY < -1) this._inputY = -1;
+    }
+
+    constructor(input: CapricaMovementInput, character: CapricaMainCharacter) {
+        this.InitialiseInput(input)
+        this._character = character;
+    }
+
+    public Update(deltaSeconds: number) {
+        let deltaX = this._accelleration * deltaSeconds * this._inputX;
+        let deltaY = this._accelleration * deltaSeconds * this._inputY;
+        let velocity = this._character.Rigidbody.Velocity;
+        console.log(this._inputY);
+        if (velocity.x > this._maxSpeed) {
+            velocity.x = this._maxSpeed;
+        } else if (velocity.x < -this._maxSpeed) {
+            velocity.x = -this._maxSpeed;
+        }
+        if (velocity.y > this._maxSpeed) {
+            velocity.y = this._maxSpeed;
+        } else if (velocity.y < -this._maxSpeed) {
+            velocity.y = -this._maxSpeed;
+        }
+        this._character.Rigidbody.Velocity = { 
+            x: deltaX + velocity.x, 
+            y: deltaY + velocity.y 
+        };
+    }
+    // TODO: Automatically decelerate when no input is given. Here or in rigidbody.
+
+    private InitialiseInput(input: CapricaMovementInput): void {
+        input.up.onPressed.add(AddInputUp, this);
+        input.right.onPressed.add(AddInputRight, this);
+        input.down.onPressed.add(AddInputDown, this);
+        input.left.onPressed.add(AddInputLeft, this);
+
+        input.up.onReleased.add(AddInputDown, this);
+        input.right.onReleased.add(AddInputLeft, this);
+        input.down.onReleased.add(AddInputUp, this);
+        input.left.onReleased.add(AddInputRight, this);
+
+        function AddInputUp(): void { this.InputY -= 1; }
+        function AddInputDown(): void { this.InputY += 1; }
+        function AddInputRight(): void { this.InputX += 1; }
+        function AddInputLeft(): void { this.InputX -= 1; }
+    }
+
+}

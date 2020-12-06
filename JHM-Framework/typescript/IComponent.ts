@@ -1,4 +1,4 @@
 interface IComponent {
-    destroy(): void;
+    Destroy(): void;
     entity: Entity;
 }

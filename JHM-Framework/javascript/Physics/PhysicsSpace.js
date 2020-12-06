@@ -1,46 +1,25 @@
-class PhysicsSpace {
+class PhysicsSpace extends CollisionSpace {
     constructor(loop) {
-        this._actors = [];
-        this._colliders = [];
-        this._loopActionId = -1;
-        this._loopActionId = loop.onUpdate.add(this.update, this);
+        super();
+        this._rigidbodies = [];
+        loop.onUpdate.add(this.Update, this);
     }
-    update(deltaTime) {
-        this._actors.forEach((actor) => {
-            actor.checkCollision(this._colliders);
+    Update(deltaTime) {
+        this._rigidbodies.forEach((actor) => {
+            actor.Update(deltaTime);
+            actor.CheckCollision(this._colliders);
         });
     }
-    addCollider(collider) {
-        let index = this._colliders.indexOf(collider);
-        if (index >= 0)
-            return;
-        collider.onDestroy.add(() => {
-            this.removeCollider(collider);
-        }, this);
-        this._colliders.push(collider);
-    }
-    removeCollider(collider) {
-        let index = this._colliders.indexOf(collider);
-        if (index < 0)
-            return;
-        this._colliders.splice(index, 1);
-    }
-    getColliders() {
-        return this._colliders.slice(0);
-    }
-    addPhysicsActor(actor) {
-        let index = this._actors.indexOf(actor);
+    AddRigidbody(rigidbody) {
+        let index = this._rigidbodies.indexOf(rigidbody);
         if (index < 0) {
-            this._actors.push(actor);
+            this._rigidbodies.push(rigidbody);
         }
     }
-    removePhysicsActor(actor) {
-        let index = this._actors.indexOf(actor);
+    RemoveRigidbody(rigidbody) {
+        let index = this._rigidbodies.indexOf(rigidbody);
         if (index < 0)
             return;
-        this._actors.splice(index, 1);
-    }
-    getPhysicsActors() {
-        return this._actors.slice(0);
+        this._rigidbodies.splice(index, 1);
     }
 }

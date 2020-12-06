@@ -1,14 +1,9 @@
-class MovementInput {
+class CapricaMovementInput {
     constructor() {
         this.upBinding = new Binding("KeyW");
         this.rightBinding = new Binding("KeyD");
         this.downBinding = new Binding("KeyS");
         this.leftBinding = new Binding("KeyA");
-        this.up.onPressed.push(() => console.log("Up pressed"));
-        this.up.onReleased.push(() => console.log("Up released"));
-        this.right.onPressed.push(() => console.log("Right pressed"));
-        this.down.onPressed.push(() => console.log("Down pressed"));
-        this.left.onPressed.push(() => console.log("Left pressed"));
     }
     get up() { return this.upBinding; }
     get right() { return this.rightBinding; }
@@ -22,5 +17,8 @@ class MovementInput {
     }
     CheckReleased(event) {
         this.up.checkReleased(event);
+        this.right.checkReleased(event);
+        this.down.checkReleased(event);
+        this.left.checkReleased(event);
     }
 }

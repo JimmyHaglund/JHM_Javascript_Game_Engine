@@ -52,7 +52,7 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
         this._entity = entity;
     }
 
-    public destroy(): void {
+    public Destroy(): void {
         this._onDestroy.invoke();
     }
     // Render image.

@@ -1,17 +1,25 @@
-let input = new MovementInput();
+let movementInput;
+let gameData;
 function CapricaStart() {
-    let capricaLoop = new Loop(60);
-    let renderSpace = new RenderSpace(capricaLoop, 800, 600);
-    let physicsSpace = new PhysicsSpace(capricaLoop);
-    let mainCharacter = new CapricaMainCharacter(50, 50, capricaLoop, renderSpace, physicsSpace);
+    let loop = new Loop(60);
+    let renderSpace = new RenderSpace(loop, 800, 600);
+    let physicsSpace = new PhysicsSpace(loop);
+    let mainCharacter = new CapricaMainCharacter(50, 50, loop, renderSpace, physicsSpace);
+    gameData = {
+        playLoop: loop,
+        render: renderSpace,
+        physics: physicsSpace,
+        mainCharacter: mainCharacter
+    };
     renderSpace.render();
+    movementInput = mainCharacter.Input;
     console.log("Caprica Started");
 }
 function CheckInputPressed(event) {
-    input.CheckPressed(event); // CheckMovementInput(event);
+    movementInput.CheckPressed(event);
 }
 function CheckInputReleased(event) {
-    input.CheckReleased(event);
+    movementInput.CheckReleased(event);
 }
 /*
 Canvas settings for disabling anti alisasing

@@ -10,7 +10,7 @@ class BoxButton {
         this._entity = new Entity(left, top);
         this._sprite = new Sprite(this._entity, normalSprite);
         this._collider = new BoxCollider(this._entity, width, height);
-        physicsSpace.addCollider(this._collider);
+        physicsSpace.AddCollider(this._collider);
         this._sprite.width = width;
         this._sprite.height = height;
         // this._sprite.offsetX = width * 0.5;

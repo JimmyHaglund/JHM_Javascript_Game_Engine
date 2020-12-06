@@ -2,8 +2,8 @@ class Binding {
     constructor(main = "", alternate = "") {
         this.mainBindingCode = "";
         this.alternateBindingCode = "";
-        this.onPressed = [];
-        this.onReleased = [];
+        this.onPressed = new Action();
+        this.onReleased = new Action();
         this.isDown = false;
         this.mainBindingCode = main;
         this.alternateBindingCode = alternate;
@@ -36,13 +36,9 @@ class Binding {
         }
     }
     notifyPressed() {
-        this.onPressed.forEach(response => {
-            response();
-        });
+        this.onPressed.invoke();
     }
     notifyReleased() {
-        this.onReleased.forEach(response => {
-            response();
-        });
+        this.onReleased.invoke();
     }
 }

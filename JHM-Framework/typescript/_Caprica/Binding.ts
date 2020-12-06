@@ -2,8 +2,8 @@ class Binding {
     public mainBindingCode: string = "";
     public alternateBindingCode: string = "";
 
-    public onPressed: (() => void)[] = [];
-    public onReleased: (() => void)[] = [];
+    public onPressed = new Action();
+    public onReleased = new Action();
 
     private isDown: boolean = false;
 
@@ -40,14 +40,10 @@ class Binding {
     }
 
     private notifyPressed(): void {
-        this.onPressed.forEach(response => {
-            response();
-        });
+        this.onPressed.invoke();
     }
 
     private notifyReleased(): void {
-        this.onReleased.forEach(response => {
-            response();
-        });
+        this.onReleased.invoke();
     }
 }
