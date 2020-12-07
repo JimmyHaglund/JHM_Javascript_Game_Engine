@@ -24,7 +24,6 @@ function CapricaStart() {
   MovementInput = mainCharacter.Input;
   console.log("Caprica Started");
 }
-
 function CheckInputPressed(event: KeyboardEvent) {
   MovementInput.CheckPressed(event);
 }

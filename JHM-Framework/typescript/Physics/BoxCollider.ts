@@ -45,18 +45,18 @@ class BoxCollider implements ICollider, IComponent, IDestroyable {
         let intersectVertical: any = null;
         let intersectHorizontal: any = null;
         // Only check for collision if ray has a chance of hitting the box
-        let pointingAtBox = (corner.x > x0 && xDir > 0 || corner.x < x0 && xDir < 0 || insideRange(x0, this.left, this.right))
-            && (corner.y > y0 && yDir > 0 || corner.y < y0 && yDir < 0 || insideRange(y0, this.top, this.bottom));
+        let pointingAtBox = (corner.x > x0 && xDir > 0 || corner.x < x0 && xDir < 0 || Algebra.InsideRange(x0, this.left, this.right))
+            && (corner.y > y0 && yDir > 0 || corner.y < y0 && yDir < 0 || Algebra.InsideRange(y0, this.top, this.bottom));
         if (pointingAtBox){
-            intersectVertical = getLineOverlapPoint(corner.x, corner.y, 100000, x0, y0, lean);
-            intersectHorizontal = getLineOverlapPoint(corner.x, corner.y, 0, x0, y0, lean);
+            intersectVertical = Algebra.GetLineOverlapPoint(corner.x, corner.y, 100000, x0, y0, lean);
+            intersectHorizontal = Algebra.GetLineOverlapPoint(corner.x, corner.y, 0, x0, y0, lean);
         }
         let foundHorizontal = false;
         let foundVertical = false;
         let intersectPoint = null;
 
         if (intersectHorizontal != null
-            && insideRange(intersectHorizontal.x, this.left, this.right)) {
+            && Algebra.InsideRange(intersectHorizontal.x, this.left, this.right)) {
             foundHorizontal = true;
             intersectPoint = intersectHorizontal;
             intersectHorizontal.normalX = 0;
@@ -67,7 +67,7 @@ class BoxCollider implements ICollider, IComponent, IDestroyable {
         }
 
         if (intersectVertical != null
-            && insideRange(intersectVertical.y, this.top, this.bottom)) {
+            && Algebra.InsideRange(intersectVertical.y, this.top, this.bottom)) {
             foundVertical = true;
             intersectPoint = intersectVertical;
             intersectVertical.normalY = 0;
@@ -78,8 +78,8 @@ class BoxCollider implements ICollider, IComponent, IDestroyable {
         }
 
         if (foundHorizontal && foundVertical) {
-            if (squareDistance(intersectVertical.x, intersectVertical.y, x0, y0) <
-                squareDistance(intersectHorizontal.x, intersectHorizontal.y, x0, y0)) {
+            if (Algebra.SquareDistance(intersectVertical.x, intersectVertical.y, x0, y0) <
+            Algebra.SquareDistance(intersectHorizontal.x, intersectHorizontal.y, x0, y0)) {
                 intersectPoint = intersectVertical;
             } else {
                 intersectPoint = intersectHorizontal;
