@@ -29,7 +29,7 @@ class RayRender {
     }
     get onDestroy() { return this._onDestroy; }
     Destroy() { this._onDestroy.invoke(); }
-    render(context) {
+    Render(context) {
         context.strokeStyle = this._color;
         context.moveTo(this._x1, this._y1);
         context.lineTo(this._x2, this._y2);

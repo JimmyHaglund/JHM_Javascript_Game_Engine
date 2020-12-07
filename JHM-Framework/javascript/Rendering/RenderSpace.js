@@ -57,7 +57,7 @@ class RenderSpace {
         this.paintBackground();
         this._layers.forEach((layer) => {
             layer.renderables.forEach((renderable) => {
-                renderable.render(this._context);
+                renderable.Render(this._context);
             });
         });
     }

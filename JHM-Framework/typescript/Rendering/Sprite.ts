@@ -3,7 +3,7 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
     protected _image: HTMLImageElement;
     protected _width: number;
     protected _height: number;
-    protected _entity: Entity;
+    protected _transform: ITransform;
     protected _crop: {
         width: number,
         height: number,
@@ -30,9 +30,9 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
     set width(value: number) { this._width = value; }
     get height(): number { return this._width; }
     set height(value: number) { this._height = value; }
-    get entity(): Entity { return this._entity; }
+    get Transform(): ITransform { return this._transform; }
 
-    constructor(entity: Entity, spriteId: string = "") {
+    constructor(transform: ITransform, spriteId: string = "") {
         this._spriteId = spriteId;
         this._image = document.getElementById(spriteId) as HTMLImageElement;
         if (this._image != null) {
@@ -49,18 +49,34 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
             console.log("Warning: Sprite component with sprite id",
                 spriteId, "failed to find an image.");
         }
-        this._entity = entity;
+        this._transform = transform;
     }
 
     public Destroy(): void {
         this._onDestroy.invoke();
     }
     // Render image.
-    public render(context: CanvasRenderingContext2D) {
+    public Render(context: CanvasRenderingContext2D):void {
         if (this._image == null) return;
 
-        let contextSettings = this.applyContextSettings(context);
+        let contextSettings = {
+            contextAlpha: context.globalAlpha,
+            translation: this.Translation,
+            apply: function () {
+                context.globalAlpha = this._alpha;
+                context.translate(contextSettings.translation.x, contextSettings.translation.y);
+            },
+            reset: function () {
+                context.globalAlpha = contextSettings.contextAlpha;
+                context.translate(-contextSettings.translation.x, -contextSettings.translation.y);
+            }
+        }
+        contextSettings.apply();
+        this.DrawSprite(context);
+        contextSettings.reset();
+    }
 
+    protected DrawSprite(context: CanvasRenderingContext2D): void {
         context.drawImage(
             this._image,
             this._crop.offsetX,
@@ -72,36 +88,12 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
             this._width,
             this._height
         );
-        contextSettings.reset();
     }
 
-    protected getTranslation(): { x: number, y: number } {
-        let worldX = this._entity.transform.worldX;
-        let worldY = this._entity.transform.worldY;
-        let translationX =
-            worldX * Math.cos(0) - // If we were to rotate render space origin
-            worldY * Math.sin(0);
-        let translationY =
-            worldX * Math.sin(0) +
-            worldY * Math.cos(0);
+    protected get Translation(): { x: number, y: number } {
         return {
-            x: translationX,
-            y: translationY
-        };
-    }
-
-    protected applyContextSettings(renderContext: CanvasRenderingContext2D): { reset(): void } {
-        let contextAlpha = renderContext.globalAlpha;
-        let translation = this.getTranslation();
-        
-        renderContext.globalAlpha = this._alpha;
-        renderContext.translate(translation.x, translation.y);
-
-        return {
-            reset() { 
-                renderContext.globalAlpha = contextAlpha;
-                renderContext.translate(-translation.x, -translation.y);
-            }
-        };
+            x: this._transform.worldX,
+            y: this._transform.worldY
+        }
     }
 }

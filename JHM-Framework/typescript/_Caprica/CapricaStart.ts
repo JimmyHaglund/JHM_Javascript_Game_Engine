@@ -12,7 +12,7 @@ function CapricaStart() {
   let physicsSpace = new PhysicsSpace(loop);
   let mainCharacter =  new CapricaMainCharacter(50, 50,
     loop, renderSpace, physicsSpace);
-  let lookController = new CapricaLookController(OnMouseMoved);
+  let lookController = new CapricaLookController(OnMouseMoved, mainCharacter);
   GameData = {
     playLoop: loop,
     render: renderSpace,

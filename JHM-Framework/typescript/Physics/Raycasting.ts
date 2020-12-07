@@ -37,7 +37,7 @@ class RayRender implements IRenderable, IDestroyable {
     }
     Destroy() { this._onDestroy.invoke(); }
 
-    render(context: CanvasRenderingContext2D) {
+    Render(context: CanvasRenderingContext2D) {
         context.strokeStyle = this._color;
         context.moveTo(this._x1, this._y1);
         context.lineTo(this._x2, this._y2);

@@ -32,9 +32,9 @@ class Entity implements IDestroyable, ITransform {
     get y(): number { return this._transform.y; }
     set y(value: number) { this._transform.y = value; }
 
-    get worldX(): number { return this._transform.x; }
-    set worldX(value: number) { this._transform.x = value; }
-    get worldY(): number { return this._transform.worldX; }
+    get worldX(): number { return this._transform.worldX; }
+    set worldX(value: number) { this._transform.worldX = value; }
+    get worldY(): number { return this._transform.worldY; }
     set worldY(value: number) { this._transform.worldY = value; }
 
     get rotation(): number { return this._transform.rotation; }

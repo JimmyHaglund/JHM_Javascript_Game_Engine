@@ -30,9 +30,9 @@ class Entity {
     set x(value) { this._transform.x = value; }
     get y() { return this._transform.y; }
     set y(value) { this._transform.y = value; }
-    get worldX() { return this._transform.x; }
-    set worldX(value) { this._transform.x = value; }
-    get worldY() { return this._transform.worldX; }
+    get worldX() { return this._transform.worldX; }
+    set worldX(value) { this._transform.worldX = value; }
+    get worldY() { return this._transform.worldY; }
     set worldY(value) { this._transform.worldY = value; }
     get rotation() { return this._transform.rotation; }
     set rotation(value) { this._transform.rotation = value; }

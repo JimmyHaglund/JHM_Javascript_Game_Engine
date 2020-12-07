@@ -1,24 +1,25 @@
 class RotatedSprite extends Sprite {
-    private _rotation: number = 3.14 * 0.25;
+    // private _rotation: number = 3.14 * 0.25;
+    public get Rotation(): number { return this._transform.rotation; }
 
-    public set Rotation(value: number) { this._rotation = value; }
-    public get Rotation(): number { return this._rotation; }
-
-    protected applyContextSettings(renderContext: CanvasRenderingContext2D): { reset(): void } {
-        let contextAlpha = renderContext.globalAlpha;
-        let translation = this.getTranslation();
-        let rotation = this._rotation;
-
-        renderContext.globalAlpha = this._alpha;
-        renderContext.translate(translation.x, translation.y);
-        renderContext.rotate(rotation);
-
-        return {
-            reset() {
-                renderContext.globalAlpha = contextAlpha;
-                renderContext.rotate(-rotation);
-                renderContext.translate(-translation.x, -translation.y);
+    public Render(context: CanvasRenderingContext2D) {
+        let contextSettings = {
+            contextAlpha: context.globalAlpha,
+            translation: this.Translation,
+            rotation: -this.Rotation,
+            apply: function () {
+                context.globalAlpha = this._alpha;
+                context.translate(contextSettings.translation.x, contextSettings.translation.y);
+                context.rotate(contextSettings.rotation);
+            },
+            reset: function () {
+                context.globalAlpha = contextSettings.contextAlpha;
+                context.rotate(-contextSettings.rotation);
+                context.translate(-contextSettings.translation.x, -contextSettings.translation.y);
             }
-        };
+        }
+        contextSettings.apply();
+        this.DrawSprite(context);
+        contextSettings.reset();
     }
 }

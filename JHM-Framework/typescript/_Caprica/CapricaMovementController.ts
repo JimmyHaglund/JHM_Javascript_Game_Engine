@@ -25,10 +25,13 @@ class CapricaMovementController {
     }
 
     public Update(deltaSeconds: number) {
-        let deltaX = this._accelleration * deltaSeconds * this._inputX;
-        let deltaY = this._accelleration * deltaSeconds * this._inputY;
-        let velocity = this._character.Rigidbody.Velocity;
-
+        let impulseX = this._accelleration * deltaSeconds * this._inputX;
+        let impulseY = this._accelleration * deltaSeconds * this._inputY;
+        let lastVelocity = this._character.Rigidbody.Velocity;
+        let velocity = {
+            x: lastVelocity.x + impulseX,
+            y: lastVelocity.y + impulseY
+        };
         if (velocity.x > this._maxSpeed) {
             velocity.x = this._maxSpeed;
         } else if (velocity.x < -this._maxSpeed) {
@@ -39,10 +42,7 @@ class CapricaMovementController {
         } else if (velocity.y < -this._maxSpeed) {
             velocity.y = -this._maxSpeed;
         }
-        this._character.Rigidbody.Velocity = { 
-            x: deltaX + velocity.x, 
-            y: deltaY + velocity.y 
-        };
+        this._character.Rigidbody.Velocity = velocity;
     }
     // TODO: Automatically decelerate when no input is given. Here or in rigidbody.
 

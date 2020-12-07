@@ -1,5 +1,5 @@
 class Sprite {
-    constructor(entity, spriteId = "") {
+    constructor(transform, spriteId = "") {
         this._alpha = 1;
         this._offsetX = 0;
         this._offsetY = 0;
@@ -19,7 +19,7 @@ class Sprite {
         else {
             console.log("Warning: Sprite component with sprite id", spriteId, "failed to find an image.");
         }
-        this._entity = entity;
+        this._transform = transform;
     }
     set alpha(value) { this._alpha = value; }
     get alpha() { return this._alpha; }
@@ -37,40 +37,37 @@ class Sprite {
     set width(value) { this._width = value; }
     get height() { return this._width; }
     set height(value) { this._height = value; }
-    get entity() { return this._entity; }
+    get Transform() { return this._transform; }
     Destroy() {
         this._onDestroy.invoke();
     }
     // Render image.
-    render(context) {
+    Render(context) {
         if (this._image == null)
             return;
-        let contextSettings = this.applyContextSettings(context);
-        context.drawImage(this._image, this._crop.offsetX, this._crop.offsetY, this._crop.width, this._crop.height, this._offsetX, this._offsetY, this._width, this._height);
+        let contextSettings = {
+            contextAlpha: context.globalAlpha,
+            translation: this.Translation,
+            apply: function () {
+                context.globalAlpha = this._alpha;
+                context.translate(contextSettings.translation.x, contextSettings.translation.y);
+            },
+            reset: function () {
+                context.globalAlpha = contextSettings.contextAlpha;
+                context.translate(-contextSettings.translation.x, -contextSettings.translation.y);
+            }
+        };
+        contextSettings.apply();
+        this.DrawSprite(context);
         contextSettings.reset();
     }
-    getTranslation() {
-        let worldX = this._entity.transform.worldX;
-        let worldY = this._entity.transform.worldY;
-        let translationX = worldX * Math.cos(0) - // If we were to rotate render space origin
-            worldY * Math.sin(0);
-        let translationY = worldX * Math.sin(0) +
-            worldY * Math.cos(0);
-        return {
-            x: translationX,
-            y: translationY
-        };
+    DrawSprite(context) {
+        context.drawImage(this._image, this._crop.offsetX, this._crop.offsetY, this._crop.width, this._crop.height, this._offsetX, this._offsetY, this._width, this._height);
     }
-    applyContextSettings(renderContext) {
-        let contextAlpha = renderContext.globalAlpha;
-        let translation = this.getTranslation();
-        renderContext.globalAlpha = this._alpha;
-        renderContext.translate(translation.x, translation.y);
+    get Translation() {
         return {
-            reset() {
-                renderContext.globalAlpha = contextAlpha;
-                renderContext.translate(-translation.x, -translation.y);
-            }
+            x: this._transform.worldX,
+            y: this._transform.worldY
         };
     }
 }

@@ -1,11 +1,26 @@
 class CapricaLookController {
-    constructor(mouseMoveAction:Action) {
+    private _sprite:RotatedSprite;
+    private _entity:Entity;
+
+    constructor(mouseMoveAction:Action, character:CapricaMainCharacter) {
         mouseMoveAction.add(this.UpdateMousePosition, this);
+        this._sprite = character.Sprite;
+        this._entity = character.Entity;
     }
 
     private UpdateMousePosition(mouseEvent:MouseEvent):void {
         let mouseX = mouseEvent.x;
         let mouseY = mouseEvent.y;
+        this._entity.transform.rotation = this.GetLookRotation(mouseX, mouseY);
+    }
+
+    private GetLookRotation(mouseX:number, mouseY:number):number {
+        let right = Vector.Right;
+        let entityX = this._entity.x;
+        let entityY = this._entity.y;
+        let entityToMouseX = mouseX - entityX;
+        let entityToMouseY = mouseY - entityY;
+        return Algebra.AngleFromToCounterClockwise(right.x, right.y, entityToMouseX, -entityToMouseY);
     }
     
     private LogMousePosition(x:number, y:number) {
