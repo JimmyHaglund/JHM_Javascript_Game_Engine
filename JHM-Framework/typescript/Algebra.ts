@@ -28,6 +28,14 @@ let algebra = {
         return Math.sqrt(x * x + y * y);
     },
 
+    normalize(x: number, y: number): { x: number, y: number } {
+        let magnitude = algebra.magnitude(x, y);
+        return {
+            x: x / magnitude,
+            y: y / magnitude
+        };
+    },
+
     dot(x1: number, y1: number, x2: number, y2: number): number {
         return x1 * x2 + y1 * y2;
     },
@@ -41,10 +49,10 @@ let algebra = {
         return Math.acos(cosineOfAngle);
     },
 
-    angleFromToCounterClockwise(x1:number, y1:number, x2:number, y2:number): number {
+    angleFromToCounterClockwise(x1: number, y1: number, x2: number, y2: number): number {
         let right = vector.right;
         let pi = Math.PI;
-        let getRotation = function(x:number, y:number) {
+        let getRotation = function (x: number, y: number) {
             let angleFromRight = algebra.angleBetween(right.x, right.y, x, y);
             if (y < 0) return 2 * pi - angleFromRight;
             return angleFromRight;

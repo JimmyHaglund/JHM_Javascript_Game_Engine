@@ -23,6 +23,13 @@ let algebra = {
             return 0;
         return Math.sqrt(x * x + y * y);
     },
+    normalize(x, y) {
+        let magnitude = algebra.magnitude(x, y);
+        return {
+            x: x / magnitude,
+            y: y / magnitude
+        };
+    },
     dot(x1, y1, x2, y2) {
         return x1 * x2 + y1 * y2;
     },

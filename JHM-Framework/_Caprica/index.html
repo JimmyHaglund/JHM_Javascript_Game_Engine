@@ -10,6 +10,8 @@
   onkeydown = 'checkInputPressed(event)'
   onkeyup = 'checkInputReleased(event)'
   onmousemove = 'mouseMoved(event)'
+  onmousedown='mouseDown(event)'
+  onmouseup='mouseUp(event)'
   >
     <srcImg>
       <img src = './Sprites/MainCharacter.png' id='main_character' display='none'>
@@ -36,6 +38,7 @@
 
     <script src = "../Javascript/UserInterface/BoxButton.js"></script>
     
+    <script src = "../Javascript/Input/MouseClickAction.js"></script>
     <script src = "../Javascript/Input/MouseMoveAction.js"></script>
     <script src = "../Javascript/Input/Binding.js"></script>
 
@@ -43,6 +46,8 @@
     <script src = "../Javascript/_Caprica/CapricaMovementController.js"></script>
     <script src = "../Javascript/_Caprica/CapricaLookController.js"></script>
     <script src = "../Javascript/_Caprica/Composites/CapricaMainCharacter.js"></script>
+    <script src = "../Javascript/_Caprica/AimConeRenderer.js"></script>
+    <script src = "../Javascript/_Caprica/CapricaAimConeController.js"></script>
     
 
     <div id = 'master'>

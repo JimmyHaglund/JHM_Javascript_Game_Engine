@@ -4,6 +4,7 @@ class CapricaMainCharacter {
         this.initialisePhysics(this._entity, physics);
         this.initialiseRendering(this._entity, renderSpace);
         this.initialiseController(loop);
+        this.initialiseAimCone(loop, renderSpace);
     }
     get entity() { return this._entity; }
     get rigidbody() { return this._rigidbody; }
@@ -28,6 +29,10 @@ class CapricaMainCharacter {
         this._input = new CapricaMovementInput();
         this._controller = new CapricaMovementController(this._input, this);
         loop.onUpdate.add(this._controller.update, this._controller);
+    }
+    initialiseAimCone(loop, renderSpace) {
+        this._lookCone = new AimConeRenderer(renderSpace, 300);
+        this._lookController = new AimConeController(loop, this._entity.transform, this._lookCone);
     }
     setupInputLog(input) {
         input.Up.onPressed.add(() => console.log("Up pressed, velocity: " + this._rigidbody.velocity.y), this);
