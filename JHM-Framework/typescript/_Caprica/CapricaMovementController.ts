@@ -6,40 +6,40 @@ class CapricaMovementController {
     private _maxSpeed: number = 250;
     private _minimumSpeed = 50;
 
-    private get InputX(): number { return this._inputX; }
-    private set InputX(value: number) {
+    private get inputX(): number { return this._inputX; }
+    private set inputX(value: number) {
         this._inputX = value;
         if (this._inputX > 1) this._inputX = 1;
         else if (this._inputX < -1) this._inputX = -1;
     }
 
-    private get InputY(): number { return this._inputY; }
-    private set InputY(value: number) {
+    private get inputY(): number { return this._inputY; }
+    private set inputY(value: number) {
         this._inputY = value;
         if (this._inputY > 1) this._inputY = 1;
         else if (this._inputY < -1) this._inputY = -1;
     }
 
     constructor(input: CapricaMovementInput, character: CapricaMainCharacter) {
-        this.InitialiseInput(input)
+        this.initialiseInput(input)
         this._character = character;
     }
 
-    public Update(deltaSeconds: number) {
+    public update(deltaSeconds: number) {
         let impulseX = this._accelleration * deltaSeconds * this._inputX;
         let impulseY = this._accelleration * deltaSeconds * this._inputY;
-        let lastVelocity = this._character.Rigidbody.Velocity;
+        let lastVelocity = this._character.rigidbody.velocity;
         let velocity = {
-            x: this.ClampMaxSpeed(lastVelocity.x + impulseX),
-            y: this.ClampMaxSpeed(lastVelocity.y + impulseY)
+            x: this.clampMaxSpeed(lastVelocity.x + impulseX),
+            y: this.clampMaxSpeed(lastVelocity.y + impulseY)
         };
-        velocity = this.ApplyDrag(velocity.x, velocity.y, deltaSeconds);
+        velocity = this.applyDrag(velocity.x, velocity.y, deltaSeconds);
         // velocity.x = this.ClampMinSpeed(velocity.x);
         // velocity.y = this.ClampMaxSpeed(velocity.y);
-        this._character.Rigidbody.Velocity = velocity;
+        this._character.rigidbody.velocity = velocity;
     }
 
-    private ClampMaxSpeed(speed:number):number {
+    private clampMaxSpeed(speed:number):number {
         if (speed > this._maxSpeed) {
             speed = this._maxSpeed;
         } else if (speed < -this._maxSpeed) {
@@ -48,17 +48,17 @@ class CapricaMovementController {
         return speed;
     }
 
-    private ClampMinSpeed(speed:number):number{
+    private clampMinSpeed(speed:number):number{
         if (Math.abs(speed) < this._minimumSpeed) return 0;
         return speed;
     }
 
-    private ApplyDrag(velocityX:number, velocityY:number, deltaSeconds: number): {x:number, y:number} {
+    private applyDrag(velocityX:number, velocityY:number, deltaSeconds: number): {x:number, y:number} {
         if (this._inputX == 0) {
-            velocityX -= this.GetDrag(velocityX, deltaSeconds);
+            velocityX -= this.getDrag(velocityX, deltaSeconds);
         }
         if (this._inputY == 0) {
-            velocityY -= this.GetDrag(velocityY, deltaSeconds);
+            velocityY -= this.getDrag(velocityY, deltaSeconds);
         }
         return {
             x:velocityX,
@@ -66,25 +66,24 @@ class CapricaMovementController {
         };
     }
 
-    private GetDrag(speed: number, deltaSeconds: number): number {
+    private getDrag(speed: number, deltaSeconds: number): number {
         return speed * deltaSeconds * 5;
     }
 
-    private InitialiseInput(input: CapricaMovementInput): void {
-        input.Up.OnPressed.add(AddInputUp, this);
-        input.Right.OnPressed.add(AddInputRight, this);
-        input.Down.OnPressed.add(AddInputDown, this);
-        input.Left.OnPressed.add(AddInputLeft, this);
+    private initialiseInput(input: CapricaMovementInput): void {
+        input.Up.onPressed.add(addInputUp, this);
+        input.Right.onPressed.add(addInputRight, this);
+        input.Down.onPressed.add(addInputDown, this);
+        input.Left.onPressed.add(addInputLeft, this);
 
-        input.Up.OnReleased.add(AddInputDown, this);
-        input.Right.OnReleased.add(AddInputLeft, this);
-        input.Down.OnReleased.add(AddInputUp, this);
-        input.Left.OnReleased.add(AddInputRight, this);
+        input.Up.onReleased.add(addInputDown, this);
+        input.Right.onReleased.add(addInputLeft, this);
+        input.Down.onReleased.add(addInputUp, this);
+        input.Left.onReleased.add(addInputRight, this);
 
-        function AddInputUp(): void { this.InputY -= 1; }
-        function AddInputDown(): void { this.InputY += 1; }
-        function AddInputRight(): void { this.InputX += 1; }
-        function AddInputLeft(): void { this.InputX -= 1; }
+        function addInputUp(): void { this.InputY -= 1; }
+        function addInputDown(): void { this.InputY += 1; }
+        function addInputRight(): void { this.InputX += 1; }
+        function addInputLeft(): void { this.InputX -= 1; }
     }
-
 }

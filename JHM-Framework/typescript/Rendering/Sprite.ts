@@ -56,12 +56,12 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
         this._onDestroy.invoke();
     }
     // Render image.
-    public Render(context: CanvasRenderingContext2D):void {
+    public render(context: CanvasRenderingContext2D):void {
         if (this._image == null) return;
 
         let contextSettings = {
             contextAlpha: context.globalAlpha,
-            translation: this.Translation,
+            translation: this.translation,
             apply: function () {
                 context.globalAlpha = this._alpha;
                 context.translate(contextSettings.translation.x, contextSettings.translation.y);
@@ -72,11 +72,11 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
             }
         }
         contextSettings.apply();
-        this.DrawSprite(context);
+        this.drawSprite(context);
         contextSettings.reset();
     }
 
-    protected DrawSprite(context: CanvasRenderingContext2D): void {
+    protected drawSprite(context: CanvasRenderingContext2D): void {
         context.drawImage(
             this._image,
             this._crop.offsetX,
@@ -90,7 +90,7 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
         );
     }
 
-    protected get Translation(): { x: number, y: number } {
+    protected get translation(): { x: number, y: number } {
         return {
             x: this._transform.worldX,
             y: this._transform.worldY

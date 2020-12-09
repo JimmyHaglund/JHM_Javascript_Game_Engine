@@ -7,9 +7,9 @@ class MousePointer implements IPhysicsActor {
     private _onDestroy: Action = new Action();
 
     get onDestroy() { return this._onDestroy; }
-    get OnCollisionEnter(): Action { return null; }
-    get OnCollisionExit(): Action { return null; }
-    get OnCollisionStay(): Action { return null; }
+    get onCollisionEnter(): Action { return null; }
+    get onCollisionExit(): Action { return null; }
+    get onCollisionStay(): Action { return null; }
 
     constructor(mouseInput: MouseInput, loop: ILoop, physicsSpace: PhysicsSpace) {
         let mouseDownId = mouseInput.onMouseDown.add(() => {
@@ -37,7 +37,7 @@ class MousePointer implements IPhysicsActor {
     addButton(button: BoxButton) {
         this._buttonMap.set(button.collider, button);
     }
-    public CheckCollision(colliders: ICollider[]): void {
+    public checkCollision(colliders: ICollider[]): void {
         colliders.forEach(collider => {
             let button = this._buttonMap.get(collider) as BoxButton;
             if (button != undefined) {

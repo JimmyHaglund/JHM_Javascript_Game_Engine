@@ -24,11 +24,11 @@ class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, IDestroya
         lastUpdateCount: number
     }[] = [];
     */
-    public set Velocity(value: { x: number, y: number }) { this._velocity = value; }
-    public get Velocity() { return this._velocity; }
-    public get OnCollisionEnter(): Action { return this._onCollisionEnter; }
-    public get OnCollisionExit(): Action { return this._onCollisionExit; }
-    public get OnCollisionStay(): Action { return this._onCollisionStay; }
+    public set velocity(value: { x: number, y: number }) { this._velocity = value; }
+    public get velocity() { return this._velocity; }
+    public get onCollisionEnter(): Action { return this._onCollisionEnter; }
+    public get onCollisionExit(): Action { return this._onCollisionExit; }
+    public get onCollisionStay(): Action { return this._onCollisionStay; }
     public get onDestroy() { return this._onDestroy; }
     public get entity() { return this._transform; }
 
@@ -39,12 +39,12 @@ class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, IDestroya
         this._drag = new PercentageDrag(5);
     }
 
-    public Update(deltaTime: number): void {
+    public update(deltaTime: number): void {
         // this._deltaTime = deltaTime;
         if (this.dragEnabled) {
-            this.ApplyDrag(deltaTime);
+            this.applyDrag(deltaTime);
         }
-        this.Move(deltaTime);
+        this.move(deltaTime);
     }
 
     public destroy(): void {
@@ -52,7 +52,7 @@ class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, IDestroya
         this._onDestroy.invoke();
     }
 
-    public CheckCollision(colliders: ICollider[]): void {
+    public checkCollision(colliders: ICollider[]): void {
         colliders.forEach(collider => {
             if (collider.overlapsPoint(this._transform.x, this._transform.y)) {
                 let x0 = this._previousX;
@@ -75,12 +75,12 @@ class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, IDestroya
         });
     }
 
-    public SetDragProfile(drag:IDragProfile) {
+    public setDragProfile(drag:IDragProfile) {
         if (drag == null) return;
         this._drag = drag;
     }
 
-    private Move(deltaTime: number): void {
+    private move(deltaTime: number): void {
         if (deltaTime == undefined || deltaTime <= 0) return;
         this._previousX = this._transform.x;
         this._previousY = this._transform.y;
@@ -88,8 +88,8 @@ class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, IDestroya
         this._transform.y += deltaTime * this._velocity.y;
     }
 
-    private ApplyDrag(deltaTime: number): void {
-        let drag = this._drag.GetDrag(this._velocity.x, this._velocity.y);
+    private applyDrag(deltaTime: number): void {
+        let drag = this._drag.getDrag(this._velocity.x, this._velocity.y);
         this._velocity.x -= drag.dragX * deltaTime;
         this._velocity.y -= drag.dragY * deltaTime;
     }

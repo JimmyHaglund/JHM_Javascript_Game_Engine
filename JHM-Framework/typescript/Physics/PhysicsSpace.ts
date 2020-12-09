@@ -8,8 +8,8 @@ class PhysicsSpace extends CollisionSpace {
 
     update(deltaTime: number) {
         this._rigidbodies.forEach((actor) => {
-            actor.Update(deltaTime);
-           actor.CheckCollision(this._colliders); 
+            actor.update(deltaTime);
+           actor.checkCollision(this._colliders); 
         });
     }
    

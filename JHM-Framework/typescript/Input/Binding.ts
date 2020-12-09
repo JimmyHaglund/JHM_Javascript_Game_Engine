@@ -1,48 +1,48 @@
 class Binding {
-    public MainBindingCode: string = "";
-    public AlternateBindingCode: string = "";
-    public OnPressed = new Action();
-    public OnReleased = new Action();
+    public mainBindingCode: string = "";
+    public alternateBindingCode: string = "";
+    public onPressed = new Action();
+    public onReleased = new Action();
 
     private _isDown: boolean = false;
 
     constructor(main: string = "", alternate: string = "") {
-        this.MainBindingCode = main;
-        this.AlternateBindingCode = alternate;
+        this.mainBindingCode = main;
+        this.alternateBindingCode = alternate;
     }
 
-    public CheckPressed(event: KeyboardEvent) {
+    public checkPressed(event: KeyboardEvent) {
         if (this._isDown) return;
         let keyCode = event.code;
         switch (keyCode) {
-            case this.MainBindingCode:
-            case this.AlternateBindingCode:
+            case this.mainBindingCode:
+            case this.alternateBindingCode:
                 this._isDown = true;
-                this.NotifyPressed();
+                this.notifyPressed();
                 break;
             default:
                 break;
         }
     }
 
-    public CheckReleased(event: KeyboardEvent): void {
+    public checkReleased(event: KeyboardEvent): void {
         if (!this._isDown) return;
         switch (event.code) {
-            case this.MainBindingCode:
-            case this.AlternateBindingCode:
+            case this.mainBindingCode:
+            case this.alternateBindingCode:
                 this._isDown = false;
-                this.NotifyReleased();
+                this.notifyReleased();
                 break;
             default:
                 break;
         }
     }
 
-    private NotifyPressed(): void {
-        this.OnPressed.invoke();
+    private notifyPressed(): void {
+        this.onPressed.invoke();
     }
 
-    private NotifyReleased(): void {
-        this.OnReleased.invoke();
+    private notifyReleased(): void {
+        this.onReleased.invoke();
     }
 }

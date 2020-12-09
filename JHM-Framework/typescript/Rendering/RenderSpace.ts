@@ -4,7 +4,6 @@ interface ILayer {
 }
 
 class RenderSpace implements IDestroyable {
-    
     onDestroy: Action;
     private _layers: ILayer[] = [];
     private _canvas: HTMLCanvasElement;
@@ -38,14 +37,14 @@ class RenderSpace implements IDestroyable {
         this._canvas.style.left = left.toString();
         this._canvas.style.top = top.toString();
         document.body.insertBefore(this._canvas, document.body.childNodes[0]);
-        loop.onUpdate.add(this.Render, this);
+        loop.onUpdate.add(this.render, this);
     }
 
     destroy(): void {
         this._canvas.remove();
     }
 
-    AddRenderComponent(component: IRenderable, distanceFromCamera: number): void {
+    addRenderComponent(component: IRenderable, distanceFromCamera: number): void {
         let layer = this._layers.find((value) => value.distanceFromCamera == distanceFromCamera);
         if (layer == undefined) {
             layer = {
@@ -56,11 +55,11 @@ class RenderSpace implements IDestroyable {
             this._layers.sort((layerA, layerB) => layerB.distanceFromCamera - layerA.distanceFromCamera);
         }
         if (layer.renderables.indexOf(component) != -1) return;
-        component.onDestroy.add(() => this.RemoveRenderComponent(component, distanceFromCamera), this);
+        component.onDestroy.add(() => this.removeRenderComponent(component, distanceFromCamera), this);
         layer.renderables.push(component);
     }
 
-    RemoveRenderComponent(component: IRenderable, fromLayer: number): void {
+    removeRenderComponent(component: IRenderable, fromLayer: number): void {
         let layer = this._layers.find((value) => value.distanceFromCamera == fromLayer);
         if (layer == undefined) return;
         let index = layer.renderables.indexOf(component);
@@ -68,27 +67,26 @@ class RenderSpace implements IDestroyable {
         layer.renderables.splice(index, 1);
     }
 
-
-    Wipe() {
+    wipe() {
         this._context.clearRect(this.left, this.top, this.width, this.height);
     }
 
-    Render() {
-        this.PaintBackground();
+    render() {
+        this.paintBackground();
         this._layers.forEach((layer) => {
-            this.RenderLayer(layer);
+            this.renderLayer(layer);
         });
     }
 
-    private RenderLayer(layer) {
+    paintBackground() {
+        this.wipe();
+        this._context.fillStyle = this._color;
+        this._context.fillRect(0, 0, this.width, this.height);
+    }
+
+    private renderLayer(layer) {
         layer.renderables.forEach((renderable) => {
             renderable.Render(this._context);
         });
-    }
-
-    PaintBackground() {
-        this.Wipe();
-        this._context.fillStyle = this._color;
-        this._context.fillRect(0, 0, this.width, this.height);
     }
 }

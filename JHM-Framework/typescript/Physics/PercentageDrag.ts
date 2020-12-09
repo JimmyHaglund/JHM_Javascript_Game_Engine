@@ -5,7 +5,7 @@ class PercentageDrag implements IDragProfile {
         this._dragPercentage = dragPercentage;
     }
 
-    public GetDrag(velocityX:number, velocityY:number):{dragX:number, dragY:number} {
+    public getDrag(velocityX:number, velocityY:number):{dragX:number, dragY:number} {
         return {
             dragX: velocityX * this._dragPercentage,
             dragY: velocityY * this._dragPercentage

@@ -7,11 +7,11 @@ class AudioComponent
     constructor(audioId: string){
         this._clip = document.getElementById(audioId) as HTMLAudioElement; 
     }
-    Play()
+    play()
     {
         this._clip.play();
     }
-    StopPlaying()
+    stopPlaying()
     {
         this._clip.pause();
     }

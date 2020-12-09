@@ -5,21 +5,21 @@ class CapricaMainCharacter {
     private _controller: CapricaMovementController;
     private _input: CapricaMovementInput;
 
-    public get Entity() { return this._entity; }
-    public get Rigidbody() { return this._rigidbody; }
-    public get Sprite() { return this._sprite; }
-    public get Controller() { return this._controller; }
-    public get Input() { return this._input; }
+    public get entity() { return this._entity; }
+    public get rigidbody() { return this._rigidbody; }
+    public get sprite() { return this._sprite; }
+    public get controller() { return this._controller; }
+    public get input() { return this._input; }
 
     constructor(xPosition: number, yPosition: number, loop: Loop,
         renderSpace: RenderSpace, physics: PhysicsSpace) {
         this._entity = new Entity(xPosition, yPosition);
-        this.InitialisePhysics(this._entity, physics);
-        this.InitialiseRendering(this._entity, renderSpace);
-        this.InitialiseController(loop);
+        this.initialisePhysics(this._entity, physics);
+        this.initialiseRendering(this._entity, renderSpace);
+        this.initialiseController(loop);
     }
 
-    private InitialisePhysics(entity: Entity, physics: PhysicsSpace): void {
+    private initialisePhysics(entity: Entity, physics: PhysicsSpace): void {
         let rigidBody = new PointRigidBody(entity);
         rigidBody.dragEnabled = false;
         entity.addComponent(rigidBody);
@@ -27,26 +27,26 @@ class CapricaMainCharacter {
         physics.addRigidbody(rigidBody);
     }
 
-    private InitialiseRendering(entity: Entity, renderSpace: RenderSpace): void {
+    private initialiseRendering(entity: Entity, renderSpace: RenderSpace): void {
         this._sprite = new RotatedSprite(entity, "main_character");
         this._sprite.offsetX = -50;
         this._sprite.offsetY = -50;
         entity.addComponent(this._sprite);
-        renderSpace.AddRenderComponent(this._sprite, 0);
+        renderSpace.addRenderComponent(this._sprite, 0);
     }
 
-    private InitialiseController(loop: Loop): void {
+    private initialiseController(loop: Loop): void {
         this._input = new CapricaMovementInput();
         this._controller = new CapricaMovementController(this._input, this);
-        this.SetupInputLog(this._input);
-        loop.onUpdate.add(this._controller.Update, this._controller);
+        this.setupInputLog(this._input);
+        loop.onUpdate.add(this._controller.update, this._controller);
     }
 
-    private SetupInputLog(input: CapricaMovementInput) {
-        input.Up.OnPressed.add(() => console.log("Up pressed, velocity: " + this._rigidbody.Velocity.y), this);
-        input.Up.OnReleased.add(() => console.log("Up released"), this);
-        input.Right.OnPressed.add(() => console.log("Right pressed"), this);
-        input.Down.OnPressed.add(() => console.log("Down pressed"), this);
-        input.Left.OnPressed.add(() => console.log("Left pressed"), this);
+    private setupInputLog(input: CapricaMovementInput) {
+        input.Up.onPressed.add(() => console.log("Up pressed, velocity: " + this._rigidbody.velocity.y), this);
+        input.Up.onReleased.add(() => console.log("Up released"), this);
+        input.Right.onPressed.add(() => console.log("Right pressed"), this);
+        input.Down.onPressed.add(() => console.log("Down pressed"), this);
+        input.Left.onPressed.add(() => console.log("Left pressed"), this);
     }
 }

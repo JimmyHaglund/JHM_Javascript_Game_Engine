@@ -10,16 +10,16 @@ class CapricaMovementInput {
     public get Left(): Binding { return this._leftBinding; }
 
     public CheckPressed(event:KeyboardEvent): void {
-        this.Up.CheckPressed(event);
-        this.Right.CheckPressed(event);
-        this.Down.CheckPressed(event);
-        this.Left.CheckPressed(event);
+        this.Up.checkPressed(event);
+        this.Right.checkPressed(event);
+        this.Down.checkPressed(event);
+        this.Left.checkPressed(event);
     }
 
     public CheckReleased(event:KeyboardEvent):void {
-        this.Up.CheckReleased(event);
-        this.Right.CheckReleased(event);
-        this.Down.CheckReleased(event);
-        this.Left.CheckReleased(event);
+        this.Up.checkReleased(event);
+        this.Right.checkReleased(event);
+        this.Down.checkReleased(event);
+        this.Left.checkReleased(event);
     }
 }

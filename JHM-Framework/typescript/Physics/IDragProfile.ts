@@ -1,3 +1,3 @@
 interface IDragProfile {
-    GetDrag(velocityX:number, velocityY:number):{dragX:number, dragY:number};
+    getDrag(velocityX:number, velocityY:number):{dragX:number, dragY:number};
 }

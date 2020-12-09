@@ -17,3 +17,9 @@ tsc: Transpile typescript files and output the result into the javascript root f
 - Each project contains one index html file which decides the exact resources and .js scripts to include.
 
 Project-specific .ts scripts need to be contained in a typescript folder determined by the .tsconfig file. The config file can be changed to alter both in and out directories if you want to contain project-specific files in their root folders. More information can be found here: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html
+
+# Naming conventions
+Programming naming conventions attempts to follow most common Javascript / typescript conventions.
+- private members: _privateMember (underscore + camelCase)
+- public members: publicMember (camelCase)
+- private & public methods: AnyMethod (PascalCase)

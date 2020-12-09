@@ -1,6 +1,6 @@
 interface IPhysicsActor extends IDestroyable {
-    CheckCollision(colliders: ICollider[]): void;
-    OnCollisionEnter: Action;
-    OnCollisionExit: Action;
-    OnCollisionStay: Action;
+    checkCollision(colliders: ICollider[]): void;
+    onCollisionEnter: Action;
+    onCollisionExit: Action;
+    onCollisionStay: Action;
 }
