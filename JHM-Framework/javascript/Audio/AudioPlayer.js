@@ -3,10 +3,10 @@ class AudioComponent {
         this._clip = document.getElementById(audioId);
     }
     set shouldLoop(value) { this._clip.loop = value; }
-    Play() {
+    play() {
         this._clip.play();
     }
-    StopPlaying() {
+    stopPlaying() {
         this._clip.pause();
     }
 }

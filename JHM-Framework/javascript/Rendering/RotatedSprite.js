@@ -1,11 +1,10 @@
 class RotatedSprite extends Sprite {
-    // private _rotation: number = 3.14 * 0.25;
-    get Rotation() { return this._transform.rotation; }
-    Render(context) {
+    get rotation() { return this._transform.rotation; }
+    render(context) {
         let contextSettings = {
             contextAlpha: context.globalAlpha,
-            translation: this.Translation,
-            rotation: -this.Rotation,
+            translation: this.translation,
+            rotation: -this.rotation,
             apply: function () {
                 context.globalAlpha = this._alpha;
                 context.translate(contextSettings.translation.x, contextSettings.translation.y);
@@ -18,7 +17,7 @@ class RotatedSprite extends Sprite {
             }
         };
         contextSettings.apply();
-        this.DrawSprite(context);
+        this.drawSprite(context);
         contextSettings.reset();
     }
 }

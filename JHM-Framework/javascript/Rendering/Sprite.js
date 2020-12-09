@@ -42,12 +42,12 @@ class Sprite {
         this._onDestroy.invoke();
     }
     // Render image.
-    Render(context) {
+    render(context) {
         if (this._image == null)
             return;
         let contextSettings = {
             contextAlpha: context.globalAlpha,
-            translation: this.Translation,
+            translation: this.translation,
             apply: function () {
                 context.globalAlpha = this._alpha;
                 context.translate(contextSettings.translation.x, contextSettings.translation.y);
@@ -58,13 +58,13 @@ class Sprite {
             }
         };
         contextSettings.apply();
-        this.DrawSprite(context);
+        this.drawSprite(context);
         contextSettings.reset();
     }
-    DrawSprite(context) {
+    drawSprite(context) {
         context.drawImage(this._image, this._crop.offsetX, this._crop.offsetY, this._crop.width, this._crop.height, this._offsetX, this._offsetY, this._width, this._height);
     }
-    get Translation() {
+    get translation() {
         return {
             x: this._transform.worldX,
             y: this._transform.worldY

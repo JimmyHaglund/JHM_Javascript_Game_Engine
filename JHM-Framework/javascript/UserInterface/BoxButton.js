@@ -16,7 +16,7 @@ class BoxButton {
         this._sprite.height = height;
         // this._sprAddRenderComponenth * 0.5;
         // this._sprite.offsetY = height * 0.5;
-        renderSpace.AddRenderComponent(this._sprite, -100);
+        renderSpace.addRenderComponent(this._sprite, -100);
         this._entity.addComponent(this._sprite);
         this._entity.addComponent(this._collider);
     }

@@ -86,7 +86,7 @@ class RenderSpace implements IDestroyable {
 
     private renderLayer(layer) {
         layer.renderables.forEach((renderable) => {
-            renderable.Render(this._context);
+            renderable.render(this._context);
         });
     }
 }

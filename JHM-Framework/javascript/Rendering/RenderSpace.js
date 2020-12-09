@@ -9,7 +9,7 @@ class RenderSpace {
         this._canvas.style.left = left.toString();
         this._canvas.style.top = top.toString();
         document.body.insertBefore(this._canvas, document.body.childNodes[0]);
-        loop.onUpdate.add(this.Render, this);
+        loop.onUpdate.add(this.render, this);
     }
     get canvas() { return this._canvas; }
     get width() { return this._canvas.width; }
@@ -29,7 +29,7 @@ class RenderSpace {
     destroy() {
         this._canvas.remove();
     }
-    AddRenderComponent(component, distanceFromCamera) {
+    addRenderComponent(component, distanceFromCamera) {
         let layer = this._layers.find((value) => value.distanceFromCamera == distanceFromCamera);
         if (layer == undefined) {
             layer = {
@@ -41,10 +41,10 @@ class RenderSpace {
         }
         if (layer.renderables.indexOf(component) != -1)
             return;
-        component.onDestroy.add(() => this.RemoveRenderComponent(component, distanceFromCamera), this);
+        component.onDestroy.add(() => this.removeRenderComponent(component, distanceFromCamera), this);
         layer.renderables.push(component);
     }
-    RemoveRenderComponent(component, fromLayer) {
+    removeRenderComponent(component, fromLayer) {
         let layer = this._layers.find((value) => value.distanceFromCamera == fromLayer);
         if (layer == undefined)
             return;
@@ -53,23 +53,23 @@ class RenderSpace {
             return;
         layer.renderables.splice(index, 1);
     }
-    Wipe() {
+    wipe() {
         this._context.clearRect(this.left, this.top, this.width, this.height);
     }
-    Render() {
-        this.PaintBackground();
+    render() {
+        this.paintBackground();
         this._layers.forEach((layer) => {
-            this.RenderLayer(layer);
+            this.renderLayer(layer);
         });
     }
-    RenderLayer(layer) {
-        layer.renderables.forEach((renderable) => {
-            renderable.Render(this._context);
-        });
-    }
-    PaintBackground() {
-        this.Wipe();
+    paintBackground() {
+        this.wipe();
         this._context.fillStyle = this._color;
         this._context.fillRect(0, 0, this.width, this.height);
+    }
+    renderLayer(layer) {
+        layer.renderables.forEach((renderable) => {
+            renderable.render(this._context);
+        });
     }
 }

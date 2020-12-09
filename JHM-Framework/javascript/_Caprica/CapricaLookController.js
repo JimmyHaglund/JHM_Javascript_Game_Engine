@@ -1,35 +1,35 @@
 class CapricaLookController {
     constructor(mouseMoveAction, character) {
-        mouseMoveAction.add(this.UpdateMousePosition, this);
-        this._sprite = character.Sprite;
-        this._entity = character.Entity;
+        mouseMoveAction.add(this.updateMousePosition, this);
+        this._sprite = character.sprite;
+        this._entity = character.entity;
     }
-    UpdateMousePosition(mouseEvent) {
+    updateMousePosition(mouseEvent) {
         let mouseX = mouseEvent.x;
         let mouseY = mouseEvent.y;
-        this._entity.transform.rotation = this.GetLookRotation(mouseX, mouseY);
+        this._entity.transform.rotation = this.getLookRotation(mouseX, mouseY);
     }
-    GetLookRotation(mouseX, mouseY) {
-        let right = Vector.Right;
+    getLookRotation(mouseX, mouseY) {
+        let right = vector.right;
         let entityX = this._entity.x;
         let entityY = this._entity.y;
         let entityToMouseX = mouseX - entityX;
         let entityToMouseY = mouseY - entityY;
-        return Algebra.AngleFromToCounterClockwise(right.x, right.y, entityToMouseX, -entityToMouseY);
+        return algebra.angleFromToCounterClockwise(right.x, right.y, entityToMouseX, -entityToMouseY);
     }
-    LogMousePosition(x, y) {
+    logMousePosition(x, y) {
         console.log("Mouse position:", x, ", ", y);
     }
-    LogMouseAngle(mouseX, mouseY) {
-        let right = Vector.Right;
-        let angle = Algebra.AngleBetween(right.x, -right.y, mouseX, -mouseY);
+    logMouseAngle(mouseX, mouseY) {
+        let right = vector.right;
+        let angle = algebra.angleBetween(right.x, -right.y, mouseX, -mouseY);
         console.log("Mouse Angle:", angle, "radians");
     }
-    LogMouseRotation(mouseX, mouseY) {
-        let right = Vector.Right;
+    logMouseRotation(mouseX, mouseY) {
+        let right = vector.right;
         let offsetX = mouseX - 100;
         let offsetY = mouseY - 100;
-        let angle = Algebra.AngleFromToCounterClockwise(right.x, right.y, offsetX, -offsetY);
+        let angle = algebra.angleFromToCounterClockwise(right.x, right.y, offsetX, -offsetY);
         console.log("Mouse Rotation:", angle, "radians");
     }
 }

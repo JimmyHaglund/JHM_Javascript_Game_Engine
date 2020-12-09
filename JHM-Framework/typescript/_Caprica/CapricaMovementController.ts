@@ -5,6 +5,7 @@ class CapricaMovementController {
     private _accelleration: number = 5000;
     private _maxSpeed: number = 250;
     private _minimumSpeed = 50;
+    private _dragProfile = new PercentageDrag(5);
 
     private get inputX(): number { return this._inputX; }
     private set inputX(value: number) {
@@ -54,20 +55,17 @@ class CapricaMovementController {
     }
 
     private applyDrag(velocityX:number, velocityY:number, deltaSeconds: number): {x:number, y:number} {
+        let drag = this._dragProfile.getDrag(velocityX, velocityY);
         if (this._inputX == 0) {
-            velocityX -= this.getDrag(velocityX, deltaSeconds);
+            velocityX -= drag.dragX * deltaSeconds;
         }
         if (this._inputY == 0) {
-            velocityY -= this.getDrag(velocityY, deltaSeconds);
+            velocityY -= drag.dragY * deltaSeconds;
         }
         return {
             x:velocityX,
             y:velocityY
         };
-    }
-
-    private getDrag(speed: number, deltaSeconds: number): number {
-        return speed * deltaSeconds * 5;
     }
 
     private initialiseInput(input: CapricaMovementInput): void {
@@ -81,9 +79,9 @@ class CapricaMovementController {
         input.Down.onReleased.add(addInputUp, this);
         input.Left.onReleased.add(addInputRight, this);
 
-        function addInputUp(): void { this.InputY -= 1; }
-        function addInputDown(): void { this.InputY += 1; }
-        function addInputRight(): void { this.InputX += 1; }
-        function addInputLeft(): void { this.InputX -= 1; }
+        function addInputUp(): void { this.inputY -= 1; }
+        function addInputDown(): void { this.inputY += 1; }
+        function addInputRight(): void { this.inputX += 1; }
+        function addInputLeft(): void { this.inputX -= 1; }
     }
 }

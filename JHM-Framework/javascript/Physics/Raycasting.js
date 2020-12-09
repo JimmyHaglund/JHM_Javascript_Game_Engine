@@ -23,13 +23,13 @@ class RayRender {
         this._x2 = line.x2;
         this._y2 = line.y2;
         this._color = color;
-        renderSpace.AddRenderComponent(this, -10000);
-        this._onDestroy.add(() => renderSpace.RemoveRenderComponent(this, -10000), this);
+        renderSpace.addRenderComponent(this, -10000);
+        this._onDestroy.add(() => renderSpace.removeRenderComponent(this, -10000), this);
         setTimeout(() => this.destroy.call(this), duration);
     }
     get onDestroy() { return this._onDestroy; }
     destroy() { this._onDestroy.invoke(); }
-    Render(context) {
+    render(context) {
         context.strokeStyle = this._color;
         context.moveTo(this._x1, this._y1);
         context.lineTo(this._x2, this._y2);

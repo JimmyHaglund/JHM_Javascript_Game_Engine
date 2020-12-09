@@ -10,15 +10,15 @@ class CapricaMovementInput {
     get Down() { return this._downBinding; }
     get Left() { return this._leftBinding; }
     CheckPressed(event) {
-        this.Up.CheckPressed(event);
-        this.Right.CheckPressed(event);
-        this.Down.CheckPressed(event);
-        this.Left.CheckPressed(event);
+        this.Up.checkPressed(event);
+        this.Right.checkPressed(event);
+        this.Down.checkPressed(event);
+        this.Left.checkPressed(event);
     }
     CheckReleased(event) {
-        this.Up.CheckReleased(event);
-        this.Right.CheckReleased(event);
-        this.Down.CheckReleased(event);
-        this.Left.CheckReleased(event);
+        this.Up.checkReleased(event);
+        this.Right.checkReleased(event);
+        this.Down.checkReleased(event);
+        this.Left.checkReleased(event);
     }
 }

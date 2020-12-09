@@ -20,25 +20,25 @@ class PointRigidBody {
         lastUpdateCount: number
     }[] = [];
     */
-    set Velocity(value) { this._velocity = value; }
-    get Velocity() { return this._velocity; }
-    get OnCollisionEnter() { return this._onCollisionEnter; }
-    get OnCollisionExit() { return this._onCollisionExit; }
-    get OnCollisionStay() { return this._onCollisionStay; }
+    set velocity(value) { this._velocity = value; }
+    get velocity() { return this._velocity; }
+    get onCollisionEnter() { return this._onCollisionEnter; }
+    get onCollisionExit() { return this._onCollisionExit; }
+    get onCollisionStay() { return this._onCollisionStay; }
     get onDestroy() { return this._onDestroy; }
     get entity() { return this._transform; }
-    Update(deltaTime) {
+    update(deltaTime) {
         // this._deltaTime = deltaTime;
         if (this.dragEnabled) {
-            this.ApplyDrag(deltaTime);
+            this.applyDrag(deltaTime);
         }
-        this.Move(deltaTime);
+        this.move(deltaTime);
     }
     destroy() {
         this._loopAction.remove(this._updateActionId);
         this._onDestroy.invoke();
     }
-    CheckCollision(colliders) {
+    checkCollision(colliders) {
         colliders.forEach(collider => {
             if (collider.overlapsPoint(this._transform.x, this._transform.y)) {
                 let x0 = this._previousX;
@@ -61,12 +61,12 @@ class PointRigidBody {
             }
         });
     }
-    SetDragProfile(drag) {
+    setDragProfile(drag) {
         if (drag == null)
             return;
         this._drag = drag;
     }
-    Move(deltaTime) {
+    move(deltaTime) {
         if (deltaTime == undefined || deltaTime <= 0)
             return;
         this._previousX = this._transform.x;
@@ -74,8 +74,8 @@ class PointRigidBody {
         this._transform.x += deltaTime * this._velocity.x;
         this._transform.y += deltaTime * this._velocity.y;
     }
-    ApplyDrag(deltaTime) {
-        let drag = this._drag.GetDrag(this._velocity.x, this._velocity.y);
+    applyDrag(deltaTime) {
+        let drag = this._drag.getDrag(this._velocity.x, this._velocity.y);
         this._velocity.x -= drag.dragX * deltaTime;
         this._velocity.y -= drag.dragY * deltaTime;
     }

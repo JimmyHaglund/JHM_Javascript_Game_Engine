@@ -26,16 +26,16 @@ class MousePointer {
         this._onDestroy.add(() => mouseInput.onMouseMove.remove(mouseMoveId), this);
     }
     get onDestroy() { return this._onDestroy; }
-    get OnCollisionEnter() { return null; }
-    get OnCollisionExit() { return null; }
-    get OnCollisionStay() { return null; }
+    get onCollisionEnter() { return null; }
+    get onCollisionExit() { return null; }
+    get onCollisionStay() { return null; }
     destroy() {
         this._onDestroy.invoke();
     }
     addButton(button) {
         this._buttonMap.set(button.collider, button);
     }
-    CheckCollision(colliders) {
+    checkCollision(colliders) {
         colliders.forEach(collider => {
             let button = this._buttonMap.get(collider);
             if (button != undefined) {

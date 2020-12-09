@@ -38,7 +38,6 @@ class CapricaMainCharacter {
     private initialiseController(loop: Loop): void {
         this._input = new CapricaMovementInput();
         this._controller = new CapricaMovementController(this._input, this);
-        this.setupInputLog(this._input);
         loop.onUpdate.add(this._controller.update, this._controller);
     }
 

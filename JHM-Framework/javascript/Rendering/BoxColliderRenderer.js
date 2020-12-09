@@ -7,7 +7,7 @@ class BoxColliderRenderer {
     }
     get onDestroy() { return this._onDestroy; }
     set outlineOnly(value) { this._shouldFill = !value; }
-    Render(context) {
+    render(context) {
         context.beginPath();
         let contextColor = context.fillStyle;
         let left = this._collider.left;

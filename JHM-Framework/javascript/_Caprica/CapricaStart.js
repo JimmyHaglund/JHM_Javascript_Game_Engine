@@ -1,27 +1,27 @@
-let MovementInput;
-let GameData;
-function CapricaStart() {
+let movementInput;
+let gameData;
+function capricaStart() {
     let loop = new Loop(60);
     let renderSpace = new RenderSpace(loop, 800, 600);
     let physicsSpace = new PhysicsSpace(loop);
     let mainCharacter = new CapricaMainCharacter(50, 50, loop, renderSpace, physicsSpace);
-    let lookController = new CapricaLookController(OnMouseMoved, mainCharacter);
-    GameData = {
+    let lookController = new CapricaLookController(onMouseMoved, mainCharacter);
+    gameData = {
         playLoop: loop,
         render: renderSpace,
         physics: physicsSpace,
         mainCharacter: mainCharacter,
         lookController: lookController
     };
-    renderSpace.Render();
-    MovementInput = mainCharacter.Input;
+    renderSpace.render();
+    movementInput = mainCharacter.input;
     console.log("Caprica Started");
 }
-function CheckInputPressed(event) {
-    MovementInput.CheckPressed(event);
+function checkInputPressed(event) {
+    movementInput.CheckPressed(event);
 }
-function CheckInputReleased(event) {
-    MovementInput.CheckReleased(event);
+function checkInputReleased(event) {
+    movementInput.CheckReleased(event);
 }
 /*
 Canvas settings for disabling anti alisasing

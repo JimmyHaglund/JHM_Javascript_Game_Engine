@@ -1,4 +1,4 @@
-let OnMouseMoved = new Action();
-function MouseMoved(mouseEvent) {
-    OnMouseMoved.invoke(mouseEvent);
+let onMouseMoved = new Action();
+function mouseMoved(mouseEvent) {
+    onMouseMoved.invoke(mouseEvent);
 }

@@ -1,44 +1,44 @@
 class Binding {
     constructor(main = "", alternate = "") {
-        this.MainBindingCode = "";
-        this.AlternateBindingCode = "";
-        this.OnPressed = new Action();
-        this.OnReleased = new Action();
+        this.mainBindingCode = "";
+        this.alternateBindingCode = "";
+        this.onPressed = new Action();
+        this.onReleased = new Action();
         this._isDown = false;
-        this.MainBindingCode = main;
-        this.AlternateBindingCode = alternate;
+        this.mainBindingCode = main;
+        this.alternateBindingCode = alternate;
     }
-    CheckPressed(event) {
+    checkPressed(event) {
         if (this._isDown)
             return;
         let keyCode = event.code;
         switch (keyCode) {
-            case this.MainBindingCode:
-            case this.AlternateBindingCode:
+            case this.mainBindingCode:
+            case this.alternateBindingCode:
                 this._isDown = true;
-                this.NotifyPressed();
+                this.notifyPressed();
                 break;
             default:
                 break;
         }
     }
-    CheckReleased(event) {
+    checkReleased(event) {
         if (!this._isDown)
             return;
         switch (event.code) {
-            case this.MainBindingCode:
-            case this.AlternateBindingCode:
+            case this.mainBindingCode:
+            case this.alternateBindingCode:
                 this._isDown = false;
-                this.NotifyReleased();
+                this.notifyReleased();
                 break;
             default:
                 break;
         }
     }
-    NotifyPressed() {
-        this.OnPressed.invoke();
+    notifyPressed() {
+        this.onPressed.invoke();
     }
-    NotifyReleased() {
-        this.OnReleased.invoke();
+    notifyReleased() {
+        this.onReleased.invoke();
     }
 }
