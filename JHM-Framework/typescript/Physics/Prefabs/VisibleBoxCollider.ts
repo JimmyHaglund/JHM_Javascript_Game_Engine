@@ -7,7 +7,9 @@ class VisibleBoxCollider {
     get entity(): Entity { return this._entity; }
     get collider(): BoxCollider { return this._collider; }
 
-    constructor(posX: number, posY: number, width: number, height: number, renderSpace: RenderSpace, physicsSpace: PhysicsSpace, color: string = 'black', fill = false) {
+    constructor(posX: number, posY: number, width: number, height: number, 
+        renderSpace: RenderSpace, physicsSpace: IPhysicsSpace, 
+        color: string = 'black', fill = false) {
         this._entity = new Entity(posX, posY);
         this._collider = new BoxCollider(this._entity, width, height);
         this._visual = new BoxColliderRenderer(this._collider, color, fill);

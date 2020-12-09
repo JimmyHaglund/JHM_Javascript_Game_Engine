@@ -1,4 +1,6 @@
-class RenderSpace {
+class RenderSpace implements IDestroyable {
+    
+    onDestroy: Action;
     private _layers: { layer: number, renderables: IRenderable[] }[] = [];
     private _canvas: HTMLCanvasElement;
     private _context: CanvasRenderingContext2D;
@@ -19,8 +21,8 @@ class RenderSpace {
     set bottom(value: number) { this._canvas.style.bottom = value + 'px'; }
     set backgroundColor(color: string) { this._color = color; }
     get backgroundColor(): string { return this._color; }
-    
-    constructor(loop: Loop, width: number, height: number,
+
+    constructor(loop: ILoop, width: number, height: number,
         left: number = 0, top: number = 0, backgroundColor: string = "gray") {
         this._canvas = document.createElement("canvas");
         this._context = this._canvas.getContext("2d");
@@ -32,6 +34,9 @@ class RenderSpace {
         this._canvas.style.top = top.toString();
         document.body.insertBefore(this._canvas, document.body.childNodes[0]);
         loop.onUpdate.add(this.render, this);
+    }
+    destroy(): void {
+        this._canvas.remove();
     }
     addRenderComponent(component: IRenderable, toLayer: number): void {
         let layer = this._layers.find((value) => value.layer == toLayer);
@@ -54,20 +59,27 @@ class RenderSpace {
         if (index == -1) return;
         layer.renderables.splice(index, 1);
     }
-    
+
 
     wipe() {
         this._context.clearRect(this.left, this.top, this.width, this.height);
     }
 
     render() {
+<<<<<<< HEAD
     this.paintBackground();
     this._layers.forEach((layer) => {
         layer.renderables.forEach((renderable) => {
             renderable.Render(this._context);
+=======
+        this.paintBackground();
+        this._layers.forEach((layer) => {
+            layer.renderables.forEach((renderable) => {
+                renderable.render(this._context);
+            });
+>>>>>>> 82fad0a36f197f179401c4fc2121d251ac1ca65f
         });
-    });
-}
+    }
 
     paintBackground() {
         this.wipe();

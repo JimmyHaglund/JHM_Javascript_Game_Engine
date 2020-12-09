@@ -7,9 +7,9 @@ class BoxCollider {
         this._offsetY = offsetY;
         this._onDestroy = new Action();
     }
-    get left() { return this._entity.transform.x + this._offsetX; }
+    get left() { return this._entity.transform.worldX + this._offsetX; }
     get right() { return this.left + this._width; }
-    get top() { return this._entity.transform.y + this._offsetY; }
+    get top() { return this._entity.transform.worldY + this._offsetY; }
     get bottom() { return this.top + this._height; }
     get offset() {
         return {

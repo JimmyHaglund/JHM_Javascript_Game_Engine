@@ -6,9 +6,9 @@ class BoxCollider implements ICollider, IComponent, IDestroyable {
     private _offsetY: number;
     private _onDestroy: Action;
 
-    get left(): number { return this._entity.transform.x + this._offsetX; }
+    get left(): number { return this._entity.transform.worldX + this._offsetX; }
     get right(): number { return this.left + this._width; }
-    get top(): number { return this._entity.transform.y + this._offsetY; }
+    get top(): number { return this._entity.transform.worldY + this._offsetY; }
     get bottom(): number { return this.top + this._height; }
     get offset(): { x: number, y: number } {
         return {

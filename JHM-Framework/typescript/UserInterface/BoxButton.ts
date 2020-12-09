@@ -1,4 +1,4 @@
-class BoxButton {
+class BoxButton implements IDestroyable {
     private static _buttonStates = {
         passive: 0,
         hovered: 1,
@@ -14,6 +14,8 @@ class BoxButton {
     private _collider: BoxCollider;
     private _state: number = BoxButton._buttonStates.passive;
     private _onClick: Action = new Action();
+
+    readonly onDestroy: Action = new Action();
 
     get collider(): BoxCollider { return this._collider; }
     get onClick(): Action { return this._onClick; }
@@ -40,12 +42,16 @@ class BoxButton {
         this._entity.addComponent(this._collider);
     }
 
-    press() {
+    destroy(): void {
+        this._entity.destroy();
+    }
+
+    press(): void {
         if (this._state == BoxButton._buttonStates.pressed) return;
         this._state = BoxButton._buttonStates.pressed;
         this.updateSprite();
     }
-    release(mouseX = -2000, mouseY = -2000) {
+    release(mouseX: number = -2000, mouseY: number = -2000): void {
         if (this._state != BoxButton._buttonStates.pressed) return;
         if (this._collider.overlapsPoint(mouseX, mouseY)) {
             this._onClick.invoke();
@@ -56,19 +62,19 @@ class BoxButton {
         this._state = BoxButton._buttonStates.passive;
         this.updateSprite();
     }
-    hover() {
+    hover(): void {
         if (this._state == BoxButton._buttonStates.pressed ||
             this._state == BoxButton._buttonStates.hovered) return;
         this._state = BoxButton._buttonStates.hovered;
         this.updateSprite();
     }
-    stopHover() {
+    stopHover(): void {
         if (this._state == BoxButton._buttonStates.passive ||
             this._state == BoxButton._buttonStates.pressed) return;
         this._state = BoxButton._buttonStates.passive;
         this.updateSprite();
     }
-    updateSprite() {
+    updateSprite(): void {
         switch (this._state) {
             case BoxButton._buttonStates.pressed:
                 this._sprite.spriteId = this._spritesIds.press;
