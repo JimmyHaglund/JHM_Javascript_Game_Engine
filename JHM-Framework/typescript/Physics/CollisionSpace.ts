@@ -1,20 +1,20 @@
 class CollisionSpace {
     protected _colliders: ICollider[] = [];
     
-    public AddCollider(collider: ICollider): void {
+    public addCollider(collider: ICollider): void {
         let index = this._colliders.indexOf(collider);
         if (index >= 0) return;
         collider.onDestroy.add(() => {
-            this.RemoveCollider(collider);
+            this.removeCollider(collider);
         }, this);
         this._colliders.push(collider);
     }
-    public RemoveCollider(collider): void {
+    public removeCollider(collider): void {
         let index = this._colliders.indexOf(collider);
         if (index < 0) return;
         this._colliders.splice(index, 1);
     }
-    public GetColliders(): ICollider[] {
+    public getColliders(): ICollider[] {
         return this._colliders.slice(0);
     }
 }

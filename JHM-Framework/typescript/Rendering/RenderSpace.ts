@@ -1,7 +1,12 @@
+interface ILayer {
+    distanceFromCamera:number,
+    renderables: IRenderable[]
+}
+
 class RenderSpace implements IDestroyable {
     
     onDestroy: Action;
-    private _layers: { layer: number, renderables: IRenderable[] }[] = [];
+    private _layers: ILayer[] = [];
     private _canvas: HTMLCanvasElement;
     private _context: CanvasRenderingContext2D;
     private _color: string;
@@ -33,27 +38,30 @@ class RenderSpace implements IDestroyable {
         this._canvas.style.left = left.toString();
         this._canvas.style.top = top.toString();
         document.body.insertBefore(this._canvas, document.body.childNodes[0]);
-        loop.onUpdate.add(this.render, this);
+        loop.onUpdate.add(this.Render, this);
     }
+
     destroy(): void {
         this._canvas.remove();
     }
-    addRenderComponent(component: IRenderable, toLayer: number): void {
-        let layer = this._layers.find((value) => value.layer == toLayer);
+
+    AddRenderComponent(component: IRenderable, distanceFromCamera: number): void {
+        let layer = this._layers.find((value) => value.distanceFromCamera == distanceFromCamera);
         if (layer == undefined) {
             layer = {
-                layer: toLayer,
+                distanceFromCamera: distanceFromCamera,
                 renderables: []
             };
             this._layers.push(layer);
-            this._layers.sort((layerA, layerB) => layerB.layer - layerA.layer);
+            this._layers.sort((layerA, layerB) => layerB.distanceFromCamera - layerA.distanceFromCamera);
         }
         if (layer.renderables.indexOf(component) != -1) return;
-        component.onDestroy.add(() => this.removeRenderComponent(component, toLayer), this);
+        component.onDestroy.add(() => this.RemoveRenderComponent(component, distanceFromCamera), this);
         layer.renderables.push(component);
     }
-    removeRenderComponent(component: IRenderable, fromLayer: number): void {
-        let layer = this._layers.find((value) => value.layer == fromLayer);
+
+    RemoveRenderComponent(component: IRenderable, fromLayer: number): void {
+        let layer = this._layers.find((value) => value.distanceFromCamera == fromLayer);
         if (layer == undefined) return;
         let index = layer.renderables.indexOf(component);
         if (index == -1) return;
@@ -61,28 +69,25 @@ class RenderSpace implements IDestroyable {
     }
 
 
-    wipe() {
+    Wipe() {
         this._context.clearRect(this.left, this.top, this.width, this.height);
     }
 
-    render() {
-<<<<<<< HEAD
-    this.paintBackground();
-    this._layers.forEach((layer) => {
-        layer.renderables.forEach((renderable) => {
-            renderable.Render(this._context);
-=======
-        this.paintBackground();
+    Render() {
+        this.PaintBackground();
         this._layers.forEach((layer) => {
-            layer.renderables.forEach((renderable) => {
-                renderable.render(this._context);
-            });
->>>>>>> 82fad0a36f197f179401c4fc2121d251ac1ca65f
+            this.RenderLayer(layer);
         });
     }
 
-    paintBackground() {
-        this.wipe();
+    private RenderLayer(layer) {
+        layer.renderables.forEach((renderable) => {
+            renderable.Render(this._context);
+        });
+    }
+
+    PaintBackground() {
+        this.Wipe();
         this._context.fillStyle = this._color;
         this._context.fillRect(0, 0, this.width, this.height);
     }

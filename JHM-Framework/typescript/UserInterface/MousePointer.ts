@@ -31,7 +31,7 @@ class MousePointer implements IPhysicsActor {
         this._onDestroy.add(() => mouseInput.onMouseUp.remove(mouseUpId), this);
         this._onDestroy.add(() => mouseInput.onMouseMove.remove(mouseMoveId), this);
     }
-    Destroy() {
+    destroy() {
         this._onDestroy.invoke();
     }
     addButton(button: BoxButton) {

@@ -2,21 +2,21 @@ class PhysicsSpace extends CollisionSpace {
     constructor(loop) {
         super();
         this._rigidbodies = [];
-        loop.onUpdate.add(this.Update, this);
+        loop.onUpdate.add(this.update, this);
     }
-    Update(deltaTime) {
+    update(deltaTime) {
         this._rigidbodies.forEach((actor) => {
             actor.Update(deltaTime);
             actor.CheckCollision(this._colliders);
         });
     }
-    AddRigidbody(rigidbody) {
+    addRigidbody(rigidbody) {
         let index = this._rigidbodies.indexOf(rigidbody);
         if (index < 0) {
             this._rigidbodies.push(rigidbody);
         }
     }
-    RemoveRigidbody(rigidbody) {
+    removeRigidbody(rigidbody) {
         let index = this._rigidbodies.indexOf(rigidbody);
         if (index < 0)
             return;

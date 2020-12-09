@@ -24,7 +24,7 @@ class CapricaMainCharacter {
         rigidBody.dragEnabled = false;
         entity.addComponent(rigidBody);
         this._rigidbody = rigidBody;
-        physics.AddRigidbody(rigidBody);
+        physics.addRigidbody(rigidBody);
     }
 
     private InitialiseRendering(entity: Entity, renderSpace: RenderSpace): void {
@@ -32,7 +32,7 @@ class CapricaMainCharacter {
         this._sprite.offsetX = -50;
         this._sprite.offsetY = -50;
         entity.addComponent(this._sprite);
-        renderSpace.addRenderComponent(this._sprite, 0);
+        renderSpace.AddRenderComponent(this._sprite, 0);
     }
 
     private InitialiseController(loop: Loop): void {

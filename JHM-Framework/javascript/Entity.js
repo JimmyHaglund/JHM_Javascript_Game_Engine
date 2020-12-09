@@ -9,9 +9,9 @@ class Entity {
     get onDestroy() { return this._onDestroy; }
     get transform() { return this._transform; }
     get components() { return this._components; }
-    Destroy() {
+    destroy() {
         this._components.forEach((component) => {
-            component.Destroy();
+            component.destroy();
         });
         this.onDestroy.invoke;
     }

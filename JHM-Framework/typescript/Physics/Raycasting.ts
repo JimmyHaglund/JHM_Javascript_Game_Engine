@@ -31,11 +31,11 @@ class RayRender implements IRenderable, IDestroyable {
         this._x2 = line.x2;
         this._y2 = line.y2;
         this._color = color;
-        renderSpace.addRenderComponent(this, -10000);
-        this._onDestroy.add(() => renderSpace.removeRenderComponent(this, -10000), this);
-        setTimeout(() => this.Destroy.call(this), duration);
+        renderSpace.AddRenderComponent(this, -10000);
+        this._onDestroy.add(() => renderSpace.RemoveRenderComponent(this, -10000), this);
+        setTimeout(() => this.destroy.call(this), duration);
     }
-    Destroy() { this._onDestroy.invoke(); }
+    destroy() { this._onDestroy.invoke(); }
 
     Render(context: CanvasRenderingContext2D) {
         context.strokeStyle = this._color;

@@ -30,23 +30,23 @@ class BoxButton implements IDestroyable {
         this._entity = new Entity(left, top);
         this._sprite = new Sprite(this._entity, normalSprite);
         this._collider = new BoxCollider(this._entity, width, height);
-        physicsSpace.AddCollider(this._collider);
+        physicsSpace.addCollider(this._collider);
 
         this._sprite.width = width;
         this._sprite.height = height;
-        // this._sprite.offsetX = width * 0.5;
+        // this._sprAddRenderComponenth * 0.5;
         // this._sprite.offsetY = height * 0.5;
-        renderSpace.addRenderComponent(this._sprite, -100);
+        renderSpace.AddRenderComponent(this._sprite, -100);
 
         this._entity.addComponent(this._sprite);
         this._entity.addComponent(this._collider);
     }
 
-    destroy(): void {
+    public destroy(): void {
         this._entity.destroy();
     }
 
-    press(): void {
+    public press(): void {
         if (this._state == BoxButton._buttonStates.pressed) return;
         this._state = BoxButton._buttonStates.pressed;
         this.updateSprite();

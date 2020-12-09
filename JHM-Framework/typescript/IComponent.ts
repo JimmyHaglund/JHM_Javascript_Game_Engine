@@ -1,4 +1,4 @@
-interface IComponent {
-    Destroy(): void;
+interface IComponent extends IDestroyable {
+    // destroy(): void;
     // entity: Entity;
 }

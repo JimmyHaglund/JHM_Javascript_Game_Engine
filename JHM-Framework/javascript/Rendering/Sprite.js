@@ -38,7 +38,7 @@ class Sprite {
     get height() { return this._width; }
     set height(value) { this._height = value; }
     get Transform() { return this._transform; }
-    Destroy() {
+    destroy() {
         this._onDestroy.invoke();
     }
     // Render image.

@@ -4,8 +4,8 @@ class VisibleBoxCollider {
         this._collider = new BoxCollider(this._entity, width, height);
         this._visual = new BoxColliderRenderer(this._collider, color, fill);
         this._entity.addComponent(this._collider);
-        this._collider.onDestroy.add(this._visual.Destroy, this._visual);
-        renderSpace.addRenderComponent(this._visual, 10);
+        this._collider.onDestroy.add(this._visual.destroy, this._visual);
+        renderSpace.AddRenderComponent(this._visual, 10);
         physicsSpace.AddCollider(this._collider);
     }
     set outlineOnly(value) { this._visual.outlineOnly = value; }

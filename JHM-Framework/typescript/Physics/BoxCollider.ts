@@ -1,4 +1,4 @@
-class BoxCollider implements ICollider, IComponent, IDestroyable {
+class BoxCollider implements ICollider, IDestroyable, IComponent {
     private _entity: Entity;
     private _width: number;
     private _height: number;
@@ -29,7 +29,7 @@ class BoxCollider implements ICollider, IComponent, IDestroyable {
 
         this._onDestroy = new Action();
     }
-    Destroy(): void {
+    destroy(): void {
         this._onDestroy.invoke();
     }
 

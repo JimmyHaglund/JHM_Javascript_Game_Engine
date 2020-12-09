@@ -1,9 +1,9 @@
 interface IPhysicsSpace {
-    update(deltaTime: number): void;
-    addCollider(collider: ICollider): void;
-    removeCollider(collider: ICollider): void;
-    getColliders(): ICollider[];
-    addPhysicsActor(actor: IPhysicsActor): void;
-    removePhysicsActor(actor: IPhysicsActor): void;
-    getPhysicsActors(): IPhysicsActor[];
+    Update(deltaTime: number): void;
+    AddCollider(collider: ICollider): void;
+    RemoveCollider(collider: ICollider): void;
+    GetColliders(): ICollider[];
+    AddPhysicsActor(actor: IPhysicsActor): void;
+    RemovePhysicsActor(actor: IPhysicsActor): void;
+    GetPhysicsActors(): IPhysicsActor[];
 }

@@ -11,9 +11,9 @@ class Entity implements IDestroyable, ITransform {
         this._transform.x = positionX;
         this._transform.y = positionY;
     }
-    Destroy(): void {
+    destroy(): void {
         this._components.forEach((component) => {
-            component.Destroy();
+            component.destroy();
         });
         this.onDestroy.invoke;
     }

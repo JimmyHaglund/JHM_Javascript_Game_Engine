@@ -47,7 +47,7 @@ class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, IDestroya
         this.Move(deltaTime);
     }
 
-    public Destroy(): void {
+    public destroy(): void {
         this._loopAction.remove(this._updateActionId);
         this._onDestroy.invoke();
     }

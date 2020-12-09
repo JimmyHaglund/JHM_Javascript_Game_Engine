@@ -19,7 +19,7 @@ class BoxCollider {
     }
     get onDestroy() { return this._onDestroy; }
     get entity() { return this._entity; }
-    Destroy() {
+    destroy() {
         this._onDestroy.invoke();
     }
     overlapsPoint(pointX, pointY) {

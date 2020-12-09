@@ -34,7 +34,7 @@ class PointRigidBody {
         }
         this.Move(deltaTime);
     }
-    Destroy() {
+    destroy() {
         this._loopAction.remove(this._updateActionId);
         this._onDestroy.invoke();
     }

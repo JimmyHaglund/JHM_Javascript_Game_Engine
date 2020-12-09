@@ -13,7 +13,7 @@ function CapricaStart() {
         mainCharacter: mainCharacter,
         lookController: lookController
     };
-    renderSpace.render();
+    renderSpace.Render();
     MovementInput = mainCharacter.Input;
     console.log("Caprica Started");
 }

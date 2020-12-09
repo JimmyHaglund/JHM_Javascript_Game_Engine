@@ -29,7 +29,7 @@ class MousePointer {
     get OnCollisionEnter() { return null; }
     get OnCollisionExit() { return null; }
     get OnCollisionStay() { return null; }
-    Destroy() {
+    destroy() {
         this._onDestroy.invoke();
     }
     addButton(button) {

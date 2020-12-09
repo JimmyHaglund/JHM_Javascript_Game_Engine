@@ -30,7 +30,7 @@ class BoxColliderRenderer implements IRenderable, IDestroyable {
         // context.fillStyle = contextColor;
         // context.strokeStyle = contextColor;
     }
-    Destroy(): void {
+    destroy(): void {
         this._onDestroy.invoke();
     }
     renderOutline(context: CanvasRenderingContext2D, left: number, right: number, top: number, bottom: number) {

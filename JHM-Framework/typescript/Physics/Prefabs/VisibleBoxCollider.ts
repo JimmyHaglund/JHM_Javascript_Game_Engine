@@ -15,9 +15,9 @@ class VisibleBoxCollider {
         this._visual = new BoxColliderRenderer(this._collider, color, fill);
 
         this._entity.addComponent(this._collider);
-        this._collider.onDestroy.add(this._visual.Destroy, this._visual);
+        this._collider.onDestroy.add(this._visual.destroy, this._visual);
 
-        renderSpace.addRenderComponent(this._visual, 10);
+        renderSpace.AddRenderComponent(this._visual, 10);
         physicsSpace.AddCollider(this._collider);
     }
 }
