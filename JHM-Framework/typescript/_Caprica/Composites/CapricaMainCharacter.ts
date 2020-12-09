@@ -21,13 +21,16 @@ class CapricaMainCharacter {
 
     private InitialisePhysics(entity: Entity, physics: PhysicsSpace): void {
         let rigidBody = new PointRigidBody(entity);
+        rigidBody.dragEnabled = false;
         entity.addComponent(rigidBody);
         this._rigidbody = rigidBody;
         physics.AddRigidbody(rigidBody);
     }
 
     private InitialiseRendering(entity: Entity, renderSpace: RenderSpace): void {
-        this._sprite = new RotatedSprite(entity, "character_idle");
+        this._sprite = new RotatedSprite(entity, "main_character");
+        this._sprite.offsetX = -50;
+        this._sprite.offsetY = -50;
         entity.addComponent(this._sprite);
         renderSpace.addRenderComponent(this._sprite, 0);
     }

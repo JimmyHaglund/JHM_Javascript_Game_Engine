@@ -1,10 +1,13 @@
 class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, IDestroyable {
+    public dragEnabled = true;
+
     private _velocity = { x: 0, y: 0 };
     // private _velocityX: number = 0;
     // private _velocityY: number = 0;
     private _previousX: number;
     private _previousY: number;
-    private _entity: Entity;
+    private _transform: ITransform;
+    private _drag: IDragProfile;
     private readonly _onDestroy: Action = new Action();
     private readonly _loopAction: Action;
     private _updateActionId: number;
@@ -27,17 +30,21 @@ class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, IDestroya
     public get OnCollisionExit(): Action { return this._onCollisionExit; }
     public get OnCollisionStay(): Action { return this._onCollisionStay; }
     public get onDestroy() { return this._onDestroy; }
-    public get entity() { return this._entity; }
+    public get entity() { return this._transform; }
 
-    constructor(entity: Entity) {
-        this._entity = entity;
-        this._previousX = entity.transform.x;
-        this._previousY = entity.transform.y;
+    constructor(transform: ITransform) {
+        this._transform = transform;
+        this._previousX = transform.x;
+        this._previousY = transform.y;
+        this._drag = new PercentageDrag(5);
     }
 
     public Update(deltaTime: number): void {
         // this._deltaTime = deltaTime;
-        this.move(deltaTime);
+        if (this.dragEnabled) {
+            this.ApplyDrag(deltaTime);
+        }
+        this.Move(deltaTime);
     }
 
     public Destroy(): void {
@@ -47,13 +54,13 @@ class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, IDestroya
 
     public CheckCollision(colliders: ICollider[]): void {
         colliders.forEach(collider => {
-            if (collider.overlapsPoint(this._entity.transform.x, this._entity.transform.y)) {
+            if (collider.overlapsPoint(this._transform.x, this._transform.y)) {
                 let x0 = this._previousX;
                 let y0 = this._previousY;
-                let x1 = this._entity.transform.x;
-                let y1 = this._entity.transform.y;
-                let dX = this._entity.transform.x - this._previousX;
-                let dY = this._entity.transform.y - this._previousY;
+                let x1 = this._transform.x;
+                let y1 = this._transform.y;
+                let dX = this._transform.x - this._previousX;
+                let dY = this._transform.y - this._previousY;
                 let lean = dY / dX;
                 if (dX == 0) lean = 100000;
                 let collisionData = collider.getCollisionPointWithRay(x0, y0, dX, dY);
@@ -61,18 +68,30 @@ class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, IDestroya
                 let deltaColY = collisionData.y - y1;
                 this._velocity.x -= collisionData.normalX * this._velocity.x * -Math.sign(dX);
                 this._velocity.y -= collisionData.normalY * this._velocity.y * -Math.sign(dY);
-                this._entity.transform.x -= collisionData.normalX * deltaColX * -Math.sign(deltaColX);
-                this._entity.transform.y -= collisionData.normalY * deltaColY * -Math.sign(deltaColY);
+                this._transform.x -= collisionData.normalX * deltaColX * -Math.sign(deltaColX);
+                this._transform.y -= collisionData.normalY * deltaColY * -Math.sign(deltaColY);
                 this._onCollisionEnter.invoke.call(this._onCollisionEnter, collisionData, collider);
             }
         });
     }
-    private move(deltaTime: number): void {
+
+    public SetDragProfile(drag:IDragProfile) {
+        if (drag == null) return;
+        this._drag = drag;
+    }
+
+    private Move(deltaTime: number): void {
         if (deltaTime == undefined || deltaTime <= 0) return;
-        this._previousX = this._entity.transform.x;
-        this._previousY = this._entity.transform.y;
-        this._entity.transform.x += deltaTime * this._velocity.x;
-        this._entity.transform.y += deltaTime * this._velocity.y;
+        this._previousX = this._transform.x;
+        this._previousY = this._transform.y;
+        this._transform.x += deltaTime * this._velocity.x;
+        this._transform.y += deltaTime * this._velocity.y;
+    }
+
+    private ApplyDrag(deltaTime: number): void {
+        let drag = this._drag.GetDrag(this._velocity.x, this._velocity.y);
+        this._velocity.x -= drag.dragX * deltaTime;
+        this._velocity.y -= drag.dragY * deltaTime;
     }
 }
 

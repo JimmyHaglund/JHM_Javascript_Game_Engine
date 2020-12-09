@@ -4,6 +4,7 @@ class CapricaMovementController {
         this._inputY = 0;
         this._accelleration = 5000;
         this._maxSpeed = 250;
+        this._minimumSpeed = 50;
         this.InitialiseInput(input);
         this._character = character;
     }
@@ -28,24 +29,43 @@ class CapricaMovementController {
         let impulseY = this._accelleration * deltaSeconds * this._inputY;
         let lastVelocity = this._character.Rigidbody.Velocity;
         let velocity = {
-            x: lastVelocity.x + impulseX,
-            y: lastVelocity.y + impulseY
+            x: this.ClampMaxSpeed(lastVelocity.x + impulseX),
+            y: this.ClampMaxSpeed(lastVelocity.y + impulseY)
         };
-        if (velocity.x > this._maxSpeed) {
-            velocity.x = this._maxSpeed;
-        }
-        else if (velocity.x < -this._maxSpeed) {
-            velocity.x = -this._maxSpeed;
-        }
-        if (velocity.y > this._maxSpeed) {
-            velocity.y = this._maxSpeed;
-        }
-        else if (velocity.y < -this._maxSpeed) {
-            velocity.y = -this._maxSpeed;
-        }
+        velocity = this.ApplyDrag(velocity.x, velocity.y, deltaSeconds);
+        // velocity.x = this.ClampMinSpeed(velocity.x);
+        // velocity.y = this.ClampMaxSpeed(velocity.y);
         this._character.Rigidbody.Velocity = velocity;
     }
-    // TODO: Automatically decelerate when no input is given. Here or in rigidbody.
+    ClampMaxSpeed(speed) {
+        if (speed > this._maxSpeed) {
+            speed = this._maxSpeed;
+        }
+        else if (speed < -this._maxSpeed) {
+            speed = -this._maxSpeed;
+        }
+        return speed;
+    }
+    ClampMinSpeed(speed) {
+        if (Math.abs(speed) < this._minimumSpeed)
+            return 0;
+        return speed;
+    }
+    ApplyDrag(velocityX, velocityY, deltaSeconds) {
+        if (this._inputX == 0) {
+            velocityX -= this.GetDrag(velocityX, deltaSeconds);
+        }
+        if (this._inputY == 0) {
+            velocityY -= this.GetDrag(velocityY, deltaSeconds);
+        }
+        return {
+            x: velocityX,
+            y: velocityY
+        };
+    }
+    GetDrag(speed, deltaSeconds) {
+        return speed * deltaSeconds * 5;
+    }
     InitialiseInput(input) {
         input.Up.OnPressed.add(AddInputUp, this);
         input.Right.OnPressed.add(AddInputRight, this);

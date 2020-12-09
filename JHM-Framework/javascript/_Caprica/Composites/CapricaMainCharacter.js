@@ -12,12 +12,15 @@ class CapricaMainCharacter {
     get Input() { return this._input; }
     InitialisePhysics(entity, physics) {
         let rigidBody = new PointRigidBody(entity);
+        rigidBody.dragEnabled = false;
         entity.addComponent(rigidBody);
         this._rigidbody = rigidBody;
         physics.AddRigidbody(rigidBody);
     }
     InitialiseRendering(entity, renderSpace) {
-        this._sprite = new RotatedSprite(entity, "character_idle");
+        this._sprite = new RotatedSprite(entity, "main_character");
+        this._sprite.offsetX = -50;
+        this._sprite.offsetY = -50;
         entity.addComponent(this._sprite);
         renderSpace.addRenderComponent(this._sprite, 0);
     }

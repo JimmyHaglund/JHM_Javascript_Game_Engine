@@ -3,7 +3,8 @@ class CapricaMovementController {
     private _inputX: number = 0;
     private _inputY: number = 0;
     private _accelleration: number = 5000;
-    private _maxSpeed:number = 250;
+    private _maxSpeed: number = 250;
+    private _minimumSpeed = 50;
 
     private get InputX(): number { return this._inputX; }
     private set InputX(value: number) {
@@ -29,22 +30,45 @@ class CapricaMovementController {
         let impulseY = this._accelleration * deltaSeconds * this._inputY;
         let lastVelocity = this._character.Rigidbody.Velocity;
         let velocity = {
-            x: lastVelocity.x + impulseX,
-            y: lastVelocity.y + impulseY
+            x: this.ClampMaxSpeed(lastVelocity.x + impulseX),
+            y: this.ClampMaxSpeed(lastVelocity.y + impulseY)
         };
-        if (velocity.x > this._maxSpeed) {
-            velocity.x = this._maxSpeed;
-        } else if (velocity.x < -this._maxSpeed) {
-            velocity.x = -this._maxSpeed;
-        }
-        if (velocity.y > this._maxSpeed) {
-            velocity.y = this._maxSpeed;
-        } else if (velocity.y < -this._maxSpeed) {
-            velocity.y = -this._maxSpeed;
-        }
+        velocity = this.ApplyDrag(velocity.x, velocity.y, deltaSeconds);
+        // velocity.x = this.ClampMinSpeed(velocity.x);
+        // velocity.y = this.ClampMaxSpeed(velocity.y);
         this._character.Rigidbody.Velocity = velocity;
     }
-    // TODO: Automatically decelerate when no input is given. Here or in rigidbody.
+
+    private ClampMaxSpeed(speed:number):number {
+        if (speed > this._maxSpeed) {
+            speed = this._maxSpeed;
+        } else if (speed < -this._maxSpeed) {
+            speed = -this._maxSpeed;
+        }
+        return speed;
+    }
+
+    private ClampMinSpeed(speed:number):number{
+        if (Math.abs(speed) < this._minimumSpeed) return 0;
+        return speed;
+    }
+
+    private ApplyDrag(velocityX:number, velocityY:number, deltaSeconds: number): {x:number, y:number} {
+        if (this._inputX == 0) {
+            velocityX -= this.GetDrag(velocityX, deltaSeconds);
+        }
+        if (this._inputY == 0) {
+            velocityY -= this.GetDrag(velocityY, deltaSeconds);
+        }
+        return {
+            x:velocityX,
+            y:velocityY
+        };
+    }
+
+    private GetDrag(speed: number, deltaSeconds: number): number {
+        return speed * deltaSeconds * 5;
+    }
 
     private InitialiseInput(input: CapricaMovementInput): void {
         input.Up.OnPressed.add(AddInputUp, this);
