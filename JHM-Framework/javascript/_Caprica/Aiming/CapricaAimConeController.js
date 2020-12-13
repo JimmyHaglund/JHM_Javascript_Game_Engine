@@ -9,6 +9,13 @@ class AimConeController {
         this._loop = loop;
         this._cone = cone;
         this._transform = characterTransform;
+        this._aimData = new AimData(Math.PI * 0.5, Math.PI * 0.15, 0.5);
+    }
+    set aimData(value) {
+        if (value == null)
+            return;
+        this._aimData = value;
+        this.endAim(null);
     }
     updateMousePosition(event) {
         this._mouseX = event.x;
@@ -17,7 +24,8 @@ class AimConeController {
     startAim(event) {
         this._aimTime = 0;
         this._updateEventIndex = this._loop.onUpdate.add(this.update, this);
-        this.update(0);
+        this.updateAimDirection();
+        this.updateAimAngle();
         this._cone.visible = true;
     }
     getDirection() {
@@ -35,15 +43,26 @@ class AimConeController {
         this._cone.visible = false;
     }
     update(deltaTime) {
+        this._aimTime += deltaTime;
+        this.updateAimDirection();
+        this.updateAimAngle();
+    }
+    updateAimDirection() {
         let positionX = this._transform.x;
         let positionY = this._transform.y;
         let direction = this.getDirection();
         this._cone.setDirection(direction.x, direction.y);
         this._cone.startPoint.x = positionX;
         this._cone.startPoint.y = positionY;
-        this._aimTime += deltaTime;
     }
-    logAimTime() {
-        console.log("Aimed for", this._aimTime, "seconds");
+    updateAimAngle() {
+        let aimPercent = this._aimTime / this._aimData.aimSeconds;
+        if (aimPercent > 1.0) {
+            this._cone.coneAngle = this._aimData.aimEndAngle;
+            return;
+        }
+        let baseAngle = this._aimData.aimStartAngle;
+        let deltaAngle = baseAngle - this._aimData.aimEndAngle;
+        this._cone.coneAngle = baseAngle - deltaAngle * aimPercent;
     }
 }

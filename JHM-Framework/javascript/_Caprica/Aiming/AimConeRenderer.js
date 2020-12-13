@@ -1,0 +1,57 @@
+class AimConeRenderer {
+    constructor(renderSpace, coneDistance = 100) {
+        this.coneAngle = Math.PI * 0.25;
+        this.visible = false;
+        this._onDestroy = new Action();
+        renderSpace.addRenderComponent(this, -5);
+        this._coneDistance = coneDistance;
+        this.setDirection(1, 0);
+        this.startPoint = { x: 0, y: 0 };
+    }
+    get onDestroy() { return this._onDestroy; }
+    destroy() {
+        this._onDestroy.invoke();
+    }
+    render(context) {
+        if (!this.visible)
+            return;
+        context.strokeStyle = "#000000"; // Black
+        this.renderLookDirectionLine(context);
+        context.strokeStyle = "#45f71b"; // Lime
+        this.renderCone(context);
+    }
+    setDirection(x, y) {
+        this._direction = algebra.normalize(x, y);
+    }
+    getConeMiddleTip() {
+        let startX = this.startPoint.x;
+        let startY = this.startPoint.y;
+        return {
+            x: startX + this._direction.x * this._coneDistance,
+            y: startY + this._direction.y * this._coneDistance
+        };
+    }
+    renderLookDirectionLine(context) {
+        let destination = this.getConeMiddleTip();
+        context.beginPath();
+        context.moveTo(this.startPoint.x, this.startPoint.y);
+        context.lineTo(destination.x, destination.y);
+        context.stroke();
+    }
+    renderCone(context) {
+        let coneDirectionX = this._direction.x * this._coneDistance;
+        let coneDirectionY = this._direction.y * this._coneDistance;
+        let coneRight = algebra.rotate(coneDirectionX, coneDirectionY, -this.coneAngle * 0.5);
+        let coneLeft = algebra.rotate(coneDirectionX, coneDirectionY, this.coneAngle * 0.5);
+        let coneTipRight = vector.add(this.startPoint, coneRight);
+        let coneTipLeft = vector.add(this.startPoint, coneLeft);
+        this.renderLine(this.startPoint.x, this.startPoint.y, coneTipLeft.x, coneTipLeft.y, context);
+        this.renderLine(this.startPoint.x, this.startPoint.y, coneTipRight.x, coneTipRight.y, context);
+    }
+    renderLine(x0, y0, x1, y1, context) {
+        context.beginPath();
+        context.moveTo(x0, y0);
+        context.lineTo(x1, y1);
+        context.stroke();
+    }
+}

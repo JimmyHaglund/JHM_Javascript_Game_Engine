@@ -64,5 +64,12 @@ let algebra = {
             return 2 * pi - deltaRotation;
         }
         return deltaRotation;
+    },
+
+    rotate(x: number, y: number, angle: number): { x: number, y: number } {
+        return {
+            x: x * Math.cos(angle) - y * Math.sin(angle),
+            y: x * Math.sin(angle) + y * Math.cos(angle)
+        };
     }
 }
