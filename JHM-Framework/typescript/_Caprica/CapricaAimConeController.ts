@@ -24,6 +24,7 @@ class AimConeController {
     private startAim(event: MouseEvent) {
         this._aimTime = 0;
         this._updateEventIndex = this._loop.onUpdate.add(this.update, this);
+        this.updateAimDirection();
         
         this._cone.visible = true;
     }
@@ -45,6 +46,11 @@ class AimConeController {
     }
 
     private update(deltaTime: number) {
+        this.updateAimDirection();
+        this._aimTime += deltaTime;
+    }
+
+    private updateAimDirection() {
         let positionX = this._transform.x;
         let positionY = this._transform.y;
         let direction = this.getDirection();
@@ -52,7 +58,6 @@ class AimConeController {
         this._cone.setDirection(direction.x, direction.y);
         this._cone.startPoint.x = positionX;
         this._cone.startPoint.y = positionY;
-        this._aimTime += deltaTime;
     }
 
     private logAimTime(): void {

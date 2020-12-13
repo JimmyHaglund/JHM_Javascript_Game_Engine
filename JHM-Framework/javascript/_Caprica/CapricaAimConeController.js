@@ -17,6 +17,7 @@ class AimConeController {
     startAim(event) {
         this._aimTime = 0;
         this._updateEventIndex = this._loop.onUpdate.add(this.update, this);
+        this.update(0);
         this._cone.visible = true;
     }
     getDirection() {
