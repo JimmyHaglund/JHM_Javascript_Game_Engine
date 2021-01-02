@@ -56,12 +56,13 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
         this._onDestroy.invoke();
     }
     // Render image.
-    public render(context: CanvasRenderingContext2D):void {
+    public render(context: CanvasRenderingContext2D, viewX:number, viewY:number):void {
         if (this._image == null) return;
-
+        let translationX = this.translation.x - viewX;
+        let translationY = this.translation.y - viewY;
         let contextSettings = {
             contextAlpha: context.globalAlpha,
-            translation: this.translation,
+            translation: {x:translationX, y:translationY},
             apply: function () {
                 context.globalAlpha = this._alpha;
                 context.translate(contextSettings.translation.x, contextSettings.translation.y);

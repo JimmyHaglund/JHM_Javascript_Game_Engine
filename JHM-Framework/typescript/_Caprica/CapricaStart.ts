@@ -6,13 +6,18 @@ let gameData: {
   mainCharacter: CapricaMainCharacter,
   lookController: CapricaLookController
 }
+let viewCentre: {x:number, y:number};
+
 function capricaStart() {
   let loop = new Loop(60);
   let renderSpace = new RenderSpace(loop, 800, 600);
   let physicsSpace = new PhysicsSpace(loop);
   let mainCharacter = new CapricaMainCharacter(50, 50,
     loop, renderSpace, physicsSpace);
+  renderSpace.viewTransform = mainCharacter.entity.transform;
+  movementInput = mainCharacter.input;
   let lookController = new CapricaLookController(onMouseMoved, mainCharacter);
+  viewCentre = renderSpace.viewCentre;
   gameData = {
     playLoop: loop,
     render: renderSpace,
@@ -20,16 +25,29 @@ function capricaStart() {
     mainCharacter: mainCharacter,
     lookController: lookController
   };
+
+  runDevTests();
+
   renderSpace.render();
-  movementInput = mainCharacter.input;
   console.log("Caprica Started");
 }
+
+function runDevTests() {
+  createTiledBackground();
+}
+
 function checkInputPressed(event: KeyboardEvent) {
   movementInput.CheckPressed(event);
 }
 
 function checkInputReleased(event: KeyboardEvent) {
   movementInput.CheckReleased(event);
+}
+
+function createTiledBackground() {
+  let renderSpace = gameData.render;
+  let background = new TiledBackground(10, 10, "grass_tile");
+  renderSpace.addRenderComponent(background, 100);
 }
 
 /*

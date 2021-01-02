@@ -1,6 +1,7 @@
 class RenderSpace {
     constructor(loop, width, height, left = 0, top = 0, backgroundColor = "gray") {
         this._layers = [];
+        this._viewCentreTransform = new Transform(0, 0);
         this._canvas = document.createElement("canvas");
         this._context = this._canvas.getContext("2d");
         this._color = backgroundColor;
@@ -26,6 +27,13 @@ class RenderSpace {
     set bottom(value) { this._canvas.style.bottom = value + 'px'; }
     set backgroundColor(color) { this._color = color; }
     get backgroundColor() { return this._color; }
+    get viewCentre() {
+        let x = this._viewCentreTransform.x - this.width * 0.5;
+        let y = this._viewCentreTransform.y - this.height * 0.5;
+        return { x: x, y: y };
+    }
+    get viewTransform() { return this._viewCentreTransform; }
+    set viewTransform(value) { this._viewCentreTransform = value; }
     destroy() {
         this._canvas.remove();
     }
@@ -68,8 +76,9 @@ class RenderSpace {
         this._context.fillRect(0, 0, this.width, this.height);
     }
     renderLayer(layer) {
+        let centre = this.viewCentre;
         layer.renderables.forEach((renderable) => {
-            renderable.render(this._context);
+            renderable.render(this._context, centre.x, centre.y);
         });
     }
 }

@@ -1,20 +1,28 @@
 class AimConeRenderer {
     constructor(renderSpace, coneDistance = 100) {
+        this._startPoint = { x: 0, y: 0 };
+        this._viewPosition = { x: 0, y: 0 };
         this.coneAngle = Math.PI * 0.25;
         this.visible = false;
         this._onDestroy = new Action();
         renderSpace.addRenderComponent(this, -5);
         this._coneDistance = coneDistance;
         this.setDirection(1, 0);
-        this.startPoint = { x: 0, y: 0 };
     }
     get onDestroy() { return this._onDestroy; }
+    get startPoint() {
+        return {
+            x: this._startPoint.x - this._viewPosition.x,
+            y: this._startPoint.y - this._viewPosition.y
+        };
+    }
     destroy() {
         this._onDestroy.invoke();
     }
-    render(context) {
+    render(context, viewX, viewY) {
         if (!this.visible)
             return;
+        this._viewPosition = { x: viewX, y: viewY };
         context.strokeStyle = "#000000"; // Black
         this.renderLookDirectionLine(context);
         context.strokeStyle = "#45f71b"; // Lime
@@ -22,6 +30,10 @@ class AimConeRenderer {
     }
     setDirection(x, y) {
         this._direction = algebra.normalize(x, y);
+    }
+    setStartPoint(x, y) {
+        this._startPoint.x = x;
+        this._startPoint.y = y;
     }
     getConeMiddleTip() {
         let startX = this.startPoint.x;

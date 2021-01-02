@@ -13,7 +13,7 @@ class BoxColliderRenderer implements IRenderable, IDestroyable {
         this._collider = collider;
         this._color = color;
     }
-    render(context: CanvasRenderingContext2D): void {
+    render(context: CanvasRenderingContext2D, offsetX:number, offsetY:number): void {
         context.beginPath();
         let contextColor = context.fillStyle;
         let left = this._collider.left;

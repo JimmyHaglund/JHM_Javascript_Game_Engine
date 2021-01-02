@@ -1,3 +1,3 @@
 interface IRenderable extends IDestroyable {
-    render(renderContext: CanvasRenderingContext2D):void;
+    render(renderContext: CanvasRenderingContext2D, offsetX:number, offsetY:number):void;
 }

@@ -1,27 +1,35 @@
 class AimConeRenderer implements IRenderable {
-    public startPoint: { x: number, y: number };
+    private _startPoint = {x:0, y:0};
+    private _viewPosition = {x:0, y:0};
+
     public coneAngle = Math.PI * 0.25;
     public visible = false;
     private _onDestroy = new Action();
     private _coneDistance: number;
     private _direction: { x: number, y: number };
-
+    
     public get onDestroy() { return this._onDestroy; }
+    public get startPoint():{x:number, y:number} {
+        return {
+            x:this._startPoint.x - this._viewPosition.x, 
+            y:this._startPoint.y - this._viewPosition.y
+        }
+    }
+    
 
     constructor(renderSpace: RenderSpace, coneDistance: number = 100) {
         renderSpace.addRenderComponent(this, -5);
         this._coneDistance = coneDistance;
         this.setDirection(1, 0);
-        this.startPoint = { x: 0, y: 0 };
     }
-
 
     destroy() {
         this._onDestroy.invoke();
     }
 
-    render(context: CanvasRenderingContext2D) {
+    render(context: CanvasRenderingContext2D, viewX:number, viewY:number) {
         if (!this.visible) return;
+        this._viewPosition = {x:viewX, y:viewY};
         context.strokeStyle = "#000000"; // Black
         this.renderLookDirectionLine(context);
         context.strokeStyle = "#45f71b"; // Lime
@@ -30,6 +38,11 @@ class AimConeRenderer implements IRenderable {
 
     setDirection(x: number, y: number) {
         this._direction = algebra.normalize(x, y);
+    }
+
+    setStartPoint(x:number, y:number):void { 
+        this._startPoint.x = x;
+        this._startPoint.y = y;
     }
 
     private getConeMiddleTip() {

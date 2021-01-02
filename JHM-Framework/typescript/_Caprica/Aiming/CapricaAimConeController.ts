@@ -38,8 +38,10 @@ class AimConeController {
     }
 
     private getDirection(): { x: number, y: number } {
-        let startX = this._transform.x;
-        let startY = this._transform.y;
+        // TODO: This is horse shit. Properly refactor aim cone controller and aim cone renderer
+        // to work with moveable views. Should probably just pass in a camera to this object.
+        let startX = gameData.render.width * 0.5;//this._transform.x;
+        let startY = gameData.render.height * 0.5;// viewCentre.y;// this._transform.y;
         let goalX = this._mouseX;
         let goalY = this._mouseY;
         return {
@@ -65,8 +67,7 @@ class AimConeController {
         let direction = this.getDirection();
 
         this._cone.setDirection(direction.x, direction.y);
-        this._cone.startPoint.x = positionX;
-        this._cone.startPoint.y = positionY;
+        this._cone.setStartPoint(positionX, positionY);
     }
 
     private updateAimAngle() {

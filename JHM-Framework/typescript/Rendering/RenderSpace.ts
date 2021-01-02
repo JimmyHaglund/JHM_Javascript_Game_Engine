@@ -1,5 +1,5 @@
 interface ILayer {
-    distanceFromCamera:number,
+    distanceFromCamera: number,
     renderables: IRenderable[]
 }
 
@@ -9,6 +9,7 @@ class RenderSpace implements IDestroyable {
     private _canvas: HTMLCanvasElement;
     private _context: CanvasRenderingContext2D;
     private _color: string;
+    private _viewCentreTransform: ITransform = new Transform(0, 0);
 
     get canvas(): HTMLCanvasElement { return this._canvas; }
     get width() { return this._canvas.width; }
@@ -25,6 +26,13 @@ class RenderSpace implements IDestroyable {
     set bottom(value: number) { this._canvas.style.bottom = value + 'px'; }
     set backgroundColor(color: string) { this._color = color; }
     get backgroundColor(): string { return this._color; }
+    get viewCentre(): { x: number, y: number } {
+        let x = this._viewCentreTransform.x - this.width * 0.5;
+        let y = this._viewCentreTransform.y - this.height * 0.5;
+        return { x: x, y: y };
+    }
+    get viewTransform(): ITransform { return this._viewCentreTransform; }
+    set viewTransform(value: ITransform) { this._viewCentreTransform = value; }
 
     constructor(loop: ILoop, width: number, height: number,
         left: number = 0, top: number = 0, backgroundColor: string = "gray") {
@@ -85,8 +93,9 @@ class RenderSpace implements IDestroyable {
     }
 
     private renderLayer(layer) {
+        let centre = this.viewCentre;
         layer.renderables.forEach((renderable) => {
-            renderable.render(this._context);
+            renderable.render(this._context, centre.x, centre.y);
         });
     }
 }
