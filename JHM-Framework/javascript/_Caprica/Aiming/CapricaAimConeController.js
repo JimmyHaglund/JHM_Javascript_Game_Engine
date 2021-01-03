@@ -32,7 +32,7 @@ class AimConeController {
         // TODO: This is horse shit. Properly refactor aim cone controller and aim cone renderer
         // to work with moveable views. Should probably just pass in a camera to this object.
         let startX = gameData.render.canvas.width * 0.5; //this._transform.x;
-        let startY = gameData.render.height * 0.5; // viewCentre.y;// this._transform.y;
+        let startY = gameData.render.canvas.height * 0.5; // viewCentre.y;// this._transform.y;
         let goalX = this._mouseX;
         let goalY = this._mouseY;
         return {

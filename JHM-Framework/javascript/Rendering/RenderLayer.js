@@ -13,8 +13,6 @@ class RenderLayer {
         loop.onUpdate.add(this.render, this);
     }
     get canvas() { return this._canvas; }
-    set height(value) { this.canvas.height = value; }
-    get height() { return this._canvas.height; }
     get left() { return parseInt(this._canvas.style.left, 10); }
     set left(value) { this._canvas.style.left = value + 'px'; }
     get right() { return parseInt(this._canvas.style.right, 10); }
@@ -27,7 +25,7 @@ class RenderLayer {
     get backgroundColor() { return this._color; }
     get viewCentre() {
         let x = this._viewCentreTransform.x - this.canvas.width * 0.5;
-        let y = this._viewCentreTransform.y - this.height * 0.5;
+        let y = this._viewCentreTransform.y - this.canvas.height * 0.5;
         return { x: x, y: y };
     }
     get viewTransform() { return this._viewCentreTransform; }
@@ -60,7 +58,7 @@ class RenderLayer {
         layer.renderables.splice(index, 1);
     }
     wipe() {
-        this._context.clearRect(this.left, this.top, this.canvas.width, this.height);
+        this._context.clearRect(this.left, this.top, this.canvas.width, this.canvas.height);
     }
     render() {
         this.paintBackground();
@@ -71,7 +69,7 @@ class RenderLayer {
     paintBackground() {
         this.wipe();
         this._context.fillStyle = this._color;
-        this._context.fillRect(0, 0, this.canvas.width, this.height);
+        this._context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
     renderLayer(layer) {
         let centre = this.viewCentre;

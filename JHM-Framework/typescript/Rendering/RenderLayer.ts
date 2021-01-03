@@ -12,8 +12,6 @@ class RenderLayer implements IDestroyable {
     private _viewCentreTransform: ITransform = new Transform(0, 0);
 
     get canvas(): HTMLCanvasElement { return this._canvas; }
-    set height(value: number) { this.canvas.height = value; }
-    get height() { return this._canvas.height; }
     get left() { return parseInt(this._canvas.style.left, 10); }
     set left(value: number) { this._canvas.style.left = value + 'px'; }
     get right() { return parseInt(this._canvas.style.right, 10); }
@@ -26,7 +24,7 @@ class RenderLayer implements IDestroyable {
     get backgroundColor(): string { return this._color; }
     get viewCentre(): { x: number, y: number } {
         let x = this._viewCentreTransform.x - this.canvas.width * 0.5;
-        let y = this._viewCentreTransform.y - this.height * 0.5;
+        let y = this._viewCentreTransform.y - this.canvas.height * 0.5;
         return { x: x, y: y };
     }
     get viewTransform(): ITransform { return this._viewCentreTransform; }
@@ -74,7 +72,7 @@ class RenderLayer implements IDestroyable {
     }
 
     wipe() {
-        this._context.clearRect(this.left, this.top, this.canvas.width, this.height);
+        this._context.clearRect(this.left, this.top, this.canvas.width, this.canvas.height);
     }
 
     render() {
@@ -87,7 +85,7 @@ class RenderLayer implements IDestroyable {
     paintBackground() {
         this.wipe();
         this._context.fillStyle = this._color;
-        this._context.fillRect(0, 0, this.canvas.width, this.height);
+        this._context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
     private renderLayer(layer) {
