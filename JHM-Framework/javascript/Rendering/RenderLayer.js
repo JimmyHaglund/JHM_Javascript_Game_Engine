@@ -13,14 +13,17 @@ class RenderLayer {
         loop.onUpdate.add(this.render, this);
     }
     get canvas() { return this._canvas; }
-    get left() { return parseInt(this._canvas.style.left, 10); }
-    set left(value) { this._canvas.style.left = value + 'px'; }
-    get right() { return parseInt(this._canvas.style.right, 10); }
-    set right(value) { this._canvas.style.right = value + 'px'; }
-    get top() { return parseInt(this._canvas.style.top, 10); }
-    set top(value) { this._canvas.style.top = value + 'px'; }
-    get bottom() { return parseInt(this._canvas.style.bottom, 10); }
-    set bottom(value) { this._canvas.style.bottom = value + 'px'; }
+    set canvasBoundsRect(value) {
+        this.setCanvasBoundsRect(value.left, value.right, value.top, value.bottom);
+    }
+    get canvasBoundRect() {
+        return {
+            right: parseInt(this._canvas.style.right, 10),
+            left: parseInt(this._canvas.style.left, 10),
+            top: parseInt(this._canvas.style.top, 10),
+            bottom: parseInt(this._canvas.style.bottom, 10)
+        };
+    }
     set backgroundColor(color) { this._color = color; }
     get backgroundColor() { return this._color; }
     get viewCentre() {
@@ -58,7 +61,8 @@ class RenderLayer {
         layer.renderables.splice(index, 1);
     }
     wipe() {
-        this._context.clearRect(this.left, this.top, this.canvas.width, this.canvas.height);
+        var canvasBounds = this.canvasBoundsRect;
+        this._context.clearRect(canvasBounds.left, canvasBounds.top, this.canvas.width, this.canvas.height);
     }
     render() {
         this.paintBackground();
@@ -70,6 +74,12 @@ class RenderLayer {
         this.wipe();
         this._context.fillStyle = this._color;
         this._context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+    setCanvasBoundsRect(left, right, top, bottom) {
+        this._canvas.style.left = left + 'px';
+        this._canvas.style.right = right + 'px';
+        this._canvas.style.top = top + 'px';
+        this._canvas.style.bottom = bottom + 'px';
     }
     renderLayer(layer) {
         let centre = this.viewCentre;
