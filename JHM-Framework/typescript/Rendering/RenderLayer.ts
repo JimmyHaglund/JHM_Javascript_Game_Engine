@@ -1,18 +1,18 @@
-interface ILayer {
+interface ICullingSet {
     distanceFromCamera: number,
     renderables: IRenderable[]
 }
 
 class RenderLayer implements IDestroyable {
     onDestroy: Action;
-    private _layers: ILayer[] = [];
+    private _cullingSets: ICullingSet[] = [];
     private _canvas: HTMLCanvasElement;
     private _context: CanvasRenderingContext2D;
     private _color: string;
     private _viewCentreTransform: ITransform = new Transform(0, 0);
 
     public get canvas(): HTMLCanvasElement { return this._canvas; }
-    public set canvasBoundsRect(value:{ left:number, right:number, top:number, bottom:number }) {
+    public set canvasBoundsRect(value: { left: number, right: number, top: number, bottom: number }) {
         this.setCanvasBoundsRect(value.left, value.right, value.top, value.bottom);
     }
     public get canvasBoundRect(): { left: number, right: number, top: number, bottom: number } {
@@ -53,14 +53,14 @@ class RenderLayer implements IDestroyable {
     }
 
     public addRenderComponent(component: IRenderable, distanceFromCamera: number): void {
-        let layer = this._layers.find((value) => value.distanceFromCamera == distanceFromCamera);
+        let layer = this._cullingSets.find((value) => value.distanceFromCamera == distanceFromCamera);
         if (layer == undefined) {
             layer = {
                 distanceFromCamera: distanceFromCamera,
                 renderables: []
             };
-            this._layers.push(layer);
-            this._layers.sort((layerA, layerB) => layerB.distanceFromCamera - layerA.distanceFromCamera);
+            this._cullingSets.push(layer);
+            this._cullingSets.sort((layerA, layerB) => layerB.distanceFromCamera - layerA.distanceFromCamera);
         }
         if (layer.renderables.indexOf(component) != -1) return;
         component.onDestroy.add(() => this.removeRenderComponent(component, distanceFromCamera), this);
@@ -68,39 +68,39 @@ class RenderLayer implements IDestroyable {
     }
 
     public removeRenderComponent(component: IRenderable, fromLayer: number): void {
-        let layer = this._layers.find((value) => value.distanceFromCamera == fromLayer);
+        let layer = this._cullingSets.find((value) => value.distanceFromCamera == fromLayer);
         if (layer == undefined) return;
         let index = layer.renderables.indexOf(component);
         if (index == -1) return;
         layer.renderables.splice(index, 1);
     }
 
-    public wipe():void {
+    public wipe(): void {
         var canvasBounds = this.canvasBoundsRect;
         this._context.clearRect(canvasBounds.left, canvasBounds.top, this.canvas.width, this.canvas.height);
     }
 
-    public render():void {
+    public render(offsetX: number, offsetY: number): void {
         this.paintBackground();
-        this._layers.forEach((layer) => {
-            this.renderLayer(layer);
+        this._cullingSets.forEach((layer) => {
+            this.renderLayer(layer, offsetX, offsetY);
         });
     }
 
-    public paintBackground():void {
+    public paintBackground(): void {
         this.wipe();
         this._context.fillStyle = this._color;
         this._context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
-    public setCanvasBoundsRect(left: number, right: number, top: number, bottom: number):void {
+    public setCanvasBoundsRect(left: number, right: number, top: number, bottom: number): void {
         this._canvas.style.left = left + 'px';
         this._canvas.style.right = right + 'px';
         this._canvas.style.top = top + 'px';
         this._canvas.style.bottom = bottom + 'px';
     }
 
-    public renderLayer(layer):void {
+    public renderLayer(layer: ICullingSet, offsetX: number, offsetY: number): void {
         let centre = this.viewCentre;
         layer.renderables.forEach((renderable) => {
             renderable.render(this._context, centre.x, centre.y);

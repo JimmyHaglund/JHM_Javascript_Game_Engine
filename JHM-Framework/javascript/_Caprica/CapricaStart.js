@@ -18,7 +18,7 @@ function capricaStart() {
         lookController: lookController
     };
     runDevTests();
-    renderSpace.render();
+    // renderSpace.render();
     console.log("Caprica Started");
 }
 function runDevTests() {

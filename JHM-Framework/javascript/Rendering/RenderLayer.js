@@ -1,6 +1,6 @@
 class RenderLayer {
     constructor(loop, width, height, left = 0, top = 0, backgroundColor = "gray") {
-        this._layers = [];
+        this._cullingSets = [];
         this._viewCentreTransform = new Transform(0, 0);
         this._canvas = document.createElement("canvas");
         this._context = this._canvas.getContext("2d");
@@ -37,14 +37,14 @@ class RenderLayer {
         this._canvas.remove();
     }
     addRenderComponent(component, distanceFromCamera) {
-        let layer = this._layers.find((value) => value.distanceFromCamera == distanceFromCamera);
+        let layer = this._cullingSets.find((value) => value.distanceFromCamera == distanceFromCamera);
         if (layer == undefined) {
             layer = {
                 distanceFromCamera: distanceFromCamera,
                 renderables: []
             };
-            this._layers.push(layer);
-            this._layers.sort((layerA, layerB) => layerB.distanceFromCamera - layerA.distanceFromCamera);
+            this._cullingSets.push(layer);
+            this._cullingSets.sort((layerA, layerB) => layerB.distanceFromCamera - layerA.distanceFromCamera);
         }
         if (layer.renderables.indexOf(component) != -1)
             return;
@@ -52,7 +52,7 @@ class RenderLayer {
         layer.renderables.push(component);
     }
     removeRenderComponent(component, fromLayer) {
-        let layer = this._layers.find((value) => value.distanceFromCamera == fromLayer);
+        let layer = this._cullingSets.find((value) => value.distanceFromCamera == fromLayer);
         if (layer == undefined)
             return;
         let index = layer.renderables.indexOf(component);
@@ -64,10 +64,10 @@ class RenderLayer {
         var canvasBounds = this.canvasBoundsRect;
         this._context.clearRect(canvasBounds.left, canvasBounds.top, this.canvas.width, this.canvas.height);
     }
-    render() {
+    render(offsetX, offsetY) {
         this.paintBackground();
-        this._layers.forEach((layer) => {
-            this.renderLayer(layer);
+        this._cullingSets.forEach((layer) => {
+            this.renderLayer(layer, offsetX, offsetY);
         });
     }
     paintBackground() {
@@ -81,7 +81,7 @@ class RenderLayer {
         this._canvas.style.top = top + 'px';
         this._canvas.style.bottom = bottom + 'px';
     }
-    renderLayer(layer) {
+    renderLayer(layer, offsetX, offsetY) {
         let centre = this.viewCentre;
         layer.renderables.forEach((renderable) => {
             renderable.render(this._context, centre.x, centre.y);

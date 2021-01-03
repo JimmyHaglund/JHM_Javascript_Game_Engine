@@ -28,7 +28,7 @@ function capricaStart() {
 
   runDevTests();
 
-  renderSpace.render();
+  // renderSpace.render();
   console.log("Caprica Started");
 }
 
