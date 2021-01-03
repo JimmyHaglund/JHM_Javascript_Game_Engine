@@ -24,7 +24,7 @@ class RayRender implements IRenderable, IDestroyable {
     private _color: string;
     private _onDestroy: Action = new Action();
     get onDestroy() { return this._onDestroy; }
-    constructor(renderSpace: RenderSpace, x0, y0, lean, length = 1, color = 'black', duration = 100) {
+    constructor(renderSpace: RenderLayer, x0, y0, lean, length = 1, color = 'black', duration = 100) {
         let line = rayToLine(x0, y0, lean, length);
         this._x1 = line.x1;
         this._y1 = line.y1;

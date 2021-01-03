@@ -3,7 +3,7 @@ interface ILayer {
     renderables: IRenderable[]
 }
 
-class RenderSpace implements IDestroyable {
+class RenderLayer implements IDestroyable {
     onDestroy: Action;
     private _layers: ILayer[] = [];
     private _canvas: HTMLCanvasElement;
@@ -12,8 +12,6 @@ class RenderSpace implements IDestroyable {
     private _viewCentreTransform: ITransform = new Transform(0, 0);
 
     get canvas(): HTMLCanvasElement { return this._canvas; }
-    get width() { return this._canvas.width; }
-    set width(value: number) { this.canvas.width = value; }
     set height(value: number) { this.canvas.height = value; }
     get height() { return this._canvas.height; }
     get left() { return parseInt(this._canvas.style.left, 10); }
@@ -27,7 +25,7 @@ class RenderSpace implements IDestroyable {
     set backgroundColor(color: string) { this._color = color; }
     get backgroundColor(): string { return this._color; }
     get viewCentre(): { x: number, y: number } {
-        let x = this._viewCentreTransform.x - this.width * 0.5;
+        let x = this._viewCentreTransform.x - this.canvas.width * 0.5;
         let y = this._viewCentreTransform.y - this.height * 0.5;
         return { x: x, y: y };
     }
@@ -76,7 +74,7 @@ class RenderSpace implements IDestroyable {
     }
 
     wipe() {
-        this._context.clearRect(this.left, this.top, this.width, this.height);
+        this._context.clearRect(this.left, this.top, this.canvas.width, this.height);
     }
 
     render() {
@@ -89,7 +87,7 @@ class RenderSpace implements IDestroyable {
     paintBackground() {
         this.wipe();
         this._context.fillStyle = this._color;
-        this._context.fillRect(0, 0, this.width, this.height);
+        this._context.fillRect(0, 0, this.canvas.width, this.height);
     }
 
     private renderLayer(layer) {

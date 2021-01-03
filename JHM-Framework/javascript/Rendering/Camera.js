@@ -1,6 +1,8 @@
 class Camera {
-    constructor() {
-        this.positionX = 0;
+    constructor(renderSpace, transform) {
         this.positionY = 0;
+        this._transform = transform;
+        this._renderSpace = renderSpace;
     }
+    get centreX() { return; }
 }

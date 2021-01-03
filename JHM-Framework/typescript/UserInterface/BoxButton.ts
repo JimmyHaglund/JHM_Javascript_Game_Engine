@@ -20,7 +20,7 @@ class BoxButton implements IDestroyable {
     get collider(): BoxCollider { return this._collider; }
     get onClick(): Action { return this._onClick; }
 
-    constructor(renderSpace: RenderSpace, physicsSpace: PhysicsSpace, left: number, top: number, width: number, height: number,
+    constructor(renderSpace: RenderLayer, physicsSpace: PhysicsSpace, left: number, top: number, width: number, height: number,
         normalSprite: string = "", hoverSprite: string = "", pressSprite: string = "") {
         this._spritesIds = {
             normal: normalSprite,

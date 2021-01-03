@@ -1,10 +1,10 @@
 class UiSpace {
     private _loop: ILoop;
     private _physics: PhysicsSpace;
-    private _renderer: RenderSpace;
+    private _renderer: RenderLayer;
     private _mousePointer: MousePointer;
     private _physicsSpace: PhysicsSpace;
-    constructor(renderSpace: RenderSpace, renderLayer: number = -1000,
+    constructor(renderSpace: RenderLayer, renderLayer: number = -1000,
         mouseInput: MouseInput, keyboarInput: KeyboardInput = null) {
         this._renderer = renderSpace;
         this._loop = new UiLoop(mouseInput);

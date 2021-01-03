@@ -1,7 +1,7 @@
 let movementInput: CapricaMovementInput;
 let gameData: {
   playLoop: Loop,
-  render: RenderSpace,
+  render: RenderLayer,
   physics: PhysicsSpace,
   mainCharacter: CapricaMainCharacter,
   lookController: CapricaLookController
@@ -10,7 +10,7 @@ let viewCentre: {x:number, y:number};
 
 function capricaStart() {
   let loop = new Loop(60);
-  let renderSpace = new RenderSpace(loop, 800, 600);
+  let renderSpace = new RenderLayer(loop, 800, 600);
   let physicsSpace = new PhysicsSpace(loop);
   let mainCharacter = new CapricaMainCharacter(50, 50,
     loop, renderSpace, physicsSpace);

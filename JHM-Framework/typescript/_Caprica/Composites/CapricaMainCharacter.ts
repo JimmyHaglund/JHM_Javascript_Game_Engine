@@ -14,7 +14,7 @@ class CapricaMainCharacter {
     public get input() { return this._input; }
 
     constructor(xPosition: number, yPosition: number, loop: Loop,
-        renderSpace: RenderSpace, physics: PhysicsSpace) {
+        renderSpace: RenderLayer, physics: PhysicsSpace) {
         this._entity = new Entity(xPosition, yPosition);
         this.initialisePhysics(this._entity, physics);
         this.initialiseRendering(this._entity, renderSpace);
@@ -30,7 +30,7 @@ class CapricaMainCharacter {
         physics.addRigidbody(rigidBody);
     }
 
-    private initialiseRendering(entity: Entity, renderSpace: RenderSpace): void {
+    private initialiseRendering(entity: Entity, renderSpace: RenderLayer): void {
         this._sprite = new RotatedSprite(entity, "main_character");
         this._sprite.offsetX = -50;
         this._sprite.offsetY = -50;
@@ -44,7 +44,7 @@ class CapricaMainCharacter {
         loop.onUpdate.add(this._controller.update, this._controller);
     }
 
-    private initialiseAimCone(loop:Loop, renderSpace:RenderSpace) {
+    private initialiseAimCone(loop:Loop, renderSpace:RenderLayer) {
         this._lookCone = new AimConeRenderer(renderSpace, 300);
         this._lookController = new AimConeController(loop, this._entity.transform, this._lookCone);
     }
