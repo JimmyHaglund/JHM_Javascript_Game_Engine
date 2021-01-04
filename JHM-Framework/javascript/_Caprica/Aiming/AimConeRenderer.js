@@ -5,7 +5,7 @@ class AimConeRenderer {
         this.coneAngle = Math.PI * 0.25;
         this.visible = false;
         this._onDestroy = new Action();
-        renderSpace.addRenderComponent(this, -5);
+        renderSpace.addRenderable(this);
         this._coneDistance = coneDistance;
         this.setDirection(1, 0);
     }

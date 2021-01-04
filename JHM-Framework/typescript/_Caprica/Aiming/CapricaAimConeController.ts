@@ -7,6 +7,7 @@ class AimConeController {
     private _mouseX = 0;
     private _mouseY = 0;
     private _aimData: AimData;
+    private _camera:Camera;
 
     public set aimData(value:AimData) {
         if (value == null) return;
@@ -14,7 +15,7 @@ class AimConeController {
         this.endAim(null);
     }
 
-    constructor(loop: Loop, characterTransform: ITransform, cone: AimConeRenderer, viewCentre:ITransform = null) {
+    constructor(loop: Loop, characterTransform: ITransform, cone: AimConeRenderer, camera:Camera) {
         onMouseDown.add(this.startAim, this);
         onMouseUp.add(this.endAim, this);
         onMouseMoved.add(this.updateMousePosition, this);
@@ -22,6 +23,7 @@ class AimConeController {
         this._cone = cone;
         this._transform = characterTransform;
         this._aimData = new AimData(Math.PI * 0.5, Math.PI * 0.15, 0.5);
+        this._camera = camera;
     }
 
     private updateMousePosition(event:MouseEvent) {
@@ -38,15 +40,16 @@ class AimConeController {
     }
 
     private getDirection(): { x: number, y: number } {
-        // TODO: This is horse shit. Properly refactor aim cone controller and aim cone renderer
-        // to work with moveable views. Should probably just pass in a camera to this object.
-        let startX = gameData.render.canvas.width * 0.5;//this._transform.x;
-        let startY = gameData.render.canvas.height * 0.5;// viewCentre.y;// this._transform.y;
+        let cameraCentreX = this._camera.centreX;
+        let cameraCentreY = this._camera.centreY;
+        let screenBounds = this._camera.screenBounds;
+        let mouseWorldX = this._mouseX + screenBounds.left;
+        // let mouseWorldY = 
         let goalX = this._mouseX;
         let goalY = this._mouseY;
         return {
-            x: goalX - startX,
-            y: goalY - startY
+            x: goalX - cameraCentreX,
+            y: goalY - cameraCentreY
         };
     }
 

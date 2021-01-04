@@ -2,7 +2,7 @@ class CapricaMainCharacter {
     private _entity: Entity;
     private _rigidbody: IRigidbody;
     private _sprite: RotatedSprite;
-    private _controller: CapricaMovementController;
+    private _movementController: CapricaMovementController;
     private _input: CapricaMovementInput;
     private _lookCone:AimConeRenderer;
     private _lookController:AimConeController;
@@ -10,16 +10,16 @@ class CapricaMainCharacter {
     public get entity() { return this._entity; }
     public get rigidbody() { return this._rigidbody; }
     public get sprite() { return this._sprite; }
-    public get controller() { return this._controller; }
+    public get controller() { return this._movementController; }
     public get input() { return this._input; }
 
     constructor(xPosition: number, yPosition: number, loop: Loop,
-        renderSpace: RenderLayer, physics: PhysicsSpace) {
+        renderSpace: IRenderLayer, camera:Camera, physics: PhysicsSpace) {
         this._entity = new Entity(xPosition, yPosition);
         this.initialisePhysics(this._entity, physics);
         this.initialiseRendering(this._entity, renderSpace);
-        this.initialiseController(loop);
-        this.initialiseAimCone(loop, renderSpace);
+        this.initialiseMovementController(loop);
+        this.initialiseLookController(loop, renderSpace, camera);
     }
 
     private initialisePhysics(entity: Entity, physics: PhysicsSpace): void {
@@ -30,23 +30,23 @@ class CapricaMainCharacter {
         physics.addRigidbody(rigidBody);
     }
 
-    private initialiseRendering(entity: Entity, renderSpace: RenderLayer): void {
+    private initialiseRendering(entity: Entity, renderSpace: IRenderLayer): void {
         this._sprite = new RotatedSprite(entity, "main_character");
         this._sprite.offsetX = -50;
         this._sprite.offsetY = -50;
         entity.addComponent(this._sprite);
-        renderSpace.addRenderComponent(this._sprite, 0);
+        renderSpace.addRenderable(this._sprite);
     }
 
-    private initialiseController(loop: Loop): void {
+    private initialiseMovementController(loop: Loop): void {
         this._input = new CapricaMovementInput();
-        this._controller = new CapricaMovementController(this._input, this);
-        loop.onUpdate.add(this._controller.update, this._controller);
+        this._movementController = new CapricaMovementController(this._input, this);
+        loop.onUpdate.add(this._movementController.update, this._movementController);
     }
 
-    private initialiseAimCone(loop:Loop, renderSpace:RenderLayer) {
+    private initialiseLookController(loop:Loop, renderSpace:IRenderLayer, camera:Camera) {
         this._lookCone = new AimConeRenderer(renderSpace, 300);
-        this._lookController = new AimConeController(loop, this._entity.transform, this._lookCone);
+        this._lookController = new AimConeController(loop, this._entity.transform, this._lookCone, camera);
     }
 
     private setupInputLog(input: CapricaMovementInput) {

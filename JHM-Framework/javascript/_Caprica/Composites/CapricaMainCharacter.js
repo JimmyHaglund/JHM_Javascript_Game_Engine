@@ -1,15 +1,15 @@
 class CapricaMainCharacter {
-    constructor(xPosition, yPosition, loop, renderSpace, physics) {
+    constructor(xPosition, yPosition, loop, renderSpace, camera, physics) {
         this._entity = new Entity(xPosition, yPosition);
         this.initialisePhysics(this._entity, physics);
         this.initialiseRendering(this._entity, renderSpace);
-        this.initialiseController(loop);
-        this.initialiseAimCone(loop, renderSpace);
+        this.initialiseMovementController(loop);
+        this.initialiseLookController(loop, renderSpace, camera);
     }
     get entity() { return this._entity; }
     get rigidbody() { return this._rigidbody; }
     get sprite() { return this._sprite; }
-    get controller() { return this._controller; }
+    get controller() { return this._movementController; }
     get input() { return this._input; }
     initialisePhysics(entity, physics) {
         let rigidBody = new PointRigidBody(entity);
@@ -23,16 +23,16 @@ class CapricaMainCharacter {
         this._sprite.offsetX = -50;
         this._sprite.offsetY = -50;
         entity.addComponent(this._sprite);
-        renderSpace.addRenderComponent(this._sprite, 0);
+        renderSpace.addRenderable(this._sprite);
     }
-    initialiseController(loop) {
+    initialiseMovementController(loop) {
         this._input = new CapricaMovementInput();
-        this._controller = new CapricaMovementController(this._input, this);
-        loop.onUpdate.add(this._controller.update, this._controller);
+        this._movementController = new CapricaMovementController(this._input, this);
+        loop.onUpdate.add(this._movementController.update, this._movementController);
     }
-    initialiseAimCone(loop, renderSpace) {
+    initialiseLookController(loop, renderSpace, camera) {
         this._lookCone = new AimConeRenderer(renderSpace, 300);
-        this._lookController = new AimConeController(loop, this._entity.transform, this._lookCone);
+        this._lookController = new AimConeController(loop, this._entity.transform, this._lookCone, camera);
     }
     setupInputLog(input) {
         input.Up.onPressed.add(() => console.log("Up pressed, velocity: " + this._rigidbody.velocity.y), this);

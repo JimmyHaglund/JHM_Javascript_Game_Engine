@@ -15,7 +15,7 @@ function lineToRay(x1, y1, x2, y2) {
     };
 }
 class RayRender {
-    constructor(renderSpace, x0, y0, lean, length = 1, color = 'black', duration = 100) {
+    constructor(layer, x0, y0, lean, length = 1, color = 'black', duration = 100) {
         this._onDestroy = new Action();
         let line = rayToLine(x0, y0, lean, length);
         this._x1 = line.x1;
@@ -23,8 +23,8 @@ class RayRender {
         this._x2 = line.x2;
         this._y2 = line.y2;
         this._color = color;
-        renderSpace.addRenderComponent(this, -10000);
-        this._onDestroy.add(() => renderSpace.removeRenderComponent(this, -10000), this);
+        layer.addRenderable(this);
+        this._onDestroy.add(() => layer.removeRenderable(this), this);
         setTimeout(() => this.destroy.call(this), duration);
     }
     get onDestroy() { return this._onDestroy; }
