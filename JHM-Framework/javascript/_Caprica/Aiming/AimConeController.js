@@ -1,15 +1,16 @@
 class AimConeController {
-    constructor(loop, characterTransform, cone, camera) {
+    constructor(loop, characterTransform, cone, camera, aimData) {
         this._aimTime = 0;
         this._mouseX = 0;
         this._mouseY = 0;
+        this._aiming = false;
         onMouseDown.add(this.startAim, this);
         onMouseUp.add(this.endAim, this);
         onMouseMoved.add(this.updateMousePosition, this);
         this._loop = loop;
         this._cone = cone;
         this._transform = characterTransform;
-        this._aimData = new AimData(Math.PI * 0.5, Math.PI * 0.15, 0.5);
+        this._aimData = aimData;
         this._camera = camera;
     }
     set aimData(value) {
@@ -23,11 +24,24 @@ class AimConeController {
         this._mouseY = event.y;
     }
     startAim(event) {
+        if (event.button != 0)
+            return;
+        console.log(event.button);
+        if (this._aiming)
+            return;
         this._aimTime = 0;
         this._updateEventIndex = this._loop.onUpdate.add(this.update, this);
         this.updateAimDirection();
         this.updateAimAngle();
         this._cone.visible = true;
+        this._aiming = true;
+    }
+    endAim(event) {
+        if (!this._aiming)
+            return;
+        this._loop.onUpdate.remove(this._updateEventIndex);
+        this._cone.visible = false;
+        this._aiming = false;
     }
     getDirection() {
         let mouseWorldPosition = this._camera.getMouseWorldPosition();
@@ -38,10 +52,6 @@ class AimConeController {
             y: mouseWorldPosition.y - positionY
         };
     }
-    endAim(event) {
-        this._loop.onUpdate.remove(this._updateEventIndex);
-        this._cone.visible = false;
-    }
     update(deltaTime) {
         this._aimTime += deltaTime;
         this.updateAimDirection();
@@ -51,7 +61,6 @@ class AimConeController {
         let positionX = this._transform.x;
         let positionY = this._transform.y;
         let direction = this.getDirection();
-        console.log(direction);
         this._cone.setDirection(direction.x, direction.y);
         this._cone.setStartPoint(positionX, positionY);
     }

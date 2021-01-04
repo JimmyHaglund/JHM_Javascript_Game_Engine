@@ -25,12 +25,15 @@ function capricaStart() {
   };
 
   runDevTests();
+  // let secondCamera = createCamera(renderLayers, new Transform(200, 200), loop, 
+  // 820, 10, 360, 240);
   console.log("Caprica Started");
 }
 
-function createCamera(renderLayers:IRenderLayer[], transform:ITransform, loop:ILoop):Camera {
+function createCamera(renderLayers:IRenderLayer[], transform:ITransform, loop:ILoop, 
+  left: number = 10, top:number = 10, width:number = 800, height:number = 600):Camera {
   let camera = new Camera(renderLayers, transform, loop);
-  let canvas = camera.createCanvas(10, 10, 800, 600);
+  let canvas = camera.createCanvas(left, top, width, height);
   camera.addToDocument();
   return camera;
 }

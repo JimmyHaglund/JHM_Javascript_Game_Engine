@@ -33,7 +33,7 @@ class CapricaMainCharacter {
     }
     initialiseAimConeController(loop, renderSpace, camera) {
         this._lookCone = new AimConeRenderer(renderSpace, 300);
-        this._aimConeController = new AimConeController(loop, this._entity.transform, this._lookCone, camera);
+        this._aimConeController = new AimConeController(loop, this._entity.transform, this._lookCone, camera, new AimData(Math.PI * 0.5, Math.PI * 0.15, 0.5));
     }
     initialiseLookController(camera, loop) {
         this._lookController = new CapricaLookController(camera, this);

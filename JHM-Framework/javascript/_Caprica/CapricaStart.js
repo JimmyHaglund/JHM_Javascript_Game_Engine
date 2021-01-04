@@ -17,11 +17,13 @@ function capricaStart() {
         lookController: null
     };
     runDevTests();
+    // let secondCamera = createCamera(renderLayers, new Transform(200, 200), loop, 
+    // 820, 10, 360, 240);
     console.log("Caprica Started");
 }
-function createCamera(renderLayers, transform, loop) {
+function createCamera(renderLayers, transform, loop, left = 10, top = 10, width = 800, height = 600) {
     let camera = new Camera(renderLayers, transform, loop);
-    let canvas = camera.createCanvas(10, 10, 800, 600);
+    let canvas = camera.createCanvas(left, top, width, height);
     camera.addToDocument();
     return camera;
 }

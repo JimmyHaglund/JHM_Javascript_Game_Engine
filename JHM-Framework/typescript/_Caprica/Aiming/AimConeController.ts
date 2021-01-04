@@ -1,11 +1,12 @@
 class AimConeController {
-    private _loop: Loop;
     private _aimTime = 0;
+    private _mouseX = 0;
+    private _mouseY = 0;
+    private _aiming = false;
+    private _loop: Loop;
     private _updateEventIndex: number;
     private _cone: AimConeRenderer;
     private _transform: ITransform;
-    private _mouseX = 0;
-    private _mouseY = 0;
     private _aimData: AimData;
     private _camera: Camera;
 
@@ -15,14 +16,14 @@ class AimConeController {
         this.endAim(null);
     }
 
-    constructor(loop: Loop, characterTransform: ITransform, cone: AimConeRenderer, camera: Camera) {
+    constructor(loop: Loop, characterTransform: ITransform, cone: AimConeRenderer, camera: Camera, aimData:AimData) {
         onMouseDown.add(this.startAim, this);
         onMouseUp.add(this.endAim, this);
         onMouseMoved.add(this.updateMousePosition, this);
         this._loop = loop;
         this._cone = cone;
         this._transform = characterTransform;
-        this._aimData = new AimData(Math.PI * 0.5, Math.PI * 0.15, 0.5);
+        this._aimData = aimData;
         this._camera = camera;
     }
 
@@ -32,11 +33,21 @@ class AimConeController {
     }
 
     private startAim(event: MouseEvent) {
+        if (event.button != 0) return;
+        if (this._aiming) return;
         this._aimTime = 0;
         this._updateEventIndex = this._loop.onUpdate.add(this.update, this);
         this.updateAimDirection();
         this.updateAimAngle();
         this._cone.visible = true;
+        this._aiming = true;
+    }
+
+    private endAim(event: MouseEvent) {
+        if (!this._aiming) return;
+        this._loop.onUpdate.remove(this._updateEventIndex);
+        this._cone.visible = false;
+        this._aiming = false;
     }
 
     private getDirection(): { x: number, y: number } {
@@ -49,10 +60,7 @@ class AimConeController {
         };
     }
 
-    private endAim(event: MouseEvent) {
-        this._loop.onUpdate.remove(this._updateEventIndex);
-        this._cone.visible = false;
-    }
+    
 
     private update(deltaTime: number) {
         this._aimTime += deltaTime;
@@ -64,7 +72,6 @@ class AimConeController {
         let positionX = this._transform.x;
         let positionY = this._transform.y;
         let direction = this.getDirection();
-        console.log(direction);
 
         this._cone.setDirection(direction.x, direction.y);
         this._cone.setStartPoint(positionX, positionY);
