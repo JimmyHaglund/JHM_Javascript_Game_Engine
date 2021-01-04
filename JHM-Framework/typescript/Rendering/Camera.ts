@@ -6,26 +6,29 @@ class Camera implements IDestroyable {
     private _layers: IRenderLayer[];
     private _canvas: HTMLCanvasElement;
     private _context: CanvasRenderingContext2D;
-    private _frustumWidth: number;
-    private _frustumHeight: number;
+    private _mousePosition = {x:0, y:0};
 
     public get centreX(): number { return this._transform.worldX; }
     public get centreY(): number { return this._transform.worldY; }
     public get canvas(): HTMLCanvasElement { return this._canvas; }
     public get viewFrustum(): Rect {
         return new Rect(
-            this.centreX + this._frustumWidth * 0.5,
-            this.centreX - this._frustumWidth * 0.5,
-            this.centreY - this._frustumWidth * 0.5,
-            this.centreY + this._frustumHeight * 0.5
+            this.centreX - this.canvas.width * 0.5,
+            this.centreY - this.canvas.height * 0.5,
+            this.canvas.width,
+            this.canvas.height
         );
     }
     public get screenBounds(): Rect {
+        let left = parseInt(this._canvas.style.left, 10);
+        let top = parseInt(this._canvas.style.top, 10);
+        let right = left + this.canvas.width;
+        let bottom = top + this.canvas.height;
         return new Rect(
-            parseInt(this._canvas.style.right, 10),
-            parseInt(this._canvas.style.left, 10),
-            parseInt(this._canvas.style.top, 10),
-            parseInt(this._canvas.style.bottom, 10)
+            left,
+            top,
+            right - left,
+            bottom - top
         );
     }
 
@@ -34,6 +37,7 @@ class Camera implements IDestroyable {
         this._layers = layers;
 
         loop.onUpdate.add(this.render, this);
+        onMouseMoved.add(this.storeMousePosition, this);
     }
 
     public destroy():void {
@@ -42,11 +46,12 @@ class Camera implements IDestroyable {
 
     public createCanvas(screenLeft:number, screenTop:number, width:number, height:number):HTMLCanvasElement {
         let canvas = document.createElement("canvas");
+        canvas.style.position = 'absolute';
         this._context = canvas.getContext("2d");
         canvas.width = width;
         canvas.height = height;
-        canvas.style.left = screenLeft.toString();
-        canvas.style.top = screenTop.toString();
+        canvas.style.left = screenLeft.toString() + "px";
+        canvas.style.top = screenTop.toString() + "px";
         return (this._canvas = canvas);
     }
 
@@ -66,6 +71,31 @@ class Camera implements IDestroyable {
 
     public setBackgroundColor(color:string) {
         this._backgroundColor = color;
+    }
+
+    public getMouseWorldPosition(): { x: number, y: number } {
+        let cameraWorldRect = this.viewFrustum;
+        let mouseCanvasPosition = this.getMouseCanvasPosition();
+        let mouseWorldX = mouseCanvasPosition.x + cameraWorldRect.left;
+        let mouseWorldY = mouseCanvasPosition.y + cameraWorldRect.top;
+        return {
+            x: mouseWorldX,
+            y: mouseWorldY
+        };
+    }
+
+    private getMouseCanvasPosition(): { x: number, y: number } {
+        let cameraScreenRect = this.screenBounds;
+        let mouseCanvasX = this._mousePosition.x - cameraScreenRect.left;
+        let mouseCanvasY = this._mousePosition.y - cameraScreenRect.top;
+        return {
+            x: mouseCanvasX,
+            y: mouseCanvasY
+        };
+    }
+
+    private storeMousePosition(event:MouseEvent) {
+        this._mousePosition = {x:event.x, y:event.y}
     }
 
     private paintBackground(): void {

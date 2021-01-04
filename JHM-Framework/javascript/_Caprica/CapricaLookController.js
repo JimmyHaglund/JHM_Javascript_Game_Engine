@@ -1,20 +1,19 @@
 class CapricaLookController {
-    constructor(mouseMoveAction, character) {
-        mouseMoveAction.add(this.updateMousePosition, this);
+    constructor(camera, character) {
         this._sprite = character.sprite;
         this._entity = character.entity;
+        this._camera = camera;
     }
-    updateMousePosition(mouseEvent) {
-        let mouseX = mouseEvent.x;
-        let mouseY = mouseEvent.y;
-        this._entity.transform.rotation = this.getLookRotation(mouseX, mouseY);
+    updateRotation() {
+        this._entity.transform.rotation = this.getLookRotation();
     }
-    getLookRotation(mouseX, mouseY) {
+    getLookRotation() {
+        let entityX = this._entity.transform.worldX;
+        let entityY = this._entity.transform.worldY;
+        let mouse = this._camera.getMouseWorldPosition();
         let right = vector.right;
-        let entityX = this._entity.x;
-        let entityY = this._entity.y;
-        let entityToMouseX = mouseX - entityX;
-        let entityToMouseY = mouseY - entityY;
+        let entityToMouseX = mouse.x - entityX;
+        let entityToMouseY = mouse.y - entityY;
         return algebra.angleFromToCounterClockwise(right.x, right.y, entityToMouseX, -entityToMouseY);
     }
     logMousePosition(x, y) {

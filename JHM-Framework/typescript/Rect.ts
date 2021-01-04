@@ -1,12 +1,14 @@
 class Rect {
-    public left:number;
-    public right:number;
-    public top:number;
-    public bottom:number;
-    constructor(left:number, right:number, top:number, bottom:number) {
+    public left: number;
+    public top: number;
+    public width: number;
+    public height: number;
+    public get bottom(): number { return this.top + this.height };
+    public get right(): number { return this.left + this.width };
+    constructor(left: number, top: number, width: number, height: number) {
         this.left = left;
-        this.right = right;
         this.top = top;
-        this.bottom = bottom;
+        this.width = width;
+        this.height = height;
     }
 }

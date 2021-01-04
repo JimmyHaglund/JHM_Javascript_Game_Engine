@@ -16,17 +16,15 @@ function capricaStart() {
   let mainCharacter = new CapricaMainCharacter(50, 50, loop, renderLayers[1], camera,  physicsSpace)
   cameraTransform.parent = mainCharacter.entity.transform;
   movementInput = mainCharacter.input;
-  let lookController = new CapricaLookController(onMouseMoved, mainCharacter);
   gameData = {
     playLoop: loop,
     renderLayers: renderLayers,
     physics: physicsSpace,
     mainCharacter: mainCharacter,
-    lookController: lookController
+    lookController: null
   };
 
   runDevTests();
-  console.log(cameraTransform.parent);
   console.log("Caprica Started");
 }
 

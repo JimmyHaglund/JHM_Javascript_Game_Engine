@@ -5,7 +5,8 @@ class CapricaMainCharacter {
     private _movementController: CapricaMovementController;
     private _input: CapricaMovementInput;
     private _lookCone:AimConeRenderer;
-    private _lookController:AimConeController;
+    private _aimConeController:AimConeController;
+    private _lookController: CapricaLookController;
 
     public get entity() { return this._entity; }
     public get rigidbody() { return this._rigidbody; }
@@ -19,7 +20,8 @@ class CapricaMainCharacter {
         this.initialisePhysics(this._entity, physics);
         this.initialiseRendering(this._entity, renderSpace);
         this.initialiseMovementController(loop);
-        this.initialiseLookController(loop, renderSpace, camera);
+        this.initialiseAimConeController(loop, renderSpace, camera);
+        this.initialiseLookController(camera, loop);
     }
 
     private initialisePhysics(entity: Entity, physics: PhysicsSpace): void {
@@ -44,9 +46,14 @@ class CapricaMainCharacter {
         loop.onUpdate.add(this._movementController.update, this._movementController);
     }
 
-    private initialiseLookController(loop:Loop, renderSpace:IRenderLayer, camera:Camera) {
+    private initialiseAimConeController(loop:Loop, renderSpace:IRenderLayer, camera:Camera) {
         this._lookCone = new AimConeRenderer(renderSpace, 300);
-        this._lookController = new AimConeController(loop, this._entity.transform, this._lookCone, camera);
+        this._aimConeController = new AimConeController(loop, this._entity.transform, this._lookCone, camera);
+    }
+
+    private initialiseLookController(camera:Camera, loop:ILoop) {
+        this._lookController = new CapricaLookController(camera, this);
+        loop.onUpdate.add(this._lookController.updateRotation, this._lookController);
     }
 
     private setupInputLog(input: CapricaMovementInput) {

@@ -1,8 +1,12 @@
 class Rect {
-    constructor(left, right, top, bottom) {
+    constructor(left, top, width, height) {
         this.left = left;
-        this.right = right;
         this.top = top;
-        this.bottom = bottom;
+        this.width = width;
+        this.height = height;
     }
+    get bottom() { return this.top + this.height; }
+    ;
+    get right() { return this.left + this.width; }
+    ;
 }

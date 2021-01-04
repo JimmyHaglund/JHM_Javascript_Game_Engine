@@ -1,8 +1,21 @@
 class AimConeController {
-    constructor(loop, characterTransform, cone, camera) {
-        this._aimTime = 0;
-        this._mouseX = 0;
-        this._mouseY = 0;
+    private _loop: Loop;
+    private _aimTime = 0;
+    private _updateEventIndex: number;
+    private _cone: AimConeRenderer;
+    private _transform: ITransform;
+    private _mouseX = 0;
+    private _mouseY = 0;
+    private _aimData: AimData;
+    private _camera: Camera;
+
+    public set aimData(value: AimData) {
+        if (value == null) return;
+        this._aimData = value;
+        this.endAim(null);
+    }
+
+    constructor(loop: Loop, characterTransform: ITransform, cone: AimConeRenderer, camera: Camera) {
         onMouseDown.add(this.startAim, this);
         onMouseUp.add(this.endAim, this);
         onMouseMoved.add(this.updateMousePosition, this);
@@ -12,50 +25,52 @@ class AimConeController {
         this._aimData = new AimData(Math.PI * 0.5, Math.PI * 0.15, 0.5);
         this._camera = camera;
     }
-    set aimData(value) {
-        if (value == null)
-            return;
-        this._aimData = value;
-        this.endAim(null);
-    }
-    updateMousePosition(event) {
+
+    private updateMousePosition(event: MouseEvent) {
         this._mouseX = event.x;
         this._mouseY = event.y;
     }
-    startAim(event) {
+
+    private startAim(event: MouseEvent) {
         this._aimTime = 0;
         this._updateEventIndex = this._loop.onUpdate.add(this.update, this);
         this.updateAimDirection();
         this.updateAimAngle();
         this._cone.visible = true;
     }
-    getDirection() {
+
+    private getDirection(): { x: number, y: number } {
         let mouseWorldPosition = this._camera.getMouseWorldPosition();
         let positionX = this._transform.worldX;
-        let cameraCentreY = this._transform.worldY;
+        let positionY = this._transform.worldY;
         return {
             x: mouseWorldPosition.x - positionX,
-            y: mouseWorldPosition.y - cameraCentreY
+            y: mouseWorldPosition.y - positionY
         };
     }
-    endAim(event) {
+
+    private endAim(event: MouseEvent) {
         this._loop.onUpdate.remove(this._updateEventIndex);
         this._cone.visible = false;
     }
-    update(deltaTime) {
+
+    private update(deltaTime: number) {
         this._aimTime += deltaTime;
         this.updateAimDirection();
         this.updateAimAngle();
     }
-    updateAimDirection() {
+
+    private updateAimDirection() {
         let positionX = this._transform.x;
         let positionY = this._transform.y;
         let direction = this.getDirection();
         console.log(direction);
+
         this._cone.setDirection(direction.x, direction.y);
         this._cone.setStartPoint(positionX, positionY);
     }
-    updateAimAngle() {
+
+    private updateAimAngle() {
         let aimPercent = this._aimTime / this._aimData.aimSeconds;
         if (aimPercent > 1.0) {
             this._cone.coneAngle = this._aimData.aimEndAngle;
