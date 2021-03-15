@@ -23,7 +23,7 @@ function capricaStart() {
   // The solution would be to separate the game/position and the render loops in a better way, either
   // by explicitly defining two separate loops, or by refactoring/restructuring the aim cone to work better with existing systems.
   let physicsSpace = new PhysicsSpace(loop);
-  let mainCharacter = new CapricaMainCharacter(0, 0, loop, renderLayers[1], camera,  physicsSpace)
+  let mainCharacter = new CapricaMainCharacter(0, 0, loop, renderLayers[1], camera, physicsSpace)
   cameraTransform.parent = mainCharacter.entity.transform;
   movementInput = mainCharacter.input;
   gameData = {
@@ -38,10 +38,19 @@ function capricaStart() {
   // let secondCamera = createCamera(renderLayers, new Transform(200, 200), loop, 
   // 820, 10, 360, 240);
   console.log("Caprica Started");
+
+  onMouseDown.add(() => generateShaker(cameraTransform), null);
+
 }
 
-function createCamera(renderLayers:IRenderLayer[], transform:ITransform, loop:ILoop, 
-  left: number = 10, top:number = 10, width:number = 800, height:number = 600):Camera {
+function generateShaker(transform:Transform):void {
+  let shakeDisplacement = {min:5, max:20};
+  let loop = gameData.playLoop;
+  let shaker = new Shaker(transform, loop, 10, shakeDisplacement);
+}
+
+function createCamera(renderLayers: IRenderLayer[], transform: ITransform, loop: ILoop,
+  left: number = 10, top: number = 10, width: number = 800, height: number = 600): Camera {
   let camera = new Camera(renderLayers, transform, loop);
   let canvas = camera.createCanvas(left, top, width, height);
   camera.addToDocument();
