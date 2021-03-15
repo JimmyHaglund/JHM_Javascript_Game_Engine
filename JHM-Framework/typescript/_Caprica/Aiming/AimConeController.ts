@@ -69,8 +69,8 @@ class AimConeController {
     }
 
     private updateAimDirection() {
-        let positionX = this._transform.x;
-        let positionY = this._transform.y;
+        let positionX = this._transform.worldX;
+        let positionY = this._transform.worldY;
         let direction = this.getDirection();
 
         this._cone.setDirection(direction.x, direction.y);

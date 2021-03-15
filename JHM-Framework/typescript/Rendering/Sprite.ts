@@ -55,7 +55,7 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
     public destroy(): void {
         this._onDestroy.invoke();
     }
-    // Render image.
+    
     public render(context: CanvasRenderingContext2D, viewX:number, viewY:number):void {
         if (this._image == null) return;
         let translationX = this.translation.x - viewX;

@@ -10,10 +10,20 @@ let gameData: {
 function capricaStart() {
   let loop = new Loop(60);
   let renderLayers: IRenderLayer[] = createRenderLayers();
-  let physicsSpace = new PhysicsSpace(loop);
-  let cameraTransform = new Transform(50, 50);
+  let cameraTransform = new Transform(0, 0);
   let camera = createCamera(renderLayers, cameraTransform, loop);
-  let mainCharacter = new CapricaMainCharacter(50, 50, loop, renderLayers[1], camera,  physicsSpace)
+  // Heres' a volatile situation: the AimConeController will cache the game loop and dynamically add and remove itself
+  // when the user starts respectively stops aiming.
+  // As a result, the aimconecontroller can be assumed to always be last in the update loop.
+  // The aimconecontroller updates its position in its loop, while the character updates its positions as part of the physics loop.
+  // Meanwhile, they both render as part of the camera render update loop.
+  // As a result, if the physics loop is added before the rendering loop the order would be
+  // character move -> render -> aim cone move. The aim cone will seem to lag behind the character.
+  // This is the volatile part: simply changing the order that loops are added will cause a bug.
+  // The solution would be to separate the game/position and the render loops in a better way, either
+  // by explicitly defining two separate loops, or by refactoring/restructuring the aim cone to work better with existing systems.
+  let physicsSpace = new PhysicsSpace(loop);
+  let mainCharacter = new CapricaMainCharacter(0, 0, loop, renderLayers[1], camera,  physicsSpace)
   cameraTransform.parent = mainCharacter.entity.transform;
   movementInput = mainCharacter.input;
   gameData = {

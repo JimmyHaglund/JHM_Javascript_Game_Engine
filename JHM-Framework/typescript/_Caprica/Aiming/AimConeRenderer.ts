@@ -34,6 +34,8 @@ class AimConeRenderer implements IRenderable {
         this.renderLookDirectionLine(context);
         context.strokeStyle = "#45f71b"; // Lime
         this.renderCone(context);
+        context.strokeStyle = "red"
+        this.renderDiff(context);
     }
 
     setDirection(x: number, y: number) {
@@ -72,6 +74,17 @@ class AimConeRenderer implements IRenderable {
         this.renderLine(this.startPoint.x, this.startPoint.y, coneTipLeft.x, coneTipLeft.y, context);
         this.renderLine(this.startPoint.x, this.startPoint.y, coneTipRight.x, coneTipRight.y, context);
     }
+
+    private renderDiff(context: CanvasRenderingContext2D) {
+        let a = {x: 0, y: 0};
+        let b = {x: this._startPoint.x, y: this._startPoint.y};
+        let c = {x: b.x - this._viewPosition.x, y: b.y - this._viewPosition.y};
+        let d = {x: this._viewPosition.x, y: this._viewPosition.y};
+        this.renderLine(a.x, a.y, b.x, b.y, context);
+        context.strokeStyle = "blue";
+        this.renderLine(a.x, a.y, d.x, d.y, context);
+    }
+
 
     private renderLine(x0:number, y0:number, x1:number, y1:number, context:CanvasRenderingContext2D) {
         context.beginPath();

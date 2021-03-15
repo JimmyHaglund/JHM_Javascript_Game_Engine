@@ -40,7 +40,6 @@ class Camera {
     render() {
         this.paintBackground();
         for (let n = 0; n < this._layers.length; n++) {
-            let layer = this._layers[n];
             let offsetX = this._transform.worldX - this.canvas.width * 0.5;
             let offsetY = this._transform.worldY - this.canvas.height * 0.5;
             this._layers[n].render(this._context, offsetX, offsetY, this.viewFrustum);

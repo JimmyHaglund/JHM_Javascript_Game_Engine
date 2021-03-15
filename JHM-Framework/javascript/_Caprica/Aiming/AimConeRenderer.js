@@ -27,6 +27,8 @@ class AimConeRenderer {
         this.renderLookDirectionLine(context);
         context.strokeStyle = "#45f71b"; // Lime
         this.renderCone(context);
+        context.strokeStyle = "red";
+        this.renderDiff(context);
     }
     setDirection(x, y) {
         this._direction = algebra.normalize(x, y);
@@ -59,6 +61,15 @@ class AimConeRenderer {
         let coneTipLeft = vector.add(this.startPoint, coneLeft);
         this.renderLine(this.startPoint.x, this.startPoint.y, coneTipLeft.x, coneTipLeft.y, context);
         this.renderLine(this.startPoint.x, this.startPoint.y, coneTipRight.x, coneTipRight.y, context);
+    }
+    renderDiff(context) {
+        let a = { x: 0, y: 0 };
+        let b = { x: this._startPoint.x, y: this._startPoint.y };
+        let c = { x: b.x - this._viewPosition.x, y: b.y - this._viewPosition.y };
+        let d = { x: this._viewPosition.x, y: this._viewPosition.y };
+        this.renderLine(a.x, a.y, b.x, b.y, context);
+        context.strokeStyle = "blue";
+        this.renderLine(a.x, a.y, d.x, d.y, context);
     }
     renderLine(x0, y0, x1, y1, context) {
         context.beginPath();

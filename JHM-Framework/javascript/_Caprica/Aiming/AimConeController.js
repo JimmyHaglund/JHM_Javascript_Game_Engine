@@ -26,7 +26,6 @@ class AimConeController {
     startAim(event) {
         if (event.button != 0)
             return;
-        console.log(event.button);
         if (this._aiming)
             return;
         this._aimTime = 0;
@@ -58,8 +57,8 @@ class AimConeController {
         this.updateAimAngle();
     }
     updateAimDirection() {
-        let positionX = this._transform.x;
-        let positionY = this._transform.y;
+        let positionX = this._transform.worldX;
+        let positionY = this._transform.worldY;
         let direction = this.getDirection();
         this._cone.setDirection(direction.x, direction.y);
         this._cone.setStartPoint(positionX, positionY);

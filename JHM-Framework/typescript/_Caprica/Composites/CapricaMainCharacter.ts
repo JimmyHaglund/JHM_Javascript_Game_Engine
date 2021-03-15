@@ -17,11 +17,13 @@ class CapricaMainCharacter {
     constructor(xPosition: number, yPosition: number, loop: Loop,
         renderSpace: IRenderLayer, camera:Camera, physics: PhysicsSpace) {
         this._entity = new Entity(xPosition, yPosition);
-        this.initialisePhysics(this._entity, physics);
-        this.initialiseRendering(this._entity, renderSpace);
         this.initialiseMovementController(loop);
-        this.initialiseAimConeController(loop, renderSpace, camera);
         this.initialiseLookController(camera, loop);
+        this.initialisePhysics(this._entity, physics);
+        
+        this.initialiseRendering(this._entity, renderSpace);
+        this.initialiseAimConeController(loop, renderSpace, camera);
+        
     }
 
     private initialisePhysics(entity: Entity, physics: PhysicsSpace): void {

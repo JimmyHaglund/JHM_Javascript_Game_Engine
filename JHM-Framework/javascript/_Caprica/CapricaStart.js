@@ -3,10 +3,10 @@ let gameData;
 function capricaStart() {
     let loop = new Loop(60);
     let renderLayers = createRenderLayers();
-    let physicsSpace = new PhysicsSpace(loop);
-    let cameraTransform = new Transform(50, 50);
+    let cameraTransform = new Transform(0, 0);
     let camera = createCamera(renderLayers, cameraTransform, loop);
-    let mainCharacter = new CapricaMainCharacter(50, 50, loop, renderLayers[1], camera, physicsSpace);
+    let physicsSpace = new PhysicsSpace(loop);
+    let mainCharacter = new CapricaMainCharacter(0, 0, loop, renderLayers[1], camera, physicsSpace);
     cameraTransform.parent = mainCharacter.entity.transform;
     movementInput = mainCharacter.input;
     gameData = {

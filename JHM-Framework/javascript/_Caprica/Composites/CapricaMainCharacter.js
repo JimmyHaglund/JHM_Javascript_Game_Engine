@@ -1,11 +1,11 @@
 class CapricaMainCharacter {
     constructor(xPosition, yPosition, loop, renderSpace, camera, physics) {
         this._entity = new Entity(xPosition, yPosition);
+        this.initialiseMovementController(loop);
+        this.initialiseLookController(camera, loop);
         this.initialisePhysics(this._entity, physics);
         this.initialiseRendering(this._entity, renderSpace);
-        this.initialiseMovementController(loop);
         this.initialiseAimConeController(loop, renderSpace, camera);
-        this.initialiseLookController(camera, loop);
     }
     get entity() { return this._entity; }
     get rigidbody() { return this._rigidbody; }

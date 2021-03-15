@@ -41,7 +41,6 @@ class Sprite {
     destroy() {
         this._onDestroy.invoke();
     }
-    // Render image.
     render(context, viewX, viewY) {
         if (this._image == null)
             return;
