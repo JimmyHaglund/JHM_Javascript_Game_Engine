@@ -1,10 +1,11 @@
 class CapricaMainCharacter {
-    constructor(xPosition, yPosition, loop, renderSpace, camera, physics) {
+    constructor(xPosition, yPosition, loop, legRenderLayer, armRenderLayer, torsoRenderLayer, camera, physics) {
         this._entity = new Entity(xPosition, yPosition);
         this.initialiseMovementController(loop);
         this.initialiseLookController(camera, loop);
         this.initialisePhysics(this._entity, physics);
-        this.initialiseRendering(this._entity, renderSpace);
+        // this.initialiseRendering(this._entity, legRenderLayer,);
+        this.generateSprites(loop, this._entity.transform, legRenderLayer, armRenderLayer, torsoRenderLayer);
     }
     get entity() { return this._entity; }
     get rigidbody() { return this._rigidbody; }
@@ -21,13 +22,6 @@ class CapricaMainCharacter {
         entity.addComponent(rigidBody);
         this._rigidbody = rigidBody;
         physics.addRigidbody(rigidBody);
-    }
-    initialiseRendering(entity, renderSpace) {
-        this._sprite = new RotatedSprite(entity, "main_character");
-        this._sprite.offsetX = -50;
-        this._sprite.offsetY = -50;
-        entity.addComponent(this._sprite);
-        renderSpace.addRenderable(this._sprite);
     }
     initialiseMovementController(loop) {
         this._input = new CapricaMovementInput();
@@ -48,5 +42,23 @@ class CapricaMainCharacter {
         input.Right.onPressed.add(() => console.log("Right pressed"), this);
         input.Down.onPressed.add(() => console.log("Down pressed"), this);
         input.Left.onPressed.add(() => console.log("Left pressed"), this);
+    }
+    generateSprites(loop, transform, renderLayerLegs, renderLayerArms, renderLayerTorso) {
+        let ids = {
+            legA: 'legsA',
+            legB: 'legsB',
+            armDown: 'armsDown',
+            armUp: 'armsAim',
+            torso: 'torso'
+        };
+        let legA = new RotatedSprite(transform, ids.legA);
+        let legB = new RotatedSprite(transform, ids.legB);
+        let armDown = new RotatedSprite(transform, ids.armDown);
+        let armUp = new RotatedSprite(transform, ids.armUp);
+        let torso = new RotatedSprite(transform, ids.torso);
+        this._sprite = new CapricaMainCharacterSprite(loop, renderLayerLegs, renderLayerArms, renderLayerTorso)
+            .withArms(armDown, armUp)
+            .withLegs(legA, legB)
+            .withTorso(torso);
     }
 }

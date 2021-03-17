@@ -1,6 +1,5 @@
 class CapricaLookController {
     constructor(camera, character) {
-        this._sprite = character.sprite;
         this._entity = character.entity;
         this._camera = camera;
     }

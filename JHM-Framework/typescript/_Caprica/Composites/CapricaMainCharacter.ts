@@ -1,13 +1,14 @@
 class CapricaMainCharacter {
     private _entity: Entity;
     private _rigidbody: IRigidbody;
-    private _sprite: RotatedSprite;
+    // private _sprite: RotatedSprite;
     private _movementController: CapricaMovementController;
     private _input: CapricaMovementInput;
     private _lookCone:AimConeRenderer;
     private _aimConeController:AimController;
     private _lookController: CapricaLookController;
     private _gun: Gun;
+    private _sprite: CapricaMainCharacterSprite;
 
     public get entity() { return this._entity; }
     public get rigidbody() { return this._rigidbody; }
@@ -17,13 +18,15 @@ class CapricaMainCharacter {
     public get gun() { return this._gun; }
 
     constructor(xPosition: number, yPosition: number, loop: Loop,
-        renderSpace: IRenderLayer, camera:Camera, physics: PhysicsSpace) {
+        legRenderLayer: IRenderLayer, armRenderLayer: IRenderLayer, torsoRenderLayer:IRenderLayer,
+         camera:Camera, physics: PhysicsSpace) {
         this._entity = new Entity(xPosition, yPosition);
         this.initialiseMovementController(loop);
         this.initialiseLookController(camera, loop);
         this.initialisePhysics(this._entity, physics);
         
-        this.initialiseRendering(this._entity, renderSpace);
+        // this.initialiseRendering(this._entity, legRenderLayer,);
+        this.generateSprites(loop, this._entity.transform, legRenderLayer, armRenderLayer, torsoRenderLayer);
     }
 
     public assignGun(gun:Gun): void {
@@ -36,14 +39,6 @@ class CapricaMainCharacter {
         entity.addComponent(rigidBody);
         this._rigidbody = rigidBody;
         physics.addRigidbody(rigidBody);
-    }
-
-    private initialiseRendering(entity: Entity, renderSpace: IRenderLayer): void {
-        this._sprite = new RotatedSprite(entity, "main_character");
-        this._sprite.offsetX = -50;
-        this._sprite.offsetY = -50;
-        entity.addComponent(this._sprite);
-        renderSpace.addRenderable(this._sprite);
     }
 
     private initialiseMovementController(loop: Loop): void {
@@ -69,4 +64,31 @@ class CapricaMainCharacter {
         input.Down.onPressed.add(() => console.log("Down pressed"), this);
         input.Left.onPressed.add(() => console.log("Left pressed"), this);
     }
+
+    private generateSprites(loop:ILoop, transform:Transform, renderLayerLegs: IRenderLayer, renderLayerArms: IRenderLayer, renderLayerTorso: IRenderLayer) {
+        let ids = {
+            legA: 'legsA',
+            legB: 'legsB',
+            armDown: 'armsDown',
+            armUp: 'armsAim',
+            torso: 'torso'
+        }
+        let legA = new RotatedSprite(transform, ids.legA);
+        let legB = new RotatedSprite(transform, ids.legB);
+        let armDown = new RotatedSprite(transform, ids.armDown)
+        let armUp = new RotatedSprite(transform, ids.armUp);
+        let torso = new RotatedSprite(transform, ids.torso);
+        this._sprite = new CapricaMainCharacterSprite(loop, renderLayerLegs, renderLayerArms, renderLayerTorso)
+        .withArms(armDown, armUp)
+        .withLegs(legA, legB)
+        .withTorso(torso);
+    }
+    /*
+    private initialiseRendering(entity: Entity, renderSpace: IRenderLayer): void {
+        this._sprite = new RotatedSprite(entity, "main_character");
+        this._sprite.offsetX = -50;
+        this._sprite.offsetY = -50;
+        entity.addComponent(this._sprite);
+        renderSpace.addRenderable(this._sprite);
+    }/**/
 }

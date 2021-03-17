@@ -4,7 +4,6 @@ class RenderLayer implements IRenderLayer {
     constructor(label: string = "background") { }
 
     public addRenderable(renderable: IRenderable): void {
-
         this._renderables.push(renderable);
     }
 

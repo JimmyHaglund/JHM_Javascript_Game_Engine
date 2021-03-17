@@ -1,10 +1,8 @@
 class CapricaLookController {
-    private _sprite:RotatedSprite;
     private _entity:Entity;
     private _camera:Camera;
 
     constructor(camera:Camera, character:CapricaMainCharacter) {
-        this._sprite = character.sprite;
         this._entity = character.entity;
         this._camera = camera;
     }

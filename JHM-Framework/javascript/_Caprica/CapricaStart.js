@@ -7,11 +7,8 @@ function capricaStart() {
     let cameraTransform = new Transform(0, 0);
     let camera = createCamera(renderLayers, cameraTransform, renderLoop);
     let physicsSpace = new PhysicsSpace(gameLoop);
-    let mainCharacter = new CapricaMainCharacter(0, 0, gameLoop, renderLayers[1], camera, physicsSpace);
-    let aimConeRenderer = new AimConeRenderer(renderLayers[1], 300);
-    let gunShaker = new ShakerMaker(cameraTransform, gameLoop);
-    let aimController = new AimController(gameLoop, mainCharacter.entity.transform, aimConeRenderer, camera, new AimData(Math.PI * 0.5, Math.PI * 0.15, 0.5));
-    let gun = new Gun(aimController, gunShaker);
+    let mainCharacter = new CapricaMainCharacter(0, 0, gameLoop, renderLayers[1], renderLayers[2], renderLayers[3], camera, physicsSpace);
+    let gun = createGun(cameraTransform, gameLoop, mainCharacter.entity.transform, renderLayers[3], camera);
     mainCharacter.assignGun(gun);
     cameraTransform.parent = mainCharacter.entity.transform;
     movementInput = mainCharacter.input;
@@ -25,10 +22,11 @@ function capricaStart() {
     runDevTests();
     console.log("Caprica Started");
 }
-function generateShaker(transform) {
-    let shakeDisplacement = { min: 5, max: 20 };
-    let loop = gameData.playLoop;
-    let shaker = new Shaker(transform, loop, 10, shakeDisplacement);
+function createGun(cameraTransform, gameLoop, characterTransform, renderLayer, camera) {
+    let aimConeRenderer = new AimConeRenderer(renderLayer, 300);
+    let recoilCameraShaker = new ShakerMaker(cameraTransform, gameLoop);
+    let aimController = new AimController(gameLoop, characterTransform, aimConeRenderer, camera, new AimData(Math.PI * 0.5, Math.PI * 0.15, 0.5));
+    return new Gun(aimController, recoilCameraShaker);
 }
 function createCamera(renderLayers, transform, loop, left = 10, top = 10, width = 800, height = 600) {
     let camera = new Camera(renderLayers, transform, loop);
@@ -39,7 +37,9 @@ function createCamera(renderLayers, transform, loop, left = 10, top = 10, width 
 function createRenderLayers() {
     return [
         new RenderLayer(),
-        new RenderLayer()
+        new RenderLayer(),
+        new RenderLayer(),
+        new RenderLayer() // Character Torso
     ];
 }
 function runDevTests() {
@@ -67,4 +67,4 @@ canvas {
   image-rendering: pixelated;                 // Awesome future-browsers (?)
   -ms-interpolation-mode: nearest-neighbor;   // IE
 }
-*/ 
+/**/ 
