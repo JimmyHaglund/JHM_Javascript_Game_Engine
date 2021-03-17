@@ -1,13 +1,16 @@
 class CapricaMainCharacterSprite {
-    constructor(loop, legLayer, armLayer, torsoLayer) {
+    constructor(loop, legLayer, armLayer, torsoLayer, movementController) {
         this._walkCycleTime = 0.25;
         this._timeSinceLastStep = 0;
+        this._legsVisible = false;
         this._legLayer = legLayer;
         this._armLayer = armLayer;
         this._torsoLayer = torsoLayer;
         this._loop = loop;
         loop.onUpdate.add(this.update, this);
+        this._movementController = movementController;
     }
+    get moving() { return this._movementController.moving; }
     withLegs(walk1, walk2) {
         walk1.offsetX = -32;
         walk1.offsetY = -32;
@@ -45,6 +48,10 @@ class CapricaMainCharacterSprite {
         this._armLayer.addRenderable(this._armsDown);
     }
     update(deltaTime) {
+        if (!this.moving) {
+            this.hideLegs();
+            return;
+        }
         this._timeSinceLastStep += deltaTime;
         if (this._timeSinceLastStep > this._walkCycleTime) {
             this._timeSinceLastStep = 0;
@@ -61,5 +68,18 @@ class CapricaMainCharacterSprite {
             this._currentLegSprite = this._legWalk1;
         }
         this._legLayer.addRenderable(this._currentLegSprite);
+    }
+    hideLegs() {
+        if (this._currentLegSprite == null)
+            return;
+        this._legLayer.removeRenderable(this._currentLegSprite);
+        this._currentLegSprite = null;
+        // this._legsVisible = false;
+    }
+    showLegs() {
+        if (this._legsVisible)
+            return;
+        this._legLayer.addRenderable(this._currentLegSprite);
+        this._legsVisible = true;
     }
 }

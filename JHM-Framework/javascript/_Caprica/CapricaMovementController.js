@@ -5,9 +5,14 @@ class CapricaMovementController {
         this._accelleration = 5000;
         this._maxSpeed = 250;
         this._minimumSpeed = 50;
-        this._dragProfile = new PercentageDrag(5);
+        this._dragProfile = new PercentageDrag(15);
         this.initialiseInput(input);
         this._character = character;
+    }
+    get moving() {
+        let velocity = this._character.rigidbody.velocity;
+        let velocityAddedMagnitude = Math.abs(velocity.x) + Math.abs(velocity.y);
+        return velocityAddedMagnitude > 50;
     }
     get inputX() { return this._inputX; }
     set inputX(value) {
