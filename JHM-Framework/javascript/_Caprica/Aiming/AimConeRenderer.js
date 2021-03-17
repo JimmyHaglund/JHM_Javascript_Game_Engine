@@ -23,8 +23,8 @@ class AimConeRenderer {
         if (!this.visible)
             return;
         this._viewPosition = { x: viewX, y: viewY };
-        context.strokeStyle = "#000000"; // Black
-        this.renderLookDirectionLine(context);
+        // context.strokeStyle = "#000000"; // Black
+        // this.renderLookDirectionLine(context);
         context.strokeStyle = "#45f71b"; // Lime
         this.renderCone(context);
     }

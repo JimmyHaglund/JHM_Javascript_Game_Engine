@@ -14,6 +14,8 @@ class CapricaMainCharacter {
     get gun() { return this._gun; }
     assignGun(gun) {
         this._gun = gun;
+        gun.onTakeAim.add(this._sprite.startAim, this._sprite);
+        gun.onStopAim.add(this._sprite.endAim, this._sprite);
     }
     initialisePhysics(entity, physics) {
         let rigidBody = new PointRigidBody(entity);

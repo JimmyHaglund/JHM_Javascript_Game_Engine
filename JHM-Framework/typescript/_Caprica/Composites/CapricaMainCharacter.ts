@@ -29,6 +29,8 @@ class CapricaMainCharacter {
 
     public assignGun(gun:Gun): void {
         this._gun = gun;
+        gun.onTakeAim.add(this._sprite.startAim, this._sprite);
+        gun.onStopAim.add(this._sprite.endAim, this._sprite);
     }
 
     private initialisePhysics(entity: Entity, physics: PhysicsSpace): void {
