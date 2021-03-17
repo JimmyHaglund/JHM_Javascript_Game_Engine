@@ -8,6 +8,11 @@ function capricaStart() {
     let camera = createCamera(renderLayers, cameraTransform, renderLoop);
     let physicsSpace = new PhysicsSpace(gameLoop);
     let mainCharacter = new CapricaMainCharacter(0, 0, gameLoop, renderLayers[1], camera, physicsSpace);
+    let aimConeRenderer = new AimConeRenderer(renderLayers[1], 300);
+    let gunShaker = new ShakerMaker(cameraTransform, gameLoop);
+    let aimController = new AimController(gameLoop, mainCharacter.entity.transform, aimConeRenderer, camera, new AimData(Math.PI * 0.5, Math.PI * 0.15, 0.5));
+    let gun = new Gun(aimController, gunShaker);
+    mainCharacter.assignGun(gun);
     cameraTransform.parent = mainCharacter.entity.transform;
     movementInput = mainCharacter.input;
     gameData = {

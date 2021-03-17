@@ -16,7 +16,6 @@ class AimConeRenderer implements IRenderable {
         }
     }
     
-
     constructor(renderSpace: IRenderLayer, coneDistance: number = 100) {
         renderSpace.addRenderable(this);
         this._coneDistance = coneDistance;

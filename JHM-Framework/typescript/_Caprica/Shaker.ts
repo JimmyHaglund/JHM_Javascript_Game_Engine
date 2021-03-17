@@ -1,3 +1,22 @@
+class ShakerMaker {
+    private _targetTransform: Transform;
+    private _targetLoop: ILoop;
+
+    constructor(targetTransform: Transform, targetLoop: ILoop) {
+        this._targetTransform = targetTransform;
+        this._targetLoop = targetLoop;
+    }
+
+    public MakeShake(
+        numberOfShakes:number = 1, 
+        shakeOffsetMin: number = 5, 
+        shakeOffsetMax: number = 15): Shaker {
+        let shakeRange =  {min: shakeOffsetMin, max: shakeOffsetMax};
+        return new Shaker(this._targetTransform, this._targetLoop,
+            numberOfShakes, shakeRange);
+    }
+}
+
 class Shaker {
     private _targetTransform: Transform;
     private _remainingShakes: number;
@@ -5,10 +24,10 @@ class Shaker {
     private _maxOffset: number;
     private _offsetX: number = 0;
     private _offsetY: number = 0;
-    private _loop:Loop;
+    private _loop:ILoop;
     private _loopActionId:number;
     
-    constructor(targetTransform: Transform, loop: Loop, numberOfShakes: number, shakeOffset: { min: number, max: number }) {
+    constructor(targetTransform: Transform, loop: ILoop, numberOfShakes: number, shakeOffset: { min: number, max: number }) {
         this._targetTransform = targetTransform;
         this._loopActionId = loop.onUpdate.add(this.update, this);
         this._remainingShakes = numberOfShakes;

@@ -1,3 +1,13 @@
+class ShakerMaker {
+    constructor(targetTransform, targetLoop) {
+        this._targetTransform = targetTransform;
+        this._targetLoop = targetLoop;
+    }
+    MakeShake(numberOfShakes = 1, shakeOffsetMin = 5, shakeOffsetMax = 15) {
+        let shakeRange = { min: shakeOffsetMin, max: shakeOffsetMax };
+        return new Shaker(this._targetTransform, this._targetLoop, numberOfShakes, shakeRange);
+    }
+}
 class Shaker {
     constructor(targetTransform, loop, numberOfShakes, shakeOffset) {
         this._offsetX = 0;

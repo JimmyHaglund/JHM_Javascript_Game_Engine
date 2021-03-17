@@ -5,13 +5,16 @@ class CapricaMainCharacter {
         this.initialiseLookController(camera, loop);
         this.initialisePhysics(this._entity, physics);
         this.initialiseRendering(this._entity, renderSpace);
-        this.initialiseAimConeController(loop, renderSpace, camera);
     }
     get entity() { return this._entity; }
     get rigidbody() { return this._rigidbody; }
     get sprite() { return this._sprite; }
     get controller() { return this._movementController; }
     get input() { return this._input; }
+    get gun() { return this._gun; }
+    assignGun(gun) {
+        this._gun = gun;
+    }
     initialisePhysics(entity, physics) {
         let rigidBody = new PointRigidBody(entity);
         rigidBody.dragEnabled = false;
@@ -31,13 +34,13 @@ class CapricaMainCharacter {
         this._movementController = new CapricaMovementController(this._input, this);
         loop.onUpdate.add(this._movementController.update, this._movementController);
     }
-    initialiseAimConeController(loop, renderSpace, camera) {
-        this._lookCone = new AimConeRenderer(renderSpace, 300);
-        this._aimConeController = new AimConeController(loop, this._entity.transform, this._lookCone, camera, new AimData(Math.PI * 0.5, Math.PI * 0.15, 0.5));
-    }
     initialiseLookController(camera, loop) {
         this._lookController = new CapricaLookController(camera, this);
         loop.onUpdate.add(this._lookController.updateRotation, this._lookController);
+    }
+    initialiseAimConeController(loop, renderSpace, camera) {
+        this._lookCone = new AimConeRenderer(renderSpace, 300);
+        return new AimController(loop, this._entity.transform, this._lookCone, camera, new AimData(Math.PI * 0.5, Math.PI * 0.15, 0.5));
     }
     setupInputLog(input) {
         input.Up.onPressed.add(() => console.log("Up pressed, velocity: " + this._rigidbody.velocity.y), this);

@@ -5,14 +5,16 @@ class CapricaMainCharacter {
     private _movementController: CapricaMovementController;
     private _input: CapricaMovementInput;
     private _lookCone:AimConeRenderer;
-    private _aimConeController:AimConeController;
+    private _aimConeController:AimController;
     private _lookController: CapricaLookController;
+    private _gun: Gun;
 
     public get entity() { return this._entity; }
     public get rigidbody() { return this._rigidbody; }
     public get sprite() { return this._sprite; }
     public get controller() { return this._movementController; }
     public get input() { return this._input; }
+    public get gun() { return this._gun; }
 
     constructor(xPosition: number, yPosition: number, loop: Loop,
         renderSpace: IRenderLayer, camera:Camera, physics: PhysicsSpace) {
@@ -22,8 +24,10 @@ class CapricaMainCharacter {
         this.initialisePhysics(this._entity, physics);
         
         this.initialiseRendering(this._entity, renderSpace);
-        this.initialiseAimConeController(loop, renderSpace, camera);
-        
+    }
+
+    public assignGun(gun:Gun): void {
+        this._gun = gun;
     }
 
     private initialisePhysics(entity: Entity, physics: PhysicsSpace): void {
@@ -48,14 +52,14 @@ class CapricaMainCharacter {
         loop.onUpdate.add(this._movementController.update, this._movementController);
     }
 
-    private initialiseAimConeController(loop:Loop, renderSpace:IRenderLayer, camera:Camera) {
-        this._lookCone = new AimConeRenderer(renderSpace, 300);
-        this._aimConeController = new AimConeController(loop, this._entity.transform, this._lookCone, camera, new AimData(Math.PI * 0.5, Math.PI * 0.15, 0.5));
-    }
-
     private initialiseLookController(camera:Camera, loop:ILoop) {
         this._lookController = new CapricaLookController(camera, this);
         loop.onUpdate.add(this._lookController.updateRotation, this._lookController);
+    }
+
+    private initialiseAimConeController(loop:Loop, renderSpace:IRenderLayer, camera:Camera): AimController {
+        this._lookCone = new AimConeRenderer(renderSpace, 300);
+        return new AimController(loop, this._entity.transform, this._lookCone, camera, new AimData(Math.PI * 0.5, Math.PI * 0.15, 0.5));
     }
 
     private setupInputLog(input: CapricaMovementInput) {
