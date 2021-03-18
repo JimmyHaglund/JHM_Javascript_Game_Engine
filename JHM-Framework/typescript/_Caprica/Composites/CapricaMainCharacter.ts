@@ -5,7 +5,6 @@ class CapricaMainCharacter {
     private _movementController: CapricaMovementController;
     private _input: CapricaMovementInput;
     private _lookCone:AimConeRenderer;
-    private _aimConeController:AimController;
     private _lookController: CapricaLookController;
     private _gun: Gun;
     private _sprite: CapricaMainCharacterSprite;
@@ -50,11 +49,6 @@ class CapricaMainCharacter {
     private initialiseLookController(camera:Camera, loop:ILoop) {
         this._lookController = new CapricaLookController(camera, this);
         loop.onUpdate.add(this._lookController.updateRotation, this._lookController);
-    }
-
-    private initialiseAimConeController(loop:Loop, renderSpace:IRenderLayer, camera:Camera): AimController {
-        this._lookCone = new AimConeRenderer(renderSpace, 300);
-        return new AimController(loop, this._entity.transform, this._lookCone, camera, new AimData(Math.PI * 0.5, Math.PI * 0.15, 0.5));
     }
 
     private setupInputLog(input: CapricaMovementInput) {

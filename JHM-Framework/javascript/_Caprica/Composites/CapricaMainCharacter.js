@@ -33,10 +33,6 @@ class CapricaMainCharacter {
         this._lookController = new CapricaLookController(camera, this);
         loop.onUpdate.add(this._lookController.updateRotation, this._lookController);
     }
-    initialiseAimConeController(loop, renderSpace, camera) {
-        this._lookCone = new AimConeRenderer(renderSpace, 300);
-        return new AimController(loop, this._entity.transform, this._lookCone, camera, new AimData(Math.PI * 0.5, Math.PI * 0.15, 0.5));
-    }
     setupInputLog(input) {
         input.Up.onPressed.add(() => console.log("Up pressed, velocity: " + this._rigidbody.velocity.y), this);
         input.Up.onReleased.add(() => console.log("Up released"), this);

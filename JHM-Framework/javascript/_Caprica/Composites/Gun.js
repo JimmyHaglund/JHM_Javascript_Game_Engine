@@ -7,6 +7,10 @@ class Gun {
         this._shakerMaker = shakerMaker;
         onMouseDown.add(this.takeAim, this);
         onMouseUp.add(this.discharge, this);
+        this._shootAudio = new AudioComponent("gunShoot");
+        this._shootAudio.shouldLoop = false;
+        this._takeAimAudio = new AudioComponent("aimStart");
+        this._takeAimAudio.shouldLoop = false;
     }
     get onFire() { return this._onFire; }
     get onTakeAim() { return this._onTakeAim; }
@@ -14,6 +18,8 @@ class Gun {
     takeAim() {
         this._aim.startAim();
         this._onTakeAim.invoke();
+        this._takeAimAudio.stopPlaying();
+        this._takeAimAudio.play();
     }
     endAim() {
         this._aim.endAim();
@@ -23,6 +29,8 @@ class Gun {
         this.endAim();
         let offset = { min: 5, max: 15 };
         this._shakerMaker.MakeShake(1, 5, 15);
+        this._shootAudio.stopPlaying();
+        this._shootAudio.play();
         this._onFire.invoke();
     }
 }
