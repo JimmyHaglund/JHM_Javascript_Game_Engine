@@ -2,7 +2,9 @@
 <html>
   <head>
   <style>
-    .srcImg { display: none; }
+    srcImg img {
+      display: none;
+    }
     #gameCanvas {
       position: relative;
       width: 60%;
@@ -20,13 +22,13 @@
     onmouseup='mouseUp(event)'
   >
     <srcImg>
-      <img src = './Sprites/MainCharacter.png' class = "srcImg" id='main_character'>
-      <img src = './Sprites/GrassTile_64.png' class = "srcImg" id='grass_tile'>
-      <img src = './Sprites/MainCharacter/Leg_Walk_1.png' class = "srcImg" id='legsA'>
-      <img src = './Sprites/MainCharacter/Leg_Walk_2.png' class = "srcImg" id='legsB'>
-      <img src = './Sprites/MainCharacter/Arms_Handgun_Down.png' class = "srcImg" id='armsDown'>
-      <img src = './Sprites/MainCharacter/Arms_Handgun_Aim.png' class = "srcImg" id='armsAim'>
-      <img src = './Sprites/MainCharacter/Torso.png' class = "srcImg" id='torso'>
+      <img src = './Sprites/MainCharacter.png' id='main_character'>
+      <img src = './Sprites/GrassTile_64.png' id='grass_tile'>
+      <img src = './Sprites/MainCharacter/Leg_Walk_1.png' id='legsA'>
+      <img src = './Sprites/MainCharacter/Leg_Walk_2.png' id='legsB'>
+      <img src = './Sprites/MainCharacter/Arms_Handgun_Down.png' id='armsDown'>
+      <img src = './Sprites/MainCharacter/Arms_Handgun_Aim.png' id='armsAim'>
+      <img src = './Sprites/MainCharacter/Torso.png' id='torso'>
     </srcImg>
     
     <audio src = "./Sound/Pflowf.wav" id = "gunShoot"></audio>
