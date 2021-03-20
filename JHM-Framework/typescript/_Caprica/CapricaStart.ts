@@ -7,12 +7,12 @@ let gameData: {
   lookController: CapricaLookController
 }
 
-function capricaStart() {
+function capricaStart(canvasId: string) {
   let gameLoop = new Loop(60);
   let renderLoop = new Loop(60);
   let renderLayers: IRenderLayer[] = createRenderLayers();
   let cameraTransform = new Transform(0, 0);
-  let camera = createCamera(renderLayers, cameraTransform, renderLoop);
+  let camera = createCamera(renderLayers, cameraTransform, renderLoop, canvasId);
   let physicsSpace = new PhysicsSpace(gameLoop);
   let mainCharacter = new CapricaMainCharacter(0, 0, gameLoop, renderLayers[1], 
     renderLayers[2], renderLayers[3], camera, physicsSpace)
@@ -45,10 +45,12 @@ function createGun(cameraTransform:Transform, gameLoop:Loop,
 }
 
 function createCamera(renderLayers: IRenderLayer[], transform: ITransform, loop: ILoop,
-  left: number = 10, top: number = 10, width: number = 800, height: number = 600): Camera {
+  canvasId: string): Camera {
   let camera = new Camera(renderLayers, transform, loop);
-  let canvas = camera.createCanvas(left, top, width, height);
-  camera.addToDocument();
+  let canvas = document.getElementById(canvasId) as HTMLCanvasElement;
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
+  camera.setCanvas(canvas);
   return camera;
 }
 

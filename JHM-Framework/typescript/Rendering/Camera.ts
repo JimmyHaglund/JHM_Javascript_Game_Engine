@@ -1,13 +1,14 @@
 class Camera implements IDestroyable {
-    public onDestroy:Action = new Action();
-
+    
     private _backgroundColor: string = "gray";
     private _transform: ITransform;
     private _layers: IRenderLayer[];
     private _canvas: HTMLCanvasElement;
     private _context: CanvasRenderingContext2D;
     private _mousePosition = {x:0, y:0};
-
+    private _onDestroy = new Action();
+    
+    public get onDestroy():Action { return this._onDestroy };
     public get centreX(): number { return this._transform.worldX; }
     public get centreY(): number { return this._transform.worldY; }
     public get canvas(): HTMLCanvasElement { return this._canvas; }
@@ -20,8 +21,9 @@ class Camera implements IDestroyable {
         );
     }
     public get screenBounds(): Rect {
-        let left = parseInt(this._canvas.style.left, 10);
-        let top = parseInt(this._canvas.style.top, 10);
+        let rect = this.canvas.getBoundingClientRect();
+        let left = rect.left;
+        let top = rect.top;
         let right = left + this.canvas.width;
         let bottom = top + this.canvas.height;
         return new Rect(
@@ -44,19 +46,17 @@ class Camera implements IDestroyable {
         this._canvas.remove();
     }
 
-    public createCanvas(screenLeft:number, screenTop:number, width:number, height:number):HTMLCanvasElement {
-        let canvas = document.createElement("canvas");
-        canvas.style.position = 'absolute';
+    public setCanvas(canvas: HTMLCanvasElement): void {
+        this._canvas = canvas;
         this._context = canvas.getContext("2d");
-        canvas.width = width;
-        canvas.height = height;
-        canvas.style.left = screenLeft.toString() + "px";
-        canvas.style.top = screenTop.toString() + "px";
-        return (this._canvas = canvas);
     }
 
-    public addToDocument(){
-        document.body.insertBefore(this._canvas, document.body.childNodes[0]);
+    public printCanvasProperties() {
+        console.log("Camera canvas properties:");
+        console.log("Width/Height: ", this.canvas.width, "/", this.canvas.height);
+        console.log("Left/Top: ", this.canvas.style.left, "/", this.canvas.style.top);
+        console.log("Positioning: ", this.canvas.style.position);
+        console.log(this.canvas);
     }
 
     public render() {
@@ -81,6 +81,18 @@ class Camera implements IDestroyable {
             x: mouseWorldX,
             y: mouseWorldY
         };
+    }
+
+    public static createCanvas(screenLeft:number, screenTop:number, width:number, height:number, positioning: string):HTMLCanvasElement {
+        let canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = canvas.height = height;
+        canvas.style.position = positioning;
+        canvas.width = width;
+        canvas.height = height;
+        canvas.style.left = screenLeft.toString() + "px";
+        canvas.style.top = screenTop.toString() + "px";
+        return (canvas);
     }
 
     private getMouseCanvasPosition(): { x: number, y: number } {

@@ -1,11 +1,11 @@
 let movementInput;
 let gameData;
-function capricaStart() {
+function capricaStart(canvasId) {
     let gameLoop = new Loop(60);
     let renderLoop = new Loop(60);
     let renderLayers = createRenderLayers();
     let cameraTransform = new Transform(0, 0);
-    let camera = createCamera(renderLayers, cameraTransform, renderLoop);
+    let camera = createCamera(renderLayers, cameraTransform, renderLoop, canvasId);
     let physicsSpace = new PhysicsSpace(gameLoop);
     let mainCharacter = new CapricaMainCharacter(0, 0, gameLoop, renderLayers[1], renderLayers[2], renderLayers[3], camera, physicsSpace);
     let gun = createGun(cameraTransform, gameLoop, mainCharacter.entity.transform, renderLayers[3], camera);
@@ -28,10 +28,12 @@ function createGun(cameraTransform, gameLoop, characterTransform, renderLayer, c
     let aimController = new AimController(gameLoop, characterTransform, aimConeRenderer, camera, new AimData(Math.PI * 0.5, Math.PI * 0.15, 0.5));
     return new Gun(aimController, recoilCameraShaker);
 }
-function createCamera(renderLayers, transform, loop, left = 10, top = 10, width = 800, height = 600) {
+function createCamera(renderLayers, transform, loop, canvasId) {
     let camera = new Camera(renderLayers, transform, loop);
-    let canvas = camera.createCanvas(left, top, width, height);
-    camera.addToDocument();
+    let canvas = document.getElementById(canvasId);
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+    camera.setCanvas(canvas);
     return camera;
 }
 function createRenderLayers() {
