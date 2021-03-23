@@ -19,6 +19,11 @@ class BoxCollider {
     }
     get onDestroy() { return this._onDestroy; }
     get entity() { return this._entity; }
+    get centre() {
+        let x = this._entity.transform.x + this.offset.x;
+        let y = this._entity.transform.y + this.offset.y;
+        return { x: x, y: y };
+    }
     destroy() {
         this._onDestroy.invoke();
     }
@@ -74,14 +79,6 @@ class BoxCollider {
         }
         return intersectPoint;
     }
-    get corners() {
-        return [
-            { x: this.left, y: this.top },
-            { x: this.right, y: this.top },
-            { x: this.right, y: this.bottom },
-            { x: this.left, y: this.bottom }
-        ];
-    }
     getNearestCorner(x, y) {
         let deltaLeft = Math.abs(this.left - x);
         let deltaRight = Math.abs(this.right - x);
@@ -91,5 +88,13 @@ class BoxCollider {
             x: deltaLeft < deltaRight ? this.left : this.right,
             y: deltaTop < deltaBottom ? this.top : this.bottom
         };
+    }
+    get corners() {
+        return [
+            { x: this.left, y: this.top },
+            { x: this.right, y: this.top },
+            { x: this.right, y: this.bottom },
+            { x: this.left, y: this.bottom }
+        ];
     }
 }

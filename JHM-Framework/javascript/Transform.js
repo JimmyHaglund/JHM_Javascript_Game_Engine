@@ -13,6 +13,7 @@ class Transform {
     get x() { return this._x; }
     set y(value) { this._y = value; }
     get y() { return this._y; }
+    get position() { return { x: this.x, y: this.y }; }
     get worldX() { return this._parent == null ? this._x : this._parent.worldX + this._x; }
     set worldX(value) {
         this._x = this._parent == null ? value : value - this._parent.worldX;
