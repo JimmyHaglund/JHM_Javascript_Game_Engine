@@ -34,7 +34,8 @@ class Rigidbody {
         colliders.forEach(collider => {
             if (collider == this._collider)
                 return;
-            if (collider.overlapsPoint(this._transform.x, this._transform.y)) {
+            var nearestPoint = this._collider.getNearestCorner(collider.centre.x, collider.centre.y);
+            if (collider.overlapsPoint(nearestPoint.x, nearestPoint.y)) {
                 let x0 = this._previousX;
                 let y0 = this._previousY;
                 let x1 = this._transform.x;

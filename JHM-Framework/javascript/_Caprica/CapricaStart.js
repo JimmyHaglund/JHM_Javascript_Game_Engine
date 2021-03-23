@@ -1,19 +1,23 @@
 let movementInput;
 let gameData;
 function capricaStart(canvasId) {
-    let gameLoop = new Loop(60);
+    let inputLoop = new Loop(60);
+    let movementLoop = new Loop(60);
+    let physicsLoop = new Loop(60);
     let renderLoop = new Loop(60);
     let renderLayers = createRenderLayers();
     let cameraTransform = new Transform(0, 0);
     let camera = createCamera(renderLayers, cameraTransform, renderLoop, canvasId);
-    let physicsSpace = new PhysicsSpace(gameLoop);
-    let mainCharacter = new CapricaMainCharacter(0, 0, gameLoop, renderLayers[1], renderLayers[2], renderLayers[3], camera, physicsSpace);
-    let gun = createGun(cameraTransform, gameLoop, mainCharacter.entity.transform, renderLayers[3], camera);
+    let collisionSpaces = [new CollisionSpace()];
+    let physicsSpace = new PhysicsSpace(physicsLoop, collisionSpaces);
+    let mainCharacter = new CapricaMainCharacter(0, 0, inputLoop, movementLoop, renderLayers[1], renderLayers[2], renderLayers[3], camera, physicsSpace);
+    let gun = createGun(cameraTransform, inputLoop, mainCharacter.entity.transform, renderLayers[3], camera);
+    let boxes = createTestBoxes(renderLayers[1], collisionSpaces[0]);
     mainCharacter.assignGun(gun);
     cameraTransform.parent = mainCharacter.entity.transform;
     movementInput = mainCharacter.input;
     gameData = {
-        playLoop: gameLoop,
+        playLoop: inputLoop,
         renderLayers: renderLayers,
         physics: physicsSpace,
         mainCharacter: mainCharacter,
@@ -44,6 +48,14 @@ function createRenderLayers() {
         new RenderLayer() // Character Torso
     ];
 }
+function createLoops() {
+    return [
+        new Loop(),
+        new Loop(),
+        new Loop(),
+        new Loop() // Rendering
+    ];
+}
 function runDevTests() {
     createTiledBackground();
 }
@@ -57,6 +69,19 @@ function createTiledBackground() {
     let renderSpace = gameData.renderLayers[0];
     let background = new TiledBackground(10, 10, "grass_tile");
     renderSpace.addRenderable(background);
+}
+function createTestBoxes(renderspace, collisionSpace) {
+    let amount = 10;
+    let result = [];
+    let width = 50;
+    let height = width;
+    for (let n = 0; n < amount; n++) {
+        let x = n * width;
+        let y = 0;
+        let box = new VisibleBoxCollider(x, y, width, height, renderspace, collisionSpace);
+        result.push(box);
+    }
+    return result;
 }
 /*
 Canvas settings for disabling anti alisasing

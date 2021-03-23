@@ -1,6 +1,8 @@
 class CollisionSpace {
     protected _colliders: ICollider[] = [];
     
+    get colliders(): ICollider[] { return this._colliders; };
+
     public addCollider(collider: ICollider): void {
         let index = this._colliders.indexOf(collider);
         if (index >= 0) return;

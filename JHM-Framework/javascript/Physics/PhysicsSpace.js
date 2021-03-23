@@ -1,25 +1,30 @@
-class PhysicsSpace extends CollisionSpace {
-    constructor(loop) {
-        super();
-        this._rigidbodies = [];
+class PhysicsSpace {
+    constructor(loop, collisions) {
+        // private _rigidbodies: IRigidbody[] = [];
+        this._actors = [];
+        // super();
         loop.onUpdate.add(this.update, this);
+        this._collisionSpaces = collisions;
     }
+    get physicsActors() { return this._actors; }
+    ;
     update(deltaTime) {
-        this._rigidbodies.forEach((actor) => {
-            actor.update(deltaTime);
-            actor.checkCollision(this._colliders);
+        this._actors.forEach((actor) => {
+            this._collisionSpaces.forEach(space => {
+                actor.checkCollision(space.colliders);
+            });
         });
     }
-    addRigidbody(rigidbody) {
-        let index = this._rigidbodies.indexOf(rigidbody);
+    addPhysicsActor(actor) {
+        let index = this._actors.indexOf(actor);
         if (index < 0) {
-            this._rigidbodies.push(rigidbody);
+            this._actors.push(actor);
         }
     }
-    removeRigidbody(rigidbody) {
-        let index = this._rigidbodies.indexOf(rigidbody);
+    removePhysicsActor(actor) {
+        let index = this._actors.indexOf(actor);
         if (index < 0)
             return;
-        this._rigidbodies.splice(index, 1);
+        this._actors.splice(index, 1);
     }
 }
