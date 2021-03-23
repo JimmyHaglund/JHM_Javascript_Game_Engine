@@ -19,10 +19,10 @@ function capricaStart(canvasId: string) {
   let physicsSpace = new PhysicsSpace(physicsLoop, collisionSpaces);
   let mainCharacter = new CapricaMainCharacter(0, 0, inputLoop, movementLoop, renderLayers[1], 
     renderLayers[2], renderLayers[3], camera, physicsSpace);
-  let gun = createGun(cameraTransform, inputLoop, mainCharacter.entity.transform, renderLayers[3], camera);
+  let gun = createGun(cameraTransform, movementLoop, mainCharacter.entity.transform, renderLayers[3], camera);
   let boxes = createTestBoxes(renderLayers[1], collisionSpaces[0]);
+  
   mainCharacter.assignGun(gun);
-    
   cameraTransform.parent = mainCharacter.entity.transform;
   movementInput = mainCharacter.input;
   gameData = {

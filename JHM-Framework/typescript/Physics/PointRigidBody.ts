@@ -64,6 +64,7 @@ class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, IDestroya
                 let lean = dY / dX;
                 if (dX == 0) lean = 100000;
                 let collisionData = collider.getCollisionPointWithRay(x0, y0, dX, dY);
+                if (collisionData == null) return;
                 let deltaColX = collisionData.x - x1;
                 let deltaColY = collisionData.y - y1;
                 this._velocity.x -= collisionData.normalX * this._velocity.x * -Math.sign(dX);
