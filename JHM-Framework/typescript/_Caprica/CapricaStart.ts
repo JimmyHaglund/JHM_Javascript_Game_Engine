@@ -21,7 +21,9 @@ function capricaStart(canvasId: string) {
     renderLayers[2], renderLayers[3], camera, physicsSpace);
   let gun = createGun(cameraTransform, movementLoop, mainCharacter.entity.transform, renderLayers[3], camera);
   let boxes = createTestBoxes(renderLayers[1], collisionSpaces[0]);
-  
+  let debugCircle = new CircleRenderer(100, mainCharacter.entity.transform, "black", 32);
+  renderLayers[3].addRenderable(debugCircle);
+
   mainCharacter.assignGun(gun);
   cameraTransform.parent = mainCharacter.entity.transform;
   movementInput = mainCharacter.input;
