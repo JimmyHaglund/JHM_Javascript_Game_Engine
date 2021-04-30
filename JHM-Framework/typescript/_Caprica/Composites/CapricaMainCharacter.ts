@@ -16,14 +16,14 @@ class CapricaMainCharacter {
     public get input() { return this._input; }
     public get gun() { return this._gun; }
 
-    constructor(xPosition: number, yPosition: number, loop: Loop,
+    constructor(xPosition: number, yPosition: number, inputLoop: Loop, movementLoop: Loop,
         legRenderLayer: IRenderLayer, armRenderLayer: IRenderLayer, torsoRenderLayer:IRenderLayer,
          camera:Camera, physics: PhysicsSpace) {
         this._entity = new Entity(xPosition, yPosition);
-        this.initialiseMovementController(loop);
-        this.initialiseLookController(camera, loop);
-        this.initialisePhysics(this._entity, physics);
-        this.generateSprites(loop, this._entity.transform, legRenderLayer, armRenderLayer, torsoRenderLayer, this.controller);
+        this.initialiseMovementController(inputLoop);
+        this.initialiseLookController(camera, inputLoop);
+        this.initialisePhysics(this._entity, physics, movementLoop);
+        this.generateSprites(movementLoop, this._entity.transform, legRenderLayer, armRenderLayer, torsoRenderLayer, this.controller);
     }
 
     public assignGun(gun:Gun): void {
@@ -32,12 +32,13 @@ class CapricaMainCharacter {
         gun.onStopAim.add(this._sprite.endAim, this._sprite);
     }
 
-    private initialisePhysics(entity: Entity, physics: PhysicsSpace): void {
+    private initialisePhysics(entity: Entity, physics: PhysicsSpace, movementLoop: Loop): void {
         let rigidBody = new PointRigidBody(entity);
         rigidBody.dragEnabled = false;
+        movementLoop.onUpdate.add(rigidBody.update, rigidBody);
         entity.addComponent(rigidBody);
         this._rigidbody = rigidBody;
-        physics.addRigidbody(rigidBody);
+        physics.addPhysicsActor(rigidBody);
     }
 
     private initialiseMovementController(loop: Loop): void {

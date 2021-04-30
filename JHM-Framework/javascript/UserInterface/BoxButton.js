@@ -1,5 +1,5 @@
 class BoxButton {
-    constructor(renderSpace, physicsSpace, left, top, width, height, normalSprite = "", hoverSprite = "", pressSprite = "") {
+    constructor(renderSpace, collisionSpace, left, top, width, height, normalSprite = "", hoverSprite = "", pressSprite = "") {
         this._state = BoxButton._buttonStates.passive;
         this._onClick = new Action();
         this.onDestroy = new Action();
@@ -11,7 +11,7 @@ class BoxButton {
         this._entity = new Entity(left, top);
         this._sprite = new Sprite(this._entity, normalSprite);
         this._collider = new BoxCollider(this._entity, width, height);
-        physicsSpace.addCollider(this._collider);
+        collisionSpace.addCollider(this._collider);
         this._sprite.width = width;
         this._sprite.height = height;
         // this._sprAddRenderComponenth * 0.5;

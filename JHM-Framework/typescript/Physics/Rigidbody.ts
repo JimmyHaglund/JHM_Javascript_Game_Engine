@@ -1,9 +1,7 @@
-class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, IDestroyable {
+class Rigidbody implements IRigidbody, IPhysicsActor, IComponent, IDestroyable {
     public dragEnabled = true;
 
     private _velocity = { x: 0, y: 0 };
-    // private _velocityX: number = 0;
-    // private _velocityY: number = 0;
     private _previousX: number;
     private _previousY: number;
     private _transform: ITransform;
@@ -11,19 +9,11 @@ class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, IDestroya
     private readonly _onDestroy: Action = new Action();
     private readonly _loopAction: Action;
     private _updateActionId: number;
-    // private _deltaTime: number;
     private readonly _onCollisionEnter: Action = new Action();
-
     private readonly _onCollisionExit: Action = new Action();
     private readonly _onCollisionStay: Action = new Action();
-    /*
-    // TODO: Implement collision stay & triggers
-    private readonly _activeCollisionData: {
-        collider: ICollider,
-        updateCount: number,
-        lastUpdateCount: number
-    }[] = [];
-    */
+    private readonly _collider: ICollider;
+
     public set velocity(value: { x: number, y: number }) { this._velocity = value; }
     public get velocity() { return this._velocity; }
     public get onCollisionEnter(): Action { return this._onCollisionEnter; }
@@ -40,7 +30,6 @@ class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, IDestroya
     }
 
     public update(deltaTime: number): void {
-        // this._deltaTime = deltaTime;
         if (this.dragEnabled) {
             this.applyDrag(deltaTime);
         }
@@ -53,8 +42,12 @@ class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, IDestroya
     }
 
     public checkCollision(colliders: ICollider[]): void {
+        if (this._collider == null) return;
         colliders.forEach(collider => {
-            if (collider.overlapsPoint(this._transform.x, this._transform.y)) {
+            if (collider == this._collider) return;
+            var nearestPoint = this._collider.getNearestCorner(collider.centre.x, collider.centre.y);
+            
+            if (collider.overlapsPoint(nearestPoint.x, nearestPoint.y)) {
                 let x0 = this._previousX;
                 let y0 = this._previousY;
                 let x1 = this._transform.x;
@@ -64,7 +57,6 @@ class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, IDestroya
                 let lean = dY / dX;
                 if (dX == 0) lean = 100000;
                 let collisionData = collider.getCollisionPointWithRay(x0, y0, dX, dY);
-                if (collisionData == null) return;
                 let deltaColX = collisionData.x - x1;
                 let deltaColY = collisionData.y - y1;
                 this._velocity.x -= collisionData.normalX * this._velocity.x * -Math.sign(dX);

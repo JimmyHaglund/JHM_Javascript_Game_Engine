@@ -1,9 +1,8 @@
-class PointRigidBody {
+class Rigidbody {
     constructor(transform) {
         this.dragEnabled = true;
         this._velocity = { x: 0, y: 0 };
         this._onDestroy = new Action();
-        // private _deltaTime: number;
         this._onCollisionEnter = new Action();
         this._onCollisionExit = new Action();
         this._onCollisionStay = new Action();
@@ -12,14 +11,6 @@ class PointRigidBody {
         this._previousY = transform.y;
         this._drag = new PercentageDrag(5);
     }
-    /*
-    // TODO: Implement collision stay & triggers
-    private readonly _activeCollisionData: {
-        collider: ICollider,
-        updateCount: number,
-        lastUpdateCount: number
-    }[] = [];
-    */
     set velocity(value) { this._velocity = value; }
     get velocity() { return this._velocity; }
     get onCollisionEnter() { return this._onCollisionEnter; }
@@ -28,7 +19,6 @@ class PointRigidBody {
     get onDestroy() { return this._onDestroy; }
     get entity() { return this._transform; }
     update(deltaTime) {
-        // this._deltaTime = deltaTime;
         if (this.dragEnabled) {
             this.applyDrag(deltaTime);
         }
@@ -39,8 +29,13 @@ class PointRigidBody {
         this._onDestroy.invoke();
     }
     checkCollision(colliders) {
+        if (this._collider == null)
+            return;
         colliders.forEach(collider => {
-            if (collider.overlapsPoint(this._transform.x, this._transform.y)) {
+            if (collider == this._collider)
+                return;
+            var nearestPoint = this._collider.getNearestCorner(collider.centre.x, collider.centre.y);
+            if (collider.overlapsPoint(nearestPoint.x, nearestPoint.y)) {
                 let x0 = this._previousX;
                 let y0 = this._previousY;
                 let x1 = this._transform.x;
@@ -51,8 +46,6 @@ class PointRigidBody {
                 if (dX == 0)
                     lean = 100000;
                 let collisionData = collider.getCollisionPointWithRay(x0, y0, dX, dY);
-                if (collisionData == null)
-                    return;
                 let deltaColX = collisionData.x - x1;
                 let deltaColY = collisionData.y - y1;
                 this._velocity.x -= collisionData.normalX * this._velocity.x * -Math.sign(dX);

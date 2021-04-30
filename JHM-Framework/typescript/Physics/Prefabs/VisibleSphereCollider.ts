@@ -1,4 +1,4 @@
-class VisibleBoxCollider {
+class VisibleSphereCollider {
     private _entity: Entity;
     private _collider: BoxCollider;
     private _visual: BoxColliderRenderer;

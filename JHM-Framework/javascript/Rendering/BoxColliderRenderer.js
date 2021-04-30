@@ -7,13 +7,13 @@ class BoxColliderRenderer {
     }
     get onDestroy() { return this._onDestroy; }
     set outlineOnly(value) { this._shouldFill = !value; }
-    render(context, offsetX, offsetY) {
+    render(context, viewX, viewY) {
         context.beginPath();
         let contextColor = context.fillStyle;
-        let left = this._collider.left;
-        let right = this._collider.right;
-        let top = this._collider.top;
-        let bottom = this._collider.bottom;
+        let left = this._collider.left - viewX;
+        let right = this._collider.right - viewX;
+        let top = this._collider.top - viewY;
+        let bottom = this._collider.bottom - viewY;
         context.fillStyle = this._color;
         context.strokeStyle = this._color;
         if (this._shouldFill) {

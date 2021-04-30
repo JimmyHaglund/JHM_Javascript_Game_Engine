@@ -2,6 +2,8 @@ class CollisionSpace {
     constructor() {
         this._colliders = [];
     }
+    get colliders() { return this._colliders; }
+    ;
     addCollider(collider) {
         let index = this._colliders.indexOf(collider);
         if (index >= 0)

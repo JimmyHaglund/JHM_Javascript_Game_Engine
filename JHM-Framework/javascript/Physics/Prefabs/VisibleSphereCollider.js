@@ -1,4 +1,4 @@
-class VisibleBoxCollider {
+class VisibleSphereCollider {
     constructor(posX, posY, width, height, renderSpace, collisionSpace, color = 'black', fill = false) {
         this._entity = new Entity(posX, posY);
         this._collider = new BoxCollider(this._entity, width, height);
