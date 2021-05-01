@@ -10,21 +10,24 @@ class Entity {
     get transform() { return this._transform; }
     get components() { return this._components; }
     destroy() {
-        this._components.forEach((component) => {
-            component.destroy();
-        });
         this.onDestroy.invoke;
     }
-    addComponent(component) {
-        if (this._components.indexOf(component) != -1)
-            return;
-        this._components.push(component);
+    addComponent(component, id) {
+        this._components.push({ component: component, id: id });
     }
     removeComponent(component) {
         let index = this._components.indexOf(component);
         if (index == -1)
             return;
         this._components.splice(index, 1);
+    }
+    getComponent(type) {
+        for (let n = 0; n < this._components.length; n++) {
+            if (type.Implements(this._components[n].id)) {
+                return this._components[n].component;
+            }
+        }
+        return null;
     }
     get x() { return this._transform.x; }
     set x(value) { this._transform.x = value; }

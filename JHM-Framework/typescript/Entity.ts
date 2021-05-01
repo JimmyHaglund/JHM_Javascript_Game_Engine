@@ -1,6 +1,6 @@
 class Entity implements IDestroyable, ITransform {
     private _transform: Transform = new Transform();
-    private _components: IComponent[] = [];
+    private _components: { component: any, id: ClassId} [] = [];
     private _onDestroy: Action = new Action();
 
     get onDestroy() { return this._onDestroy; }
@@ -11,20 +11,28 @@ class Entity implements IDestroyable, ITransform {
         this._transform.x = positionX;
         this._transform.y = positionY;
     }
+    
     destroy(): void {
-        this._components.forEach((component) => {
-            component.destroy();
-        });
         this.onDestroy.invoke;
     }
-    addComponent(component: IComponent): void {
-        if (this._components.indexOf(component) != -1) return;
-        this._components.push(component);
+    
+    addComponent(component: any, id: ClassId): void {
+        this._components.push({ component: component, id: id });
     }
-    removeComponent(component: IComponent): void {
+
+    removeComponent(component: any): void {
         let index = this._components.indexOf(component);
         if (index == -1) return;
         this._components.splice(index, 1);
+    }
+
+    getComponent<T>(type: ClassId): T {
+        for(let n = 0; n < this._components.length; n++) {
+            if (type.Implements(this._components[n].id)) {
+                return this._components[n].component as T;
+            }
+        }
+        return null;
     }
     
     get x(): number { return this._transform.x; }

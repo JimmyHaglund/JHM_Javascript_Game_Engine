@@ -38,8 +38,8 @@ class BoxButton implements IDestroyable {
         // this._sprite.offsetY = height * 0.5;
         renderSpace.addRenderable(this._sprite);
 
-        this._entity.addComponent(this._sprite);
-        this._entity.addComponent(this._collider);
+        this._entity.addComponent(this._sprite, Type.sprite);
+        this._entity.addComponent(this._collider, Type.boxCollider);
     }
 
     public destroy(): void {

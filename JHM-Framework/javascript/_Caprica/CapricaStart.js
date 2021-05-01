@@ -26,6 +26,7 @@ function capricaStart(canvasId) {
         lookController: null
     };
     runDevTests();
+    testEntityGetComponent();
     console.log("Caprica Started");
 }
 function createGun(cameraTransform, gameLoop, characterTransform, renderLayer, camera) {
@@ -41,6 +42,12 @@ function createCamera(renderLayers, transform, loop, canvasId) {
     canvas.height = canvas.clientHeight;
     camera.setCanvas(canvas);
     return camera;
+}
+function testEntityGetComponent() {
+    var entity = new Entity();
+    entity.addComponent(new BoxCollider(entity, 10, 10), Type.boxCollider);
+    var collider = entity.getComponent(Type.boxCollider);
+    console.log(collider);
 }
 function createRenderLayers() {
     return [

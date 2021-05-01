@@ -36,6 +36,7 @@ function capricaStart(canvasId: string) {
   };
 
   runDevTests();
+  testEntityGetComponent();
   console.log("Caprica Started");
 }
 
@@ -58,6 +59,13 @@ function createCamera(renderLayers: IRenderLayer[], transform: ITransform, loop:
   canvas.height = canvas.clientHeight;
   camera.setCanvas(canvas);
   return camera;
+}
+
+function testEntityGetComponent() {
+  var entity = new Entity();
+  entity.addComponent(new BoxCollider(entity, 10, 10), Type.boxCollider);
+  var collider = entity.getComponent<BoxCollider>(Type.boxCollider);
+  console.log(collider);
 }
 
 function createRenderLayers(): IRenderLayer[] {

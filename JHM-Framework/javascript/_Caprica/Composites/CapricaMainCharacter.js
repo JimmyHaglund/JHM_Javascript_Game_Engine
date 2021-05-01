@@ -21,7 +21,7 @@ class CapricaMainCharacter {
         let rigidBody = new PointRigidBody(entity);
         rigidBody.dragEnabled = false;
         movementLoop.onUpdate.add(rigidBody.update, rigidBody);
-        entity.addComponent(rigidBody);
+        entity.addComponent(rigidBody, Type.pointRigidbody);
         this._rigidbody = rigidBody;
         physics.addPhysicsActor(rigidBody);
     }

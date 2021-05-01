@@ -3,7 +3,7 @@ class VisibleSphereCollider {
         this._entity = new Entity(posX, posY);
         this._collider = new BoxCollider(this._entity, width, height);
         this._visual = new BoxColliderRenderer(this._collider, color, fill);
-        this._entity.addComponent(this._collider);
+        this._entity.addComponent(this._collider, Type.sphereCollider);
         this._collider.onDestroy.add(this._visual.destroy, this._visual);
         renderSpace.addRenderable(this._visual);
         collisionSpace.addCollider(this._collider);
