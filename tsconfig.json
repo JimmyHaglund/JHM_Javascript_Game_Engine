@@ -2,7 +2,7 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "ES6",
-        "outDir": "JHM-Framework/javascript",
+        "outDir": "JHM-Framework/Javascript",
         "rootDir": "JHM-Framework/typescript"
     }
 }
