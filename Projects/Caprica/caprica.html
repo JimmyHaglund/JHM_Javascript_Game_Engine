@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+
+<html>
+  <head>
+  <style>
+    srcImg img {
+      display: none;
+    }
+    #gameCanvas {
+      position: relative;
+      width: 640px;
+      height: 480px;
+    }
+  </style>
+    <title>Caprica</title>
+  </head>
+  <body 
+    onload='capricaStart("gameCanvas")'
+    onkeydown = 'checkInputPressed(event)'
+    onkeyup = 'checkInputReleased(event)'
+    onmousemove = 'mouseMoved(event)'
+    onmousedown='mouseDown(event)'
+    onmouseup='mouseUp(event)'
+  >
+    <srcImg>
+      <img src = './Images/MainCharacter.png' id='main_character'>
+      <img src = './Images/GrassTile_64.png' id='grass_tile'>
+      <img src = './Images/MainCharacter/Leg_Walk_1.png' id='legsA'>
+      <img src = './Images/MainCharacter/Leg_Walk_2.png' id='legsB'>
+      <img src = './Images/MainCharacter/Arms_Handgun_Down.png' id='armsDown'>
+      <img src = './Images/MainCharacter/Arms_Handgun_Aim.png' id='armsAim'>
+      <img src = './Images/MainCharacter/Torso.png' id='torso'>
+    </srcImg>
+    
+    <audio src = "./Sound/Pflowf.wav" id = "gunShoot"></audio>
+    <audio src = "./Sound/Tuch.wav" id = "aimStart"></audio>
+    
+    <script src = "./Scripts/JhmEngine.js"></script>
+    <script src = "./Scripts/Caprica.js"></script>
+    <div>
+      <canvas id = "gameCanvas"></canvas>
+    </div>
+    
+  </body>
+</html>

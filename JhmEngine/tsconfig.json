@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "ES6",
+        "outDir": "./Js",
+        "rootDir": "./Ts",
+        "declaration": true,
+        "declarationDir": "./Out/JhmEngine"
+    },
+    "exclude": ["./Out/**"]
+}
