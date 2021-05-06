@@ -2,24 +2,33 @@
 
 JHMEngine made by me, Jimmy, in order to have a lightweight and simple way to make game applications that can run in a browser window. The engine has been developed as a way to both learn more about Javascript, web, and game development. The engine is entirely front-end, meaning the whole game is loaded as a single web page. This makes is suitable for small projects, but anything larger will require a backend component to dynamically load and unload assets.
 
-The engine was originally written in Javascript and has later been rewritten in Typescript, making development quicker.
+## Core Features
 
-# Quick Start
-The quickest way to start is by copying a project folder (marked with an underscore) and taking a look at the .index folder.
+- Completely static. Embed into any html page, takes as long to load as the content of the actual page.
+- Click to run. Runs in any html file without a need for a server. Since the engine uses simple javascript files without any modules or dynamically loaded assets, games made using it should be able to be run directly even in a local html file.
+- Stupid simple. No extra requierements. As long as you have the JhmEngine js file, it should work.
+- Unopinionated. This is a library, designed around using HTML canvas. Beyond that, how you want to set up your projects is up to you.
 
-# Commands
-tsc: Transpile typescript files and output the result into the javascript root folder.
+## Quick Instructions
 
-# Folder structure
-- typescript folder contains core scripts
-- javascript folder contains transpiled scripts
-- project-specific root folders start with an underscore, ex "_Caprica" for the project named Caprica.
-- Each project contains one index html file which decides the exact resources and .js scripts to include.
+The fastest way to get a project up and running is by simply copying the template project, located in Projects/Template. This folder contains an html file which has been set up to run a blank screen, and has a readme with information about how I've set up my projects using Typescript and the Build.py file.
+Each folder generally has its own readme file with some form of project description.
 
-Project-specific .ts scripts need to be contained in a typescript folder determined by the .tsconfig file. The config file can be changed to alter both in and out directories if you want to contain project-specific files in their root folders. More information can be found here: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html
+The JhmEngine folder contains the actual core engine. Check the readme in there for more detailed information on how the project is set up.  
 
-# Naming conventions
-Programming naming conventions attempts to follow most common Javascript / typescript conventions.
-- private members: _privateMember (underscore + camelCase)
-- public members: publicMember (camelCase)
-- private & public methods: AnyMethod (PascalCase)
+## Naming conventions
+
+The JhmEngine follows the following naming conventions.
+- Private members: _privateMember (underscore + camelCase)
+- Public members: publicMember (camelCase)
+- Private & public methods: AnyMethod (PascalCase)
+- Files: FileName (PascalCase)
+- public scope variables: variableName (camelCase)
+- public scope functions: FunctionName (PascalCase)
+
+## Links
+
+- Typescript: https://www.typescriptlang.org/
+- Javascript W3: https://www.w3schools.com/js/default.asp
+- Javascript pluralsight: https://www.javascript.com/
+- HTML W3: https://www.w3schools.com/html/default.asp 
