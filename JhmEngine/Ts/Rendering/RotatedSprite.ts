@@ -1,3 +1,4 @@
+// Dependencies: Sprite
 class RotatedSprite extends Sprite {
     public get rotation(): number { return this._transform.rotation; }
 

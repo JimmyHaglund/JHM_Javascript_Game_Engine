@@ -1,3 +1,4 @@
+// Dependencies: Sprite
 class RotatedSprite extends Sprite {
     get rotation() { return this._transform.rotation; }
     render(context, viewX, viewY) {

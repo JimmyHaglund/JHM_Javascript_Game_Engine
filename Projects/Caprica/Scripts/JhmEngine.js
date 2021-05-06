@@ -515,6 +515,11 @@ class CollisionSpace {
     }
 }
 
+
+
+
+
+
 class PercentageDrag {
     constructor(dragPercentage) {
         this._dragPercentage = 0.15;
@@ -761,36 +766,6 @@ class Rigidbody {
     }
 }
 
-
-class VisibleBoxCollider {
-    constructor(posX, posY, width, height, renderSpace, collisionSpace, color = 'black', fill = false) {
-        this._entity = new Entity(posX, posY);
-        this._collider = new BoxCollider(this._entity, width, height);
-        this._visual = new BoxColliderRenderer(this._collider, color, fill);
-        this._entity.addComponent(this._collider, Type.boxCollider);
-        this._collider.onDestroy.add(this._visual.destroy, this._visual);
-        renderSpace.addRenderable(this._visual);
-        collisionSpace.addCollider(this._collider);
-    }
-    set outlineOnly(value) { this._visual.outlineOnly = value; }
-    get entity() { return this._entity; }
-    get collider() { return this._collider; }
-}
-
-class VisibleSphereCollider {
-    constructor(posX, posY, width, height, renderSpace, collisionSpace, color = 'black', fill = false) {
-        this._entity = new Entity(posX, posY);
-        this._collider = new BoxCollider(this._entity, width, height);
-        this._visual = new BoxColliderRenderer(this._collider, color, fill);
-        this._entity.addComponent(this._collider, Type.sphereCollider);
-        this._collider.onDestroy.add(this._visual.destroy, this._visual);
-        renderSpace.addRenderable(this._visual);
-        collisionSpace.addCollider(this._collider);
-    }
-    set outlineOnly(value) { this._visual.outlineOnly = value; }
-    get entity() { return this._entity; }
-    get collider() { return this._collider; }
-}
 
 class BoxColliderRenderer {
     constructor(collider, color = 'black', fill = false) {
@@ -1054,32 +1029,6 @@ class Sprite {
     }
 }
 
-class RotatedSprite extends Sprite {
-    get rotation() { return this._transform.rotation; }
-    render(context, viewX, viewY) {
-        let translationX = this.translation.x - viewX;
-        let translationY = this.translation.y - viewY;
-        let contextSettings = {
-            contextAlpha: context.globalAlpha,
-            translation: { x: translationX, y: translationY },
-            rotation: -this.rotation,
-            apply: function () {
-                context.globalAlpha = this._alpha;
-                context.translate(contextSettings.translation.x, contextSettings.translation.y);
-                context.rotate(contextSettings.rotation);
-            },
-            reset: function () {
-                context.globalAlpha = contextSettings.contextAlpha;
-                context.rotate(-contextSettings.rotation);
-                context.translate(-contextSettings.translation.x, -contextSettings.translation.y);
-            }
-        };
-        contextSettings.apply();
-        this.drawSprite(context);
-        contextSettings.reset();
-    }
-}
-
 class TiledBackground {
     constructor(horizontalTileCount, verticalTileCount, spriteId = "") {
         this.onDestroy = new Action();
@@ -1105,6 +1054,33 @@ class TiledBackground {
         context.drawImage(this._image, offsetX, offsetY);
     }
     destroy() {
+    }
+}
+
+// Dependencies: Sprite
+class RotatedSprite extends Sprite {
+    get rotation() { return this._transform.rotation; }
+    render(context, viewX, viewY) {
+        let translationX = this.translation.x - viewX;
+        let translationY = this.translation.y - viewY;
+        let contextSettings = {
+            contextAlpha: context.globalAlpha,
+            translation: { x: translationX, y: translationY },
+            rotation: -this.rotation,
+            apply: function () {
+                context.globalAlpha = this._alpha;
+                context.translate(contextSettings.translation.x, contextSettings.translation.y);
+                context.rotate(contextSettings.rotation);
+            },
+            reset: function () {
+                context.globalAlpha = contextSettings.contextAlpha;
+                context.rotate(-contextSettings.rotation);
+                context.translate(-contextSettings.translation.x, -contextSettings.translation.y);
+            }
+        };
+        contextSettings.apply();
+        this.drawSprite(context);
+        contextSettings.reset();
     }
 }
 
@@ -1343,5 +1319,35 @@ class UiSpace {
         this._mousePointer.addButton(button);
         return button;
     }
+}
+
+class VisibleBoxCollider {
+    constructor(posX, posY, width, height, renderSpace, collisionSpace, color = 'black', fill = false) {
+        this._entity = new Entity(posX, posY);
+        this._collider = new BoxCollider(this._entity, width, height);
+        this._visual = new BoxColliderRenderer(this._collider, color, fill);
+        this._entity.addComponent(this._collider, Type.boxCollider);
+        this._collider.onDestroy.add(this._visual.destroy, this._visual);
+        renderSpace.addRenderable(this._visual);
+        collisionSpace.addCollider(this._collider);
+    }
+    set outlineOnly(value) { this._visual.outlineOnly = value; }
+    get entity() { return this._entity; }
+    get collider() { return this._collider; }
+}
+
+class VisibleSphereCollider {
+    constructor(posX, posY, width, height, renderSpace, collisionSpace, color = 'black', fill = false) {
+        this._entity = new Entity(posX, posY);
+        this._collider = new BoxCollider(this._entity, width, height);
+        this._visual = new BoxColliderRenderer(this._collider, color, fill);
+        this._entity.addComponent(this._collider, Type.sphereCollider);
+        this._collider.onDestroy.add(this._visual.destroy, this._visual);
+        renderSpace.addRenderable(this._visual);
+        collisionSpace.addCollider(this._collider);
+    }
+    set outlineOnly(value) { this._visual.outlineOnly = value; }
+    get entity() { return this._entity; }
+    get collider() { return this._collider; }
 }
 
