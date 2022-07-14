@@ -1,6 +1,6 @@
-# JhmEngine, the simple static browser-based game engine
+# JhmEngine, a simple static browser-based game engine
 
-JhmEngine made by me, Jimmy, in order to have a lightweight and simple way to make game applications that can run in a browser window. The engine has been developed as a way to both learn more about Javascript, web, and game development. The engine is entirely front-end, meaning the whole game is loaded as a single web page. This makes is suitable for small projects, but anything larger will require a backend component to dynamically load and unload assets.
+JhmEngine was made by me, Jimmy Haglund Malm, in order to have a lightweight and simple way to make game applications that can run in a browser window. The engine has been developed as a way to both learn more about Javascript, web, and game development. The engine is designed to function by running a html page directly by a browser, meaning that no web server is required for running applications made by it. This puts a limit to project scope, which is intended as the purpose of the engine is to allow creating tiny game applications that load near-instantly.
 
 ## Core Features
 
