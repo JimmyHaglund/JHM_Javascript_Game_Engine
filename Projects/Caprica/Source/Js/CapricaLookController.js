@@ -10,6 +10,8 @@ class CapricaLookController {
         let entityX = this._entity.transform.worldX;
         let entityY = this._entity.transform.worldY;
         let mouse = this._camera.getMouseWorldPosition();
+        // console.log(mouse);
+        // this._camera.printCanvasProperties();
         let right = vector.right;
         let entityToMouseX = mouse.x - entityX;
         let entityToMouseY = mouse.y - entityY;

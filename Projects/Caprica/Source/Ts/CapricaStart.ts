@@ -1,3 +1,4 @@
+// Dependencies: WindowEvents
 let movementInput: CapricaMovementInput;
 let gameData: {
   playLoop: Loop,
@@ -55,6 +56,10 @@ function createCamera(renderLayers: IRenderLayer[], transform: ITransform, loop:
   canvasId: string): Camera {
   let camera = new Camera(renderLayers, transform, loop);
   let canvas = document.getElementById(canvasId) as HTMLCanvasElement;
+  windowEvents.onWindowResize.add((_) => {
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+  }, canvas);
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
   camera.setCanvas(canvas);

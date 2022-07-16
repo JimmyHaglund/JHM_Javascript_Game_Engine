@@ -10,6 +10,8 @@ class CapricaLookController {
         let entityX = this._entity.transform.worldX;
         let entityY = this._entity.transform.worldY;
         let mouse = this._camera.getMouseWorldPosition();
+        // console.log(mouse);
+        // this._camera.printCanvasProperties();
         let right = vector.right;
         let entityToMouseX = mouse.x - entityX;
         let entityToMouseY = mouse.y - entityY;
@@ -231,6 +233,60 @@ class CapricaMovementInput {
     }
 }
 
+class ShakerMaker {
+    constructor(targetTransform, targetLoop) {
+        this._targetTransform = targetTransform;
+        this._targetLoop = targetLoop;
+    }
+    MakeShake(numberOfShakes = 1, shakeOffsetMin = 5, shakeOffsetMax = 15) {
+        let shakeRange = { min: shakeOffsetMin, max: shakeOffsetMax };
+        return new Shaker(this._targetTransform, this._targetLoop, numberOfShakes, shakeRange);
+    }
+}
+class Shaker {
+    constructor(targetTransform, loop, numberOfShakes, shakeOffset) {
+        this._offsetX = 0;
+        this._offsetY = 0;
+        this._targetTransform = targetTransform;
+        this._loopActionId = loop.onUpdate.add(this.update, this);
+        this._remainingShakes = numberOfShakes;
+        this._minOffset = shakeOffset.min;
+        this._maxOffset = shakeOffset.max;
+        this._loop = loop;
+    }
+    update() {
+        this.resetTargetToNormal();
+        let shakeMagnitude = this._minOffset + Math.random() * (this._maxOffset - this._minOffset);
+        this.applyShake(shakeMagnitude);
+        this.addShakeCount();
+    }
+    resetTargetToNormal() {
+        this._targetTransform.x -= this._offsetX;
+        this._targetTransform.y -= this._offsetY;
+    }
+    applyShake(magnitude) {
+        this._targetTransform.x += magnitude;
+        this._targetTransform.y += magnitude;
+        this._offsetX = magnitude;
+        this._offsetY = magnitude;
+    }
+    addShakeCount() {
+        if (--this._remainingShakes < 0) {
+            this.resetTargetToNormal();
+            this._loop.onUpdate.remove(this._loopActionId);
+        }
+    }
+}
+
+class WindowEvents {
+    constructor() {
+        this.onWindowResize = new Action();
+        window.onresize = () => this.onWindowResize.invoke(window);
+    }
+}
+const windowEvents = new WindowEvents();
+
+// Dependencies: WindowEvents
 let movementInput;
 let gameData;
 function capricaStart(canvasId) {
@@ -271,6 +327,10 @@ function createGun(cameraTransform, gameLoop, characterTransform, renderLayer, c
 function createCamera(renderLayers, transform, loop, canvasId) {
     let camera = new Camera(renderLayers, transform, loop);
     let canvas = document.getElementById(canvasId);
+    windowEvents.onWindowResize.add((_) => {
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+    }, canvas);
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
     camera.setCanvas(canvas);
@@ -337,51 +397,6 @@ canvas {
   -ms-interpolation-mode: nearest-neighbor;   // IE
 }
 /**/ 
-
-class ShakerMaker {
-    constructor(targetTransform, targetLoop) {
-        this._targetTransform = targetTransform;
-        this._targetLoop = targetLoop;
-    }
-    MakeShake(numberOfShakes = 1, shakeOffsetMin = 5, shakeOffsetMax = 15) {
-        let shakeRange = { min: shakeOffsetMin, max: shakeOffsetMax };
-        return new Shaker(this._targetTransform, this._targetLoop, numberOfShakes, shakeRange);
-    }
-}
-class Shaker {
-    constructor(targetTransform, loop, numberOfShakes, shakeOffset) {
-        this._offsetX = 0;
-        this._offsetY = 0;
-        this._targetTransform = targetTransform;
-        this._loopActionId = loop.onUpdate.add(this.update, this);
-        this._remainingShakes = numberOfShakes;
-        this._minOffset = shakeOffset.min;
-        this._maxOffset = shakeOffset.max;
-        this._loop = loop;
-    }
-    update() {
-        this.resetTargetToNormal();
-        let shakeMagnitude = this._minOffset + Math.random() * (this._maxOffset - this._minOffset);
-        this.applyShake(shakeMagnitude);
-        this.addShakeCount();
-    }
-    resetTargetToNormal() {
-        this._targetTransform.x -= this._offsetX;
-        this._targetTransform.y -= this._offsetY;
-    }
-    applyShake(magnitude) {
-        this._targetTransform.x += magnitude;
-        this._targetTransform.y += magnitude;
-        this._offsetX = magnitude;
-        this._offsetY = magnitude;
-    }
-    addShakeCount() {
-        if (--this._remainingShakes < 0) {
-            this.resetTargetToNormal();
-            this._loop.onUpdate.remove(this._loopActionId);
-        }
-    }
-}
 
 class AimConeRenderer {
     constructor(renderSpace, coneDistance = 100) {

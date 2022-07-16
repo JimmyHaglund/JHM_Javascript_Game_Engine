@@ -1,0 +1,14 @@
+srcImg img {
+   display: none;
+ }
+ #appCanvas {
+   position: relative;
+   width: 640px;
+   height: 480px;
+   background-color: rgb(119, 131, 119);
+   margin: 0px;
+ }
+ body {
+   padding: 0px;
+   margin: 0px;
+ }

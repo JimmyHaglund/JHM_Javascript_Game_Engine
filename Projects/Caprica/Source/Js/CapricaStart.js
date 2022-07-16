@@ -1,3 +1,4 @@
+// Dependencies: WindowEvents
 let movementInput;
 let gameData;
 function capricaStart(canvasId) {
@@ -38,6 +39,10 @@ function createGun(cameraTransform, gameLoop, characterTransform, renderLayer, c
 function createCamera(renderLayers, transform, loop, canvasId) {
     let camera = new Camera(renderLayers, transform, loop);
     let canvas = document.getElementById(canvasId);
+    windowEvents.onWindowResize.add((_) => {
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+    }, canvas);
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
     camera.setCanvas(canvas);

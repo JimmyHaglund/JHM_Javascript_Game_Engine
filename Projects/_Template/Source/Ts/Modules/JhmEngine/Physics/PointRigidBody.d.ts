@@ -1,0 +1,34 @@
+declare class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, IDestroyable {
+    dragEnabled: boolean;
+    private _velocity;
+    private _previousX;
+    private _previousY;
+    private _transform;
+    private _drag;
+    private readonly _onDestroy;
+    private readonly _loopAction;
+    private _updateActionId;
+    private readonly _onCollisionEnter;
+    private readonly _onCollisionExit;
+    private readonly _onCollisionStay;
+    set velocity(value: {
+        x: number;
+        y: number;
+    });
+    get velocity(): {
+        x: number;
+        y: number;
+    };
+    get onCollisionEnter(): Action;
+    get onCollisionExit(): Action;
+    get onCollisionStay(): Action;
+    get onDestroy(): Action;
+    get entity(): ITransform;
+    constructor(transform: ITransform);
+    update(deltaTime: number): void;
+    destroy(): void;
+    checkCollision(colliders: ICollider[]): void;
+    setDragProfile(drag: IDragProfile): void;
+    private move;
+    private applyDrag;
+}

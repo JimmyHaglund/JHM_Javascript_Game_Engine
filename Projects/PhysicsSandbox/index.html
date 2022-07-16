@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="./Style/jhmEngine.css">
+    <title>Template</title>
+
+  </head>
+
+  <body
+    onload='start("appCanvas")',
+    onmousedown='onMouseDown.invoke(event)',
+    onmouseup='onMouseUp.invoke(event)'
+    onmousemove='onMouseMoved.invoke(event)'
+  >
+      
+    <srcImg>
+      <img src = './Sprites/MainCharacter.png' id='main_character'>
+    </srcImg>
+    
+    <audio src = "./Sound/Pflowf.wav" id = "gunShoot"></audio>
+    
+    <script src = "./Scripts/JhmEngine.js"></script>
+    <script src = "./Scripts/PhysicsSandbox.js"></script>
+    <div>
+      <canvas id = "appCanvas"></canvas>
+    </div>
+    
+  </body>
+</html>
