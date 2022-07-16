@@ -23,7 +23,7 @@ class CapricaMainCharacter {
         movementLoop.onUpdate.add(rigidBody.update, rigidBody);
         entity.addComponent(rigidBody, Type.pointRigidbody);
         this._rigidbody = rigidBody;
-        physics.addPhysicsActor(rigidBody);
+        // physics.addPhysicsActor(rigidBody);
     }
     initialiseMovementController(loop) {
         this._input = new CapricaMovementInput();

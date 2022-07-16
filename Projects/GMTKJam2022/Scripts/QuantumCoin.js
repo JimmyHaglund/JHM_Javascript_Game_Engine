@@ -37,27 +37,35 @@ class SatCollider {
             return;
         let collidingIndex = -1;
         let collidingDistance = Number.MAX_SAFE_INTEGER;
+        console.log(vertices);
         for (let n = 0; n < vertices.length; n++) {
             let axis = this._normals[n];
+            console.log("Axis:", axis);
             let distX = other.entity.worldX - this.entity.worldX;
             let distY = other.entity.worldY - this.entity.worldY;
             let angleDot = algebra.dot(distX, distY, axis.x, axis.y);
             if (angleDot < 0) {
                 // TODO: Major bug potential here, need to check centre of polygon instead of 
                 // the entity  since the collider may be offset away from the entity.
+                console.log("Normal is away from other collider entity, ignoring");
+                console.log("from to other vector: ", distX, distY);
+                console.log("Dot product with normal: ", angleDot);
                 continue;
             }
             let myProjection = this.getShadowOnAxis(axis.x, axis.y);
             let theirProjection = other.getShadowOnAxis(axis.x, axis.y);
+            console.log("Projections:", myProjection, theirProjection);
             if (myProjection.minScalar > theirProjection.maxScalar
                 || myProjection.maxScalar < theirProjection.minScalar) {
                 // No shadow overlap -> no collision, quit
+                console.log("No overlap for projections: ", myProjection, theirProjection);
                 return null;
             }
             // Collision found - compare distance to determine if that's the closest to push out
             let pen0 = Math.max(myProjection.minScalar, theirProjection.minScalar);
             let pen1 = Math.min(myProjection.maxScalar, theirProjection.maxScalar);
             let penetration = Math.abs(pen1 - pen0);
+            console.log("Penetration: " + penetration);
             if (penetration > collidingDistance && n > 0)
                 continue;
             if (penetration == collidingDistance) {
@@ -68,6 +76,7 @@ class SatCollider {
             collidingIndex = n;
         }
         if (collidingIndex == -1) {
+            console.log("CollidingIndex -1");
             return null;
         }
         let startVertex = vertices[collidingIndex];
@@ -78,15 +87,11 @@ class SatCollider {
             x: startVertex.x + 0.5 * (endVertex.x - startVertex.x),
             y: startVertex.y + 0.5 * (endVertex.y - startVertex.y)
         };
+        console.log("Colliding vertex index: ", collidingIndex);
         let directionVector = this._normals[collidingIndex];
         let collisionX = startPoint.x - directionVector.x * collidingDistance;
         let collisionY = startPoint.y - directionVector.y * collidingDistance;
-        return {
-            x: collisionX,
-            y: collisionY,
-            normalX: -directionVector.x * collidingDistance,
-            normalY: -directionVector.y * collidingDistance
-        };
+        return { x: collisionX, y: collisionY };
     }
     getNormals(vertices) {
         let result = [];
@@ -216,171 +221,5 @@ class SatColliderRenderer {
     }
 }
 
-class SatRigidbody {
-    constructor(transform) {
-        this.dragEnabled = true;
-        this._velocity = { x: 0, y: 0 };
-        this._onDestroy = new Action();
-        // private _deltaTime: number;
-        this._onCollisionEnter = new Action();
-        this._onCollisionExit = new Action();
-        this._onCollisionStay = new Action();
-        this._transform = transform;
-        this._previousX = transform.x;
-        this._previousY = transform.y;
-        this._drag = new PercentageDrag(5);
-    }
-    /*
-    // TODO: Implement collision stay & triggers
-    private readonly _activeCollisionData: {
-        collider: ICollider,
-        updateCount: number,
-        lastUpdateCount: number
-    }[] = [];
-    */
-    set velocity(value) { this._velocity = value; }
-    get velocity() { return this._velocity; }
-    get onCollisionEnter() { return this._onCollisionEnter; }
-    get onCollisionExit() { return this._onCollisionExit; }
-    get onCollisionStay() { return this._onCollisionStay; }
-    get onDestroy() { return this._onDestroy; }
-    get entity() { return this._transform; }
-    update(deltaTime) {
-        // this._deltaTime = deltaTime;
-        if (this.dragEnabled) {
-            this.applyDrag(deltaTime);
-        }
-        this.move(deltaTime);
-    }
-    destroy() {
-        this._loopAction.remove(this._updateActionId);
-        this._onDestroy.invoke();
-    }
-    checkCollision(colliders) {
-        colliders.forEach(collider => {
-            if (collider.overlapsPoint(this._transform.x, this._transform.y)) {
-                let x0 = this._previousX;
-                let y0 = this._previousY;
-                let x1 = this._transform.x;
-                let y1 = this._transform.y;
-                let dX = this._transform.x - this._previousX;
-                let dY = this._transform.y - this._previousY;
-                let lean = dY / dX;
-                if (dX == 0)
-                    lean = 100000;
-                let collisionData = collider.getCollisionPointWithRay(x0, y0, dX, dY);
-                if (collisionData == null)
-                    return;
-                let deltaColX = collisionData.x - x1;
-                let deltaColY = collisionData.y - y1;
-                this._velocity.x -= collisionData.normalX * this._velocity.x * -Math.sign(dX);
-                this._velocity.y -= collisionData.normalY * this._velocity.y * -Math.sign(dY);
-                this._transform.x -= collisionData.normalX * deltaColX * -Math.sign(deltaColX);
-                this._transform.y -= collisionData.normalY * deltaColY * -Math.sign(deltaColY);
-                this._onCollisionEnter.invoke.call(this._onCollisionEnter, collisionData, collider);
-            }
-        });
-    }
-    setDragProfile(drag) {
-        if (drag == null)
-            return;
-        this._drag = drag;
-    }
-    move(deltaTime) {
-        if (deltaTime == undefined || deltaTime <= 0)
-            return;
-        this._previousX = this._transform.x;
-        this._previousY = this._transform.y;
-        this._transform.x += deltaTime * this._velocity.x;
-        this._transform.y += deltaTime * this._velocity.y;
-    }
-    applyDrag(deltaTime) {
-        let drag = this._drag.getDrag(this._velocity.x, this._velocity.y);
-        this._velocity.x -= drag.dragX * deltaTime;
-        this._velocity.y -= drag.dragY * deltaTime;
-    }
-}
-
-let gameData;
-let various = {};
-function start(canvasId) {
-    let renderLayers = createRenderLayers();
-    let mainLoop = new Loop(60);
-    let cameraTransform = new Transform(0, 0);
-    let camera = createCamera(renderLayers, cameraTransform, mainLoop, canvasId);
-    let collisionSpaces = [new CollisionSpace()];
-    let physics = new PhysicsSpace(mainLoop, collisionSpaces);
-    gameData = {
-        mainLoop: mainLoop,
-        renderLayers: renderLayers,
-        physics: physics
-    };
-    let mouseBox = createSatBox(); // new VisibleBoxCollider(0, 0, 10, 10, renderLayers[1], new CollisionSpace(), "red", false);
-    let staticBox = createSatBox();
-    let collisionRenderBox = createSatBox("red", 5);
-    // let mousePhysics = new PointRigidBody(mouseCollider.entity);
-    renderLayers[1].addRenderable(mouseBox.renderer);
-    renderLayers[1].addRenderable(staticBox.renderer);
-    renderLayers[1].addRenderable(collisionRenderBox.renderer);
-    collisionSpaces[0].addCollider(staticBox.collider);
-    onMouseMoved.add(() => {
-        var mousePosition = camera.getMouseWorldPosition();
-        // let x = mousePosition.x + camera.viewFrustum.width * 0.5;
-        // let y = mousePosition.y + camera.viewFrustum.height * 0.5;
-        // mousePosition = {x: x, y: y};
-        mouseBox.collider.entity.worldX = mousePosition.x;
-        mouseBox.collider.entity.worldY = mousePosition.y;
-        // console.log(mousePosition);
-    }, mouseBox);
-    mainLoop.onUpdate.add(() => {
-        let collisionData = mouseBox.collider.GetCollisionPoint(staticBox.collider);
-        if (collisionData == null)
-            return;
-        collisionRenderBox.collider.entity.worldX = mouseBox.collider.entity.worldX + collisionData.x;
-        collisionRenderBox.collider.entity.worldY = mouseBox.collider.entity.worldY + collisionData.y;
-        staticBox.collider.entity.worldX -= collisionData.normalX;
-        staticBox.collider.entity.worldY -= collisionData.normalY;
-    }, mouseBox);
-}
-function createRenderLayers() {
-    return [
-        new RenderLayer(),
-        new RenderLayer() // Actors
-    ];
-}
-function createCamera(renderLayers, transform, loop, canvasId) {
-    let camera = new Camera(renderLayers, transform, loop);
-    let canvas = document.getElementById(canvasId);
-    windowEvents.onWindowResize.add((_) => {
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
-    }, canvas);
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
-    camera.setCanvas(canvas);
-    return camera;
-}
-function createSatBox(color = "black", size = 100) {
-    let entity = new Entity(0, 0);
-    let mod = size * 0.5;
-    let vertices = [
-        { x: -0.538 * mod, y: -0.638 * mod },
-        { x: -0.923 * mod, y: -0.014 * mod },
-        { x: -0.595 * mod, y: 0.857 * mod },
-        { x: 0.504 * mod, y: 0.866 * mod },
-        { x: 0.934 * mod, y: -0.008 * mod },
-        { x: 0.415 * mod, y: -0.758 * mod },
-    ];
-    let result = new SatCollider(entity, 0, 0, vertices);
-    let renderer = new SatColliderRenderer(result, color);
-    return { collider: result, renderer: renderer };
-}
-
-class WindowEvents {
-    constructor() {
-        this.onWindowResize = new Action();
-        window.onresize = () => this.onWindowResize.invoke(window);
-    }
-}
-const windowEvents = new WindowEvents();
+// Dependencies: SatCollider SatColliderRenderer
 

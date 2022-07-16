@@ -72,4 +72,4 @@ def get_dependencies(dependencystring):
 
 if __name__ == '__main__':
     os.system('cmd /c tsc')
-    bundle('./Js', '../Scripts/Template.js')
+    bundle('./Js', '../Scripts/QuantumCoin.js')

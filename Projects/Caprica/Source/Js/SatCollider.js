@@ -37,27 +37,35 @@ class SatCollider {
             return;
         let collidingIndex = -1;
         let collidingDistance = Number.MAX_SAFE_INTEGER;
+        console.log(vertices);
         for (let n = 0; n < vertices.length; n++) {
             let axis = this._normals[n];
+            console.log("Axis:", axis);
             let distX = other.entity.worldX - this.entity.worldX;
             let distY = other.entity.worldY - this.entity.worldY;
             let angleDot = algebra.dot(distX, distY, axis.x, axis.y);
             if (angleDot < 0) {
                 // TODO: Major bug potential here, need to check centre of polygon instead of 
                 // the entity  since the collider may be offset away from the entity.
+                console.log("Normal is away from other collider entity, ignoring");
+                console.log("from to other vector: ", distX, distY);
+                console.log("Dot product with normal: ", angleDot);
                 continue;
             }
             let myProjection = this.getShadowOnAxis(axis.x, axis.y);
             let theirProjection = other.getShadowOnAxis(axis.x, axis.y);
+            console.log("Projections:", myProjection, theirProjection);
             if (myProjection.minScalar > theirProjection.maxScalar
                 || myProjection.maxScalar < theirProjection.minScalar) {
                 // No shadow overlap -> no collision, quit
+                console.log("No overlap for projections: ", myProjection, theirProjection);
                 return null;
             }
             // Collision found - compare distance to determine if that's the closest to push out
             let pen0 = Math.max(myProjection.minScalar, theirProjection.minScalar);
             let pen1 = Math.min(myProjection.maxScalar, theirProjection.maxScalar);
             let penetration = Math.abs(pen1 - pen0);
+            console.log("Penetration: " + penetration);
             if (penetration > collidingDistance && n > 0)
                 continue;
             if (penetration == collidingDistance) {
@@ -68,6 +76,7 @@ class SatCollider {
             collidingIndex = n;
         }
         if (collidingIndex == -1) {
+            console.log("CollidingIndex -1");
             return null;
         }
         let startVertex = vertices[collidingIndex];
@@ -78,15 +87,11 @@ class SatCollider {
             x: startVertex.x + 0.5 * (endVertex.x - startVertex.x),
             y: startVertex.y + 0.5 * (endVertex.y - startVertex.y)
         };
+        console.log("Colliding vertex index: ", collidingIndex);
         let directionVector = this._normals[collidingIndex];
         let collisionX = startPoint.x - directionVector.x * collidingDistance;
         let collisionY = startPoint.y - directionVector.y * collidingDistance;
-        return {
-            x: collisionX,
-            y: collisionY,
-            normalX: -directionVector.x * collidingDistance,
-            normalY: -directionVector.y * collidingDistance
-        };
+        return { x: collisionX, y: collisionY };
     }
     getNormals(vertices) {
         let result = [];

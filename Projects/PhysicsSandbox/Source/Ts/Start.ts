@@ -44,14 +44,15 @@ function start(canvasId: string) {
       // console.log(mousePosition);
    }, mouseBox);
    
-   onMouseDown.add(() => {
-      console.log("Mouse down");
+   mainLoop.onUpdate.add(() => {
       let collisionData = mouseBox.collider.GetCollisionPoint(staticBox.collider);
-      console.log(collisionData);
       if (collisionData == null) return;
       collisionRenderBox.collider.entity.worldX = mouseBox.collider.entity.worldX + collisionData.x;
       collisionRenderBox.collider.entity.worldY = mouseBox.collider.entity.worldY + collisionData.y;
-       
+      
+      staticBox.collider.entity.worldX -= collisionData.normalX;
+      staticBox.collider.entity.worldY -= collisionData.normalY;
+
    }, mouseBox);
 
 }
@@ -77,28 +78,16 @@ function createCamera(renderLayers: IRenderLayer[], transform: ITransform, loop:
    return camera;
 }
 
-function createTestBoxes(renderspace: IRenderLayer, collisionSpace: CollisionSpace): ICollider[] {
-   let amount = 10;
-   let result = [];
-   let width = 50;
-   let height = width;
-   for (let n = 0; n < amount; n++) {
-      let x = n * width;
-      let y = 0;
-      let box = new VisibleBoxCollider(x, y, width, height, renderspace, collisionSpace);
-      result.push(box);
-   }
-   return result;
-}
-
-function createSatBox(color: string = "black", size: number = 50): {collider: SatCollider, renderer: SatColliderRenderer } {
+function createSatBox(color: string = "black", size: number = 100): {collider: SatCollider, renderer: SatColliderRenderer } {
    let entity = new Entity(0, 0);
-   let half = size * 0.5;
+   let mod = size * 0.5;
    let vertices = [
-      {x: -half, y: -half},
-      {x: -half, y: half},
-      {x: half, y: half},
-      {x: half, y: -half}
+      {x: -0.538 * mod, y: -0.638 * mod},
+      {x: -0.923 * mod, y: -0.014 * mod},
+      {x: -0.595 * mod, y: 0.857 * mod},
+      {x: 0.504 * mod, y: 0.866 * mod},
+      {x: 0.934 * mod, y: -0.008 * mod},
+      {x: 0.415 * mod, y: -0.758 * mod},
    ];
    let result = new SatCollider(entity, 0, 0, vertices) 
    let renderer = new SatColliderRenderer(result, color);
