@@ -83,10 +83,14 @@ class SatCollider {
         let endVertex = vertices[0];
         if (collidingIndex < vertices.length - 1)
             endVertex = vertices[collidingIndex + 1];
+        let startPoint = {
+            x: startVertex.x + 0.5 * (endVertex.x - startVertex.x),
+            y: startVertex.y + 0.5 * (endVertex.y - startVertex.y)
+        };
         console.log("Colliding vertex index: ", collidingIndex);
         let directionVector = this._normals[collidingIndex];
-        let collisionX = startVertex.x - directionVector.x * collidingDistance;
-        let collisionY = startVertex.y - directionVector.y * collidingDistance;
+        let collisionX = startPoint.x - directionVector.x * collidingDistance;
+        let collisionY = startPoint.y - directionVector.y * collidingDistance;
         return { x: collisionX, y: collisionY };
     }
     getNormals(vertices) {
