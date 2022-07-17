@@ -4,36 +4,39 @@ class SatCollider implements ICollider {
     private _entity: Entity;
     private _vertices: { x: number, y: number }[];
     private _normals: { x: number, y: number }[];
-    private _offsetX: number;
-    private _offsetY: number;
     private _onDestroy: Action;
+    private _boundingBox: { left:number, right: number, top:number, bottom: number };
 
     get vertices(): { x: number, y: number }[] {
         return this._vertices;
     }
-    get offset(): { x: number, y: number } {
-        return {
-            x: this._offsetX,
-            y: this._offsetY
-        }
-    }
     get onDestroy(): Action { return this._onDestroy; }
     get entity(): Entity { return this._entity }
-    get centre(): { x: number, y: number } {
-        let x = this._entity.transform.x + this.offset.x;
-        let y = this._entity.transform.y + this.offset.y;
-        return { x: x, y: y };
-    }
     get normals(): {x: number, y: number}[]{
         return this._normals;
+    }
+    get boundingBox(): { left:number, right: number, top:number, bottom: number } {
+        return this._boundingBox;
+    }
+    get centre(): {x: number, y: number} {
+        const bounds = this.boundingBox;
+        const x = bounds.left + (bounds.right - bounds.left) * 0.5; 
+        const y = bounds.top + (bounds.bottom - bounds.top) * 0.5;
+        return {x, y};
+    }
+    get worldCentre(): {x: number, y: number} {
+        const localCentre = this.centre;
+        return {
+            x: localCentre.x + this.entity.worldX,
+            y: localCentre.y + this.entity.worldY
+        }
     }
 
     constructor(entity: Entity, offsetX: number = 0, offsetY: number = 0, vertices: { x: number, y: number }[]) {
         this._entity = entity;
         this._vertices = vertices;
-        this._offsetX = offsetX;
-        this._offsetY = offsetY;
         this._normals = this.getNormals(vertices);
+        this._boundingBox = this.getBoundingBox(vertices);
 
         this._onDestroy = new Action();
     }
@@ -42,22 +45,19 @@ class SatCollider implements ICollider {
         this._onDestroy.invoke();
     }
 
-    public GetCollisionPoint(other: SatCollider): { x: number, y: number, normalX: number, normalY: number} {
+    public getCollision(other: ICollider, checkOther: boolean = true): { x: number, y: number, normalX: number, normalY: number} {
         let vertices = this._vertices;
         if (vertices.length < 2) return;
         let collidingIndex = -1;
         let collidingDistance = Number.MAX_SAFE_INTEGER;
         for (let n = 0; n < vertices.length; n++) {
-            
             let axis = this._normals[n];
-            let distX = other.entity.worldX - this.entity.worldX;
-            let distY = other.entity.worldY - this.entity.worldY;
+            let otherCentre = other.worldCentre;
+            let myCentre = this.worldCentre;
+            let distX = otherCentre.x - myCentre.x;
+            let distY = otherCentre.y - myCentre.y;
             let angleDot = algebra.dot(distX, distY, axis.x, axis.y);
-            if (angleDot < 0) {
-                // TODO: Major bug potential here, need to check centre of polygon instead of 
-                // the entity  since the collider may be offset away from the entity.
-                continue;
-            }
+            if (angleDot < 0) continue;
 
             let myProjection = this.getShadowOnAxis(axis.x, axis.y);
             let theirProjection = other.getShadowOnAxis(axis.x, axis.y);
@@ -79,8 +79,15 @@ class SatCollider implements ICollider {
             collidingDistance = penetration;
             collidingIndex = n; 
         }
-        if (collidingIndex == -1) {
-            return null;
+        // Do same thing for other polygon's vertices
+        if (checkOther) {
+            let otherCollision = other.getCollision(this, false);
+            if (otherCollision == null) return null;
+            if (algebra.squareDistance(0, 0, otherCollision.normalX, otherCollision.normalY) < collidingDistance) {
+                otherCollision.normalX *= -1;
+                otherCollision.normalY *= -1;
+                return otherCollision;
+            }
         }
         let startVertex = vertices[collidingIndex];
         let endVertex = vertices[0];
@@ -90,14 +97,25 @@ class SatCollider implements ICollider {
             y: startVertex.y + 0.5 * (endVertex.y - startVertex.y)
         };
         let directionVector = this._normals[collidingIndex]
-        let collisionX = startPoint.x - directionVector.x * collidingDistance;
-        let collisionY = startPoint.y - directionVector.y * collidingDistance;
+        let collisionX = this._entity.worldX + startPoint.x - directionVector.x * collidingDistance;
+        let collisionY = this._entity.worldY + startPoint.y - directionVector.y * collidingDistance;
         return {
             x: collisionX, 
             y: collisionY, 
             normalX: -directionVector.x * collidingDistance, 
             normalY: -directionVector.y * collidingDistance
         };
+    }
+
+    private getOutlineVector(cornerIndex: number): {dirX: number, dirY: number} {
+        const startVertex = this.vertices[cornerIndex];
+        let endVertex = this.vertices[0];
+        if (cornerIndex < this.vertices.length - 1) {
+            endVertex = this.vertices[cornerIndex + 1];
+        }
+        const dirX = endVertex.x - startVertex.x;
+        const dirY = endVertex.y - startVertex.y;
+        return {dirX, dirY};
     }
 
     private getNormals(vertices: {x: number, y: number}[]) : {x:number, y:number}[] {
@@ -113,6 +131,25 @@ class SatCollider implements ICollider {
             normal.x /= magnitude;
             normal.y /= magnitude;
             result.push(normal);
+        }
+        return result;
+    }
+
+    private getBoundingBox(vertices: {x: number, y: number}[]) : { left:number, right: number, top:number, bottom: number } {
+        let result = {
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0
+        }
+        if (vertices.length == 0) return result;
+        for(let n = 0; n < vertices.length; n++) {
+            let x = vertices[n].x;
+            let y = vertices[n].y;
+            if (x < result.left) result.left = x;
+            if (x > result.right) result.right = x;
+            if (y < result.top) result.top = y;
+            if (y > result.bottom) result.bottom = y;
         }
         return result;
     }
@@ -150,6 +187,15 @@ class SatCollider implements ICollider {
     public overlapsPoint(pointX: number, pointY: number): boolean {
         return false;
     }
+
+    public getNearestPoint(pointX: number, pointY: number): {x: number, y: number} {
+        return null;
+    }
+
+    public getNearestBoundingPoint(pointX: number, pointY: number): {x: number, y: number}{
+        return null;
+    }
+    
 
     public getCollisionPointWithRay(x0: number, y0: number, xDir: number, yDir: number): { x: number, y: number, normalX: number, normalY: number } {
         return null;

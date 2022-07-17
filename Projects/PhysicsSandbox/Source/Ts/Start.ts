@@ -45,10 +45,10 @@ function start(canvasId: string) {
    }, mouseBox);
    
    mainLoop.onUpdate.add(() => {
-      let collisionData = mouseBox.collider.GetCollisionPoint(staticBox.collider);
+      let collisionData = mouseBox.collider.getCollision(staticBox.collider);
       if (collisionData == null) return;
-      collisionRenderBox.collider.entity.worldX = mouseBox.collider.entity.worldX + collisionData.x;
-      collisionRenderBox.collider.entity.worldY = mouseBox.collider.entity.worldY + collisionData.y;
+      collisionRenderBox.collider.entity.worldX = collisionData.x;
+      collisionRenderBox.collider.entity.worldY = collisionData.y;
       
       staticBox.collider.entity.worldX -= collisionData.normalX;
       staticBox.collider.entity.worldY -= collisionData.normalY;
