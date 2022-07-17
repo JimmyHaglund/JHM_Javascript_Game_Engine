@@ -15,10 +15,12 @@ function start(canvasId) {
     let mouseBox = createSatBox(); // new VisibleBoxCollider(0, 0, 10, 10, renderLayers[1], new CollisionSpace(), "red", false);
     let staticBox = createSatBox();
     let collisionRenderBox = createSatBox("red", 5);
+    let rayCollisionRenderBox = createSatBox("green", 2);
     // let mousePhysics = new PointRigidBody(mouseCollider.entity);
     renderLayers[1].addRenderable(mouseBox.renderer);
     renderLayers[1].addRenderable(staticBox.renderer);
     renderLayers[1].addRenderable(collisionRenderBox.renderer);
+    renderLayers[1].addRenderable(rayCollisionRenderBox.renderer);
     collisionSpaces[0].addCollider(staticBox.collider);
     onMouseMoved.add(() => {
         var mousePosition = camera.getMouseWorldPosition();
@@ -37,6 +39,17 @@ function start(canvasId) {
         collisionRenderBox.collider.entity.worldY = collisionData.y;
         staticBox.collider.entity.worldX -= collisionData.normalX;
         staticBox.collider.entity.worldY -= collisionData.normalY;
+    }, mouseBox);
+    let ray = { x0: 0, y0: 0, lean: 1, length: 600 };
+    let rayRender = new RayRenderOffset(renderLayers[1], ray.x0, ray.y0, ray.lean, ray.length, "green", 120000);
+    onMouseDown.add(() => {
+        let collisions = mouseBox.collider.getCollisionPointsWithRay(ray.x0, ray.y0, ray.lean, ray.length);
+        if (collisions.length == 0)
+            return;
+        let colEntity = rayCollisionRenderBox.collider.entity;
+        colEntity.x = collisions[0].x;
+        colEntity.y = collisions[0].y;
+        console.log("Collisions: ", collisions.length, collisions);
     }, mouseBox);
 }
 function createRenderLayers() {

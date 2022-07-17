@@ -5,12 +5,18 @@ interface ICollider extends IDestroyable {
     getNearestPoint(pointX: number, pointY: number): {x: number, y: number};
     getNearestBoundingPoint(pointX: number, pointY: number): {x: number, y: number};
     
-    getCollisionPointWithRay(x0: number, y0: number, xDir: number, yDir: number): {
+    getFirstCollisionPointWithRay(x0: number, y0: number, xDir: number, yDir: number): {
         x: number;
         y: number;
         normalX: number;
         normalY: number;
     };
+    getCollisionPointsWithRay(x0: number, y0: number, lean: number, length: number): {
+        x: number;
+        y: number;
+        normalX: number;
+        normalY: number;
+    }[];
     getNearestCorner(x: number, y: number): {
         x: number;
         y: number;

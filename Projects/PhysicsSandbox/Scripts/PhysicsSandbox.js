@@ -1,3 +1,27 @@
+class RayRenderOffset {
+    constructor(layer, x0, y0, lean, length = 1, color = 'black', duration = 100) {
+        this._onDestroy = new Action();
+        let line = rayToLine(x0, y0, lean, length);
+        this._x1 = line.x1;
+        this._y1 = line.y1;
+        this._x2 = line.x2;
+        this._y2 = line.y2;
+        this._color = color;
+        layer.addRenderable(this);
+        this._onDestroy.add(() => layer.removeRenderable(this), this);
+        setTimeout(() => this.destroy.call(this), duration);
+    }
+    get onDestroy() { return this._onDestroy; }
+    destroy() { this._onDestroy.invoke(); }
+    render(context, offsetX, offsetY) {
+        context.strokeStyle = this._color;
+        context.beginPath();
+        context.moveTo(this._x1 - offsetX, this._y1 - offsetY);
+        context.lineTo(this._x2 - offsetX, this._y2 - offsetY);
+        context.stroke();
+    }
+}
+
 // TODO: Implement normals calculation
 // TODO: Implement collision
 class SatCollider {
@@ -186,8 +210,47 @@ class SatCollider {
     getNearestBoundingPoint(pointX, pointY) {
         return null;
     }
-    getCollisionPointWithRay(x0, y0, xDir, yDir) {
+    getFirstCollisionPointWithRay(x0, y0, xDir, yDir) {
         return null;
+    }
+    getCollisionPointsWithRay(x0, y0, lean, length) {
+        let rayLean = lean;
+        let result = [];
+        for (let n = 0; n < this._vertices.length; n++) {
+            let worldVertice = this.getVertexWorldPosition(this._vertices[n]);
+            let nextVertIndex = n < this._vertices.length - 1 ? n + 1 : 0;
+            let endVert = this.getVertexWorldPosition(this._vertices[nextVertIndex]);
+            let lineVector = this.getOutlineVector(n);
+            let lineVectorLean = lineVector.dirY / lineVector.dirX;
+            let linePoint = worldVertice;
+            let overlap = algebra.getLineOverlapPoint(linePoint.x, linePoint.y, lineVectorLean, x0, y0, rayLean);
+            let startX = Math.min(worldVertice.x, endVert.x);
+            let startY = Math.min(worldVertice.y, endVert.y);
+            let endX = Math.max(worldVertice.x, endVert.x);
+            let endY = Math.max(worldVertice.y, endVert.y);
+            let isOnLine = (overlap.x > startX && overlap.x < endX
+                && overlap.y > startY && overlap.y < endY);
+            if (!isOnLine)
+                continue;
+            let normal = this._normals[n];
+            result.push({
+                x: overlap.x,
+                y: overlap.y,
+                normalX: normal.x,
+                normalY: normal.y
+            });
+        }
+        return result;
+    }
+    pointIsOnLineSegment(pointX, pointY, lineStartX, lineStartY, lineEndX, lineEndY) {
+        let lineVector = {
+            x: lineEndX - lineStartX,
+            y: lineEndY - lineStartY
+        };
+        if (algebra.angleBetween(lineVector.x, lineVector.y, pointX, pointY) > 0.00001)
+            return false;
+        return pointX > lineStartX && pointX < lineEndX
+            && pointY > lineStartY && pointY < lineEndY;
     }
     getNearestCorner(x, y) {
         return null;
@@ -318,7 +381,7 @@ class SatRigidbody {
                 let lean = dY / dX;
                 if (dX == 0)
                     lean = 100000;
-                let collisionData = collider.getCollisionPointWithRay(x0, y0, dX, dY);
+                let collisionData = collider.getFirstCollisionPointWithRay(x0, y0, dX, dY);
                 if (collisionData == null)
                     return;
                 let deltaColX = collisionData.x - x1;
@@ -368,10 +431,12 @@ function start(canvasId) {
     let mouseBox = createSatBox(); // new VisibleBoxCollider(0, 0, 10, 10, renderLayers[1], new CollisionSpace(), "red", false);
     let staticBox = createSatBox();
     let collisionRenderBox = createSatBox("red", 5);
+    let rayCollisionRenderBox = createSatBox("green", 2);
     // let mousePhysics = new PointRigidBody(mouseCollider.entity);
     renderLayers[1].addRenderable(mouseBox.renderer);
     renderLayers[1].addRenderable(staticBox.renderer);
     renderLayers[1].addRenderable(collisionRenderBox.renderer);
+    renderLayers[1].addRenderable(rayCollisionRenderBox.renderer);
     collisionSpaces[0].addCollider(staticBox.collider);
     onMouseMoved.add(() => {
         var mousePosition = camera.getMouseWorldPosition();
@@ -390,6 +455,17 @@ function start(canvasId) {
         collisionRenderBox.collider.entity.worldY = collisionData.y;
         staticBox.collider.entity.worldX -= collisionData.normalX;
         staticBox.collider.entity.worldY -= collisionData.normalY;
+    }, mouseBox);
+    let ray = { x0: 0, y0: 0, lean: 1, length: 600 };
+    let rayRender = new RayRenderOffset(renderLayers[1], ray.x0, ray.y0, ray.lean, ray.length, "green", 120000);
+    onMouseDown.add(() => {
+        let collisions = mouseBox.collider.getCollisionPointsWithRay(ray.x0, ray.y0, ray.lean, ray.length);
+        if (collisions.length == 0)
+            return;
+        let colEntity = rayCollisionRenderBox.collider.entity;
+        colEntity.x = collisions[0].x;
+        colEntity.y = collisions[0].y;
+        console.log("Collisions: ", collisions.length, collisions);
     }, mouseBox);
 }
 function createRenderLayers() {

@@ -195,11 +195,62 @@ class SatCollider implements ICollider {
     public getNearestBoundingPoint(pointX: number, pointY: number): {x: number, y: number}{
         return null;
     }
-    
-
-    public getCollisionPointWithRay(x0: number, y0: number, xDir: number, yDir: number): { x: number, y: number, normalX: number, normalY: number } {
+    public getFirstCollisionPointWithRay(x0: number, y0: number, xDir: number, yDir: number): 
+    { x: number, y: number, normalX: number, normalY: number } {
         return null;
     }
+
+    public getCollisionPointsWithRay(x0: number, y0: number, lean: number, length: number):
+    { x: number, y: number, normalX: number, normalY: number }[] {
+
+        let rayLean = lean;
+        let result: { 
+            x: number, 
+            y: number, 
+            normalX: number, 
+            normalY: number 
+        }[] = [];
+        for(let n = 0; n < this._vertices.length; n++) {
+            let worldVertice = this.getVertexWorldPosition(this._vertices[n]);
+            
+            let nextVertIndex = n < this._vertices.length -1 ? n + 1 : 0;
+            let endVert = this.getVertexWorldPosition(this._vertices[nextVertIndex]);
+            
+            let lineVector = this.getOutlineVector(n);
+            let lineVectorLean = lineVector.dirY / lineVector.dirX;
+            let linePoint = worldVertice;
+            let overlap = algebra.getLineOverlapPoint(
+                linePoint.x, linePoint.y, lineVectorLean,
+                x0, y0, rayLean);
+            
+            let startX = Math.min(worldVertice.x, endVert.x);
+            let startY = Math.min(worldVertice.y, endVert.y);
+            let endX = Math.max(worldVertice.x, endVert.x);
+            let endY = Math.max(worldVertice.y, endVert.y);
+            let isOnLine = ( overlap.x > startX && overlap.x < endX 
+            && overlap.y > startY && overlap.y < endY);
+            if (!isOnLine) continue;
+            let normal = this._normals[n];
+            result.push({
+                x: overlap.x, 
+                y: overlap.y, 
+                normalX: normal.x, 
+                normalY: normal.y
+            });
+        }
+        return result;
+    }
+
+    private pointIsOnLineSegment(pointX, pointY, lineStartX, lineStartY, lineEndX, lineEndY): boolean {
+        let lineVector = {
+            x: lineEndX - lineStartX, 
+            y: lineEndY - lineStartY
+        };
+        if (algebra.angleBetween(lineVector.x, lineVector.y, pointX, pointY) > 0.00001) return false;
+        return pointX > lineStartX && pointX < lineEndX 
+            && pointY > lineStartY && pointY < lineEndY;
+    }
+
 
     public getNearestCorner(x: number, y: number): { x: number, y: number } {
         return null;

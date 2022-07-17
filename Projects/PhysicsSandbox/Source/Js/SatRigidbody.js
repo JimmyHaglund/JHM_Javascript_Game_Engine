@@ -50,7 +50,7 @@ class SatRigidbody {
                 let lean = dY / dX;
                 if (dX == 0)
                     lean = 100000;
-                let collisionData = collider.getCollisionPointWithRay(x0, y0, dX, dY);
+                let collisionData = collider.getFirstCollisionPointWithRay(x0, y0, dX, dY);
                 if (collisionData == null)
                     return;
                 let deltaColX = collisionData.x - x1;
