@@ -185,7 +185,16 @@ class SatCollider implements ICollider {
     }
 
     public overlapsPoint(pointX: number, pointY: number): boolean {
-        return false;
+        let boundingBox = this.getBoundingBox(this._vertices);
+        let rayCastStart = {
+            x: boundingBox.left - 10 + this._entity.worldX, 
+            y: boundingBox.top + this._entity.worldY - 10
+        };
+        let raycastEnd = {x: pointX, y: pointY};
+        let rayHits = this.getCollisionPointsWithRay(rayCastStart.x, rayCastStart.y, raycastEnd.x, raycastEnd.y);
+        // By raycasting from a point outside the collider into the checked point, if the point is inside the collider
+        // the ray should hit exactly once.
+        return rayHits.length % 2 != 0;
     }
 
     public getNearestPoint(pointX: number, pointY: number): {x: number, y: number} {
@@ -200,10 +209,11 @@ class SatCollider implements ICollider {
         return null;
     }
 
-    public getCollisionPointsWithRay(x0: number, y0: number, lean: number, length: number):
+    public getCollisionPointsWithRay(x0: number, y0: number, x1: number, y1: number):
     { x: number, y: number, normalX: number, normalY: number }[] {
-
-        let rayLean = lean;
+        let rayStart = {x: Math.min(x0, x1), y: Math.min(y0, y1)};
+        let rayEnd = {x: Math.max(x0, x1), y: Math.max(y0, y1)};
+        let rayLean = x1 == x0 ? 0 : (y1 - y0) / (x1 - x0);
         let result: { 
             x: number, 
             y: number, 
@@ -211,22 +221,30 @@ class SatCollider implements ICollider {
             normalY: number 
         }[] = [];
         for(let n = 0; n < this._vertices.length; n++) {
-            let worldVertice = this.getVertexWorldPosition(this._vertices[n]);
-            
             let nextVertIndex = n < this._vertices.length -1 ? n + 1 : 0;
-            let endVert = this.getVertexWorldPosition(this._vertices[nextVertIndex]);
+            let currentVert = this.getVertexWorldPosition(this._vertices[n]);
+            let nextVert = this.getVertexWorldPosition(this._vertices[nextVertIndex]);
+            let vertStart = {
+                x: Math.min(currentVert.x, nextVert.x), 
+                y: Math.min(currentVert.y, nextVert.y)
+            };
+            let vertEnd = {
+                x: Math.max(currentVert.x, nextVert.x), 
+                y: Math.max(currentVert.y, nextVert.y)
+            };
             
             let lineVector = this.getOutlineVector(n);
             let lineVectorLean = lineVector.dirY / lineVector.dirX;
-            let linePoint = worldVertice;
+            let linePoint = currentVert;
             let overlap = algebra.getLineOverlapPoint(
                 linePoint.x, linePoint.y, lineVectorLean,
                 x0, y0, rayLean);
             
-            let startX = Math.min(worldVertice.x, endVert.x);
-            let startY = Math.min(worldVertice.y, endVert.y);
-            let endX = Math.max(worldVertice.x, endVert.x);
-            let endY = Math.max(worldVertice.y, endVert.y);
+            let startX = Math.max(vertStart.x, rayStart.x);
+            let startY = Math.max(vertStart.y, rayStart.y);
+            let endX = Math.min(vertEnd.x, rayEnd.x);
+            let endY = Math.min(vertEnd.y, rayEnd.y);
+
             let isOnLine = ( overlap.x > startX && overlap.x < endX 
             && overlap.y > startY && overlap.y < endY);
             if (!isOnLine) continue;

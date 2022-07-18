@@ -57,16 +57,18 @@ function start(canvasId: string) {
 
    }, mouseBox);
 
-   let ray = {x0: 0, y0: 0, lean: 1, length: 600};
-   let rayRender = new RayRenderOffset(renderLayers[1] as RenderLayer, ray.x0, ray.y0, ray.lean, ray.length, "green", 120000);
+   let ray = {x0: 0, y0: 0, x1: 600, y1: 600};
+   let rayRender = new RayRenderOffset(renderLayers[1] as RenderLayer, ray.x0, ray.y0, ray.x1, ray.y1, "green", 120000);
 
    onMouseDown.add(() => {
-      let collisions = mouseBox.collider.getCollisionPointsWithRay(ray.x0, ray.y0, ray.lean, ray.length);
+      console.log("Point (0, 0) is inside collider: ", mouseBox.collider.overlapsPoint(0, 0));
+      let collisions = mouseBox.collider.getCollisionPointsWithRay(ray.x0, ray.y0, ray.x1, ray.y1);
       if (collisions.length == 0) return;
       let colEntity = rayCollisionRenderBox.collider.entity;
       colEntity.x = collisions[0].x;
       colEntity.y = collisions[0].y;
       console.log("Collisions: ", collisions.length, collisions);
+
    }, mouseBox);
 }
 

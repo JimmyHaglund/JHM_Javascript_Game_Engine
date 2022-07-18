@@ -6,12 +6,11 @@ class RayRenderOffset implements IRenderable {
    private _color: string;
    private _onDestroy: Action = new Action();
    get onDestroy() { return this._onDestroy; }
-   constructor(layer: RenderLayer, x0, y0, lean, length = 1, color = 'black', duration = 100) {
-       let line = rayToLine(x0, y0, lean, length);
-       this._x1 = line.x1;
-       this._y1 = line.y1;
-       this._x2 = line.x2;
-       this._y2 = line.y2;
+   constructor(layer: RenderLayer, x0, y0, x1, y1, color = 'black', duration = 100) {
+       this._x1 = x0;
+       this._y1 = y0;
+       this._x2 = x1;
+       this._y2 = y1;
        this._color = color;
        layer.addRenderable(this);
        this._onDestroy.add(() => layer.removeRenderable(this), this);
