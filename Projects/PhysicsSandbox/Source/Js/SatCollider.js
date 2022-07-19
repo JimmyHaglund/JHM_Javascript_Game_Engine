@@ -19,6 +19,10 @@ class SatCollider {
     get boundingBox() {
         return this._boundingBox;
     }
+    get boundingRadius() {
+        let boundingBox = this._boundingBox;
+        return Math.max(boundingBox.left, boundingBox.right, boundingBox.top, boundingBox.bottom);
+    }
     get centre() {
         const bounds = this.boundingBox;
         const x = bounds.left + (bounds.right - bounds.left) * 0.5;
@@ -107,7 +111,7 @@ class SatCollider {
         }
         const dirX = endVertex.x - startVertex.x;
         const dirY = endVertex.y - startVertex.y;
-        return { dirX, dirY };
+        return { x: dirX, y: dirY };
     }
     getNormals(vertices) {
         let result = [];
@@ -189,11 +193,45 @@ class SatCollider {
         // the ray should hit exactly once.
         return rayHits.length % 2 != 0;
     }
-    getNearestPoint(pointX, pointY) {
+    getNearestPoint(targetX, targetY) {
         return null;
     }
-    getNearestBoundingPoint(pointX, pointY) {
-        return null;
+    getNearestBoundingPoint(targetX, targetY) {
+        let nearestPoint = { x: -1, y: -1 };
+        if (this._vertices.length < 1)
+            return nearestPoint;
+        let nearestDistance = Number.MAX_SAFE_INTEGER;
+        for (let n = 0; n < this._vertices.length; n++) {
+            let lineStart = this.getVertexWorldPosition(this._vertices[n]);
+            let direction = this.getOutlineVector(n);
+            let result = closestPointOnLine(targetX, targetY, lineStart.x, lineStart.y, lineStart.x + direction.x, lineStart.y + direction.y);
+            // If no orthogonal point is found, the closest possible should be the corner.
+            if (!this.isInVertRange(result.x, result.y, n))
+                result = lineStart;
+            let distance = algebra.squareDistance(result.x, result.y, targetX, targetY);
+            if (distance < nearestDistance) {
+                console.log("sqrDist: ", distance);
+                console.log("start: ", lineStart);
+                console.log("direction: ", direction);
+                console.log("point: ", result);
+                nearestDistance = distance;
+                nearestPoint = result;
+            }
+        }
+        return nearestPoint;
+    }
+    isInVertRange(x, y, vertIndex, local = false) {
+        let vertNow = this._vertices[vertIndex];
+        let vertNext = this._vertices[vertIndex >= this._vertices.length - 1 ? 0 : vertIndex + 1];
+        if (!local) {
+            vertNow = this.getVertexWorldPosition(vertNow);
+            vertNext = this.getVertexWorldPosition(vertNext);
+        }
+        let minX = Math.min(vertNow.x, vertNext.x);
+        let minY = Math.min(vertNow.y, vertNext.y);
+        let maxX = Math.max(vertNow.x, vertNext.x);
+        let maxY = Math.max(vertNow.y, vertNext.y);
+        return x >= minX && x <= maxX && y >= minY && y <= maxY;
     }
     getFirstCollisionPointWithRay(x0, y0, xDir, yDir) {
         return null;
@@ -216,7 +254,7 @@ class SatCollider {
                 y: Math.max(currentVert.y, nextVert.y)
             };
             let lineVector = this.getOutlineVector(n);
-            let lineVectorLean = lineVector.dirY / lineVector.dirX;
+            let lineVectorLean = lineVector.y / lineVector.x;
             let linePoint = currentVert;
             let overlap = algebra.getLineOverlapPoint(linePoint.x, linePoint.y, lineVectorLean, x0, y0, rayLean);
             let startX = Math.max(vertStart.x, rayStart.x);

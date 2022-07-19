@@ -18,6 +18,10 @@ class SatCollider implements ICollider {
     get boundingBox(): { left:number, right: number, top:number, bottom: number } {
         return this._boundingBox;
     }
+    get boundingRadius(): number {
+        let boundingBox = this._boundingBox;
+        return Math.max(boundingBox.left, boundingBox.right, boundingBox.top, boundingBox.bottom);
+    }
     get centre(): {x: number, y: number} {
         const bounds = this.boundingBox;
         const x = bounds.left + (bounds.right - bounds.left) * 0.5; 
@@ -107,7 +111,7 @@ class SatCollider implements ICollider {
         };
     }
 
-    private getOutlineVector(cornerIndex: number): {dirX: number, dirY: number} {
+    private getOutlineVector(cornerIndex: number): {x: number, y: number} {
         const startVertex = this.vertices[cornerIndex];
         let endVertex = this.vertices[0];
         if (cornerIndex < this.vertices.length - 1) {
@@ -115,7 +119,7 @@ class SatCollider implements ICollider {
         }
         const dirX = endVertex.x - startVertex.x;
         const dirY = endVertex.y - startVertex.y;
-        return {dirX, dirY};
+        return {x: dirX, y: dirY};
     }
 
     private getNormals(vertices: {x: number, y: number}[]) : {x:number, y:number}[] {
@@ -197,13 +201,48 @@ class SatCollider implements ICollider {
         return rayHits.length % 2 != 0;
     }
 
-    public getNearestPoint(pointX: number, pointY: number): {x: number, y: number} {
+    public getNearestPoint(targetX: number, targetY: number): {x: number, y: number} {
         return null;
     }
 
-    public getNearestBoundingPoint(pointX: number, pointY: number): {x: number, y: number}{
-        return null;
+    public getNearestBoundingPoint(targetX: number, targetY: number): {x: number, y: number}{
+        let nearestPoint = {x: -1, y: -1};
+        if (this._vertices.length < 1) return nearestPoint;
+        let nearestDistance = Number.MAX_SAFE_INTEGER; 
+        
+        for(let n = 0; n < this._vertices.length; n++) {
+            let lineStart = this.getVertexWorldPosition(this._vertices[n]); 
+            let direction = this.getOutlineVector(n);
+            let result = closestPointOnLine(targetX, targetY, lineStart.x, lineStart.y, lineStart.x + direction.x, lineStart.y + direction.y);
+            // If no orthogonal point is found, the closest possible should be the corner.
+            if (!this.isInVertRange(result.x, result.y, n)) result = lineStart;
+            let distance = algebra.squareDistance(result.x, result.y, targetX, targetY);
+            
+            if (distance < nearestDistance) {
+                console.log("sqrDist: ", distance);
+                console.log("start: ", lineStart);
+                console.log("direction: ", direction);
+                console.log("point: ", result);
+                nearestDistance = distance;
+                nearestPoint = result;
+            }
+        }
+        return nearestPoint;
     }
+    private isInVertRange(x: number, y: number, vertIndex: number,  local: boolean = false) {
+        let vertNow = this._vertices[vertIndex];
+        let vertNext = this._vertices[vertIndex >= this._vertices.length - 1 ? 0 : vertIndex + 1];
+        if (!local) {
+            vertNow = this.getVertexWorldPosition(vertNow);
+            vertNext = this.getVertexWorldPosition(vertNext);
+        }
+        let minX = Math.min(vertNow.x, vertNext.x);
+        let minY = Math.min(vertNow.y, vertNext.y);
+        let maxX = Math.max(vertNow.x, vertNext.x);
+        let maxY = Math.max(vertNow.y, vertNext.y); 
+        return x >= minX && x <= maxX && y >= minY && y <= maxY;
+    }
+
     public getFirstCollisionPointWithRay(x0: number, y0: number, xDir: number, yDir: number): 
     { x: number, y: number, normalX: number, normalY: number } {
         return null;
@@ -234,7 +273,7 @@ class SatCollider implements ICollider {
             };
             
             let lineVector = this.getOutlineVector(n);
-            let lineVectorLean = lineVector.dirY / lineVector.dirX;
+            let lineVectorLean = lineVector.y / lineVector.x;
             let linePoint = currentVert;
             let overlap = algebra.getLineOverlapPoint(
                 linePoint.x, linePoint.y, lineVectorLean,

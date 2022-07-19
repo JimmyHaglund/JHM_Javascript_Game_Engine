@@ -27,11 +27,13 @@ function start(canvasId: string) {
    let staticBox = createSatBox();
    let collisionRenderBox = createSatBox("red", 5);
    let rayCollisionRenderBox = createSatBox("green", 2);
+   let nearestPointRenderBox = createSatBox("blue", 2);
    // let mousePhysics = new PointRigidBody(mouseCollider.entity);
    renderLayers[1].addRenderable(mouseBox.renderer);
    renderLayers[1].addRenderable(staticBox.renderer);
    renderLayers[1].addRenderable(collisionRenderBox.renderer);
    renderLayers[1].addRenderable(rayCollisionRenderBox.renderer);
+   renderLayers[1].addRenderable(nearestPointRenderBox.renderer);
    collisionSpaces[0].addCollider(staticBox.collider);
 
    onMouseMoved.add(() => {
@@ -61,15 +63,25 @@ function start(canvasId: string) {
    let rayRender = new RayRenderOffset(renderLayers[1] as RenderLayer, ray.x0, ray.y0, ray.x1, ray.y1, "green", 120000);
 
    onMouseDown.add(() => {
-      console.log("Point (0, 0) is inside collider: ", mouseBox.collider.overlapsPoint(0, 0));
-      let collisions = mouseBox.collider.getCollisionPointsWithRay(ray.x0, ray.y0, ray.x1, ray.y1);
-      if (collisions.length == 0) return;
-      let colEntity = rayCollisionRenderBox.collider.entity;
-      colEntity.x = collisions[0].x;
-      colEntity.y = collisions[0].y;
-      console.log("Collisions: ", collisions.length, collisions);
-
+      showRayCollision(mouseBox.collider, rayCollisionRenderBox.collider.entity, ray);
+      showNearestPoint(mouseBox.collider, nearestPointRenderBox.collider.entity);
    }, mouseBox);
+}
+
+function showRayCollision(mouseBox: SatCollider, rayEntity: ITransform, ray: {x0: number, y0: number, x1: number, y1: number}) {
+   console.log("Point (0, 0) is inside collider: ", mouseBox.overlapsPoint(0, 0));
+   let collisions = mouseBox.getCollisionPointsWithRay(ray.x0, ray.y0, ray.x1, ray.y1);
+   if (collisions.length == 0) return;
+   rayEntity.x = collisions[0].x;
+   rayEntity.y = collisions[0].y;
+   console.log("Collisions: ", collisions.length, collisions);
+}
+
+function showNearestPoint(mouseBox: SatCollider, indicator: ITransform) {
+   let nearestPoint = mouseBox.getNearestBoundingPoint(0, 0);
+   console.log("Nearest point: ", nearestPoint);
+   indicator.x = nearestPoint.x;
+   indicator.y = nearestPoint.y;
 }
 
 function createRenderLayers(): IRenderLayer[] {
@@ -105,6 +117,6 @@ function createSatBox(color: string = "black", size: number = 100): {collider: S
       {x: 0.415 * mod, y: -0.758 * mod},
    ];
    let result = new SatCollider(entity, 0, 0, vertices) 
-   let renderer = new SatColliderRenderer(result, color);
+   let renderer = new SatColliderRenderer(result, "black", color);
    return {collider: result, renderer: renderer};
 }

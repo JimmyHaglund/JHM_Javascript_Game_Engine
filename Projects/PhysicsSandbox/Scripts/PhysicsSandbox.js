@@ -1,3 +1,35 @@
+// Accepts a point and two points defining a line. Returns the point on the line that is closes to the provided point.
+let closestPointOnLine = (targetX, targetY, linePointAX, linePointAY, linePointBX, linePointBY) => {
+    let relativePoint = {
+        x: targetX - linePointAX,
+        y: targetY - linePointAY
+    };
+    let relativeLine = {
+        x: linePointBX - linePointAX,
+        y: linePointBY - linePointAY
+    };
+    let projection = (project(relativePoint.x, relativePoint.y, relativeLine.x, relativeLine.y));
+    return {
+        x: linePointAX + projection.x,
+        y: linePointAY + projection.y
+    };
+};
+let project = (targetX, targetY, projectOnX, projectOnY) => {
+    let dot = targetX * projectOnX + targetY * projectOnY;
+    let pLengthSquared = projectOnX * projectOnX + projectOnY * projectOnY;
+    let length = dot / (pLengthSquared);
+    return {
+        x: projectOnX * length,
+        y: projectOnY * length
+    };
+};
+
+const colliderType = {
+    sat: 1,
+    point: 2,
+    box: 3
+};
+
 class RayRenderOffset {
     constructor(layer, x0, y0, x1, y1, color = 'black', duration = 100) {
         this._onDestroy = new Action();
@@ -8,6 +40,8 @@ class RayRenderOffset {
         this._color = color;
         layer.addRenderable(this);
         this._onDestroy.add(() => layer.removeRenderable(this), this);
+        if (duration <= 0)
+            return;
         setTimeout(() => this.destroy.call(this), duration);
     }
     get onDestroy() { return this._onDestroy; }
@@ -41,6 +75,10 @@ class SatCollider {
     }
     get boundingBox() {
         return this._boundingBox;
+    }
+    get boundingRadius() {
+        let boundingBox = this._boundingBox;
+        return Math.max(boundingBox.left, boundingBox.right, boundingBox.top, boundingBox.bottom);
     }
     get centre() {
         const bounds = this.boundingBox;
@@ -130,7 +168,7 @@ class SatCollider {
         }
         const dirX = endVertex.x - startVertex.x;
         const dirY = endVertex.y - startVertex.y;
-        return { dirX, dirY };
+        return { x: dirX, y: dirY };
     }
     getNormals(vertices) {
         let result = [];
@@ -212,11 +250,45 @@ class SatCollider {
         // the ray should hit exactly once.
         return rayHits.length % 2 != 0;
     }
-    getNearestPoint(pointX, pointY) {
+    getNearestPoint(targetX, targetY) {
         return null;
     }
-    getNearestBoundingPoint(pointX, pointY) {
-        return null;
+    getNearestBoundingPoint(targetX, targetY) {
+        let nearestPoint = { x: -1, y: -1 };
+        if (this._vertices.length < 1)
+            return nearestPoint;
+        let nearestDistance = Number.MAX_SAFE_INTEGER;
+        for (let n = 0; n < this._vertices.length; n++) {
+            let lineStart = this.getVertexWorldPosition(this._vertices[n]);
+            let direction = this.getOutlineVector(n);
+            let result = closestPointOnLine(targetX, targetY, lineStart.x, lineStart.y, lineStart.x + direction.x, lineStart.y + direction.y);
+            // If no orthogonal point is found, the closest possible should be the corner.
+            if (!this.isInVertRange(result.x, result.y, n))
+                result = lineStart;
+            let distance = algebra.squareDistance(result.x, result.y, targetX, targetY);
+            if (distance < nearestDistance) {
+                console.log("sqrDist: ", distance);
+                console.log("start: ", lineStart);
+                console.log("direction: ", direction);
+                console.log("point: ", result);
+                nearestDistance = distance;
+                nearestPoint = result;
+            }
+        }
+        return nearestPoint;
+    }
+    isInVertRange(x, y, vertIndex, local = false) {
+        let vertNow = this._vertices[vertIndex];
+        let vertNext = this._vertices[vertIndex >= this._vertices.length - 1 ? 0 : vertIndex + 1];
+        if (!local) {
+            vertNow = this.getVertexWorldPosition(vertNow);
+            vertNext = this.getVertexWorldPosition(vertNext);
+        }
+        let minX = Math.min(vertNow.x, vertNext.x);
+        let minY = Math.min(vertNow.y, vertNext.y);
+        let maxX = Math.max(vertNow.x, vertNext.x);
+        let maxY = Math.max(vertNow.y, vertNext.y);
+        return x >= minX && x <= maxX && y >= minY && y <= maxY;
     }
     getFirstCollisionPointWithRay(x0, y0, xDir, yDir) {
         return null;
@@ -239,7 +311,7 @@ class SatCollider {
                 y: Math.max(currentVert.y, nextVert.y)
             };
             let lineVector = this.getOutlineVector(n);
-            let lineVectorLean = lineVector.dirY / lineVector.dirX;
+            let lineVectorLean = lineVector.y / lineVector.x;
             let linePoint = currentVert;
             let overlap = algebra.getLineOverlapPoint(linePoint.x, linePoint.y, lineVectorLean, x0, y0, rayLean);
             let startX = Math.max(vertStart.x, rayStart.x);
@@ -287,10 +359,11 @@ class SatCollider {
 }
 
 class SatColliderRenderer {
-    constructor(collider, color = 'black') {
+    constructor(collider, color = 'black', normalColor = "red") {
         this._onDestroy = new Action();
         this._collider = collider;
         this._color = color;
+        this._normalColor = normalColor;
     }
     get onDestroy() { return this._onDestroy; }
     render(context, viewX, viewY) {
@@ -308,7 +381,7 @@ class SatColliderRenderer {
         }
         context.closePath();
         context.stroke();
-        context.strokeStyle = "red";
+        context.strokeStyle = this._normalColor;
         for (let n = 0; n < this._collider.normals.length; n++) {
             let nextN = (n == this._collider.vertices.length - 1) ? 0 : n + 1;
             let pointA = this.getVertexViewPosition(points[n], viewX, viewY);
@@ -450,11 +523,13 @@ function start(canvasId) {
     let staticBox = createSatBox();
     let collisionRenderBox = createSatBox("red", 5);
     let rayCollisionRenderBox = createSatBox("green", 2);
+    let nearestPointRenderBox = createSatBox("blue", 2);
     // let mousePhysics = new PointRigidBody(mouseCollider.entity);
     renderLayers[1].addRenderable(mouseBox.renderer);
     renderLayers[1].addRenderable(staticBox.renderer);
     renderLayers[1].addRenderable(collisionRenderBox.renderer);
     renderLayers[1].addRenderable(rayCollisionRenderBox.renderer);
+    renderLayers[1].addRenderable(nearestPointRenderBox.renderer);
     collisionSpaces[0].addCollider(staticBox.collider);
     onMouseMoved.add(() => {
         var mousePosition = camera.getMouseWorldPosition();
@@ -477,15 +552,24 @@ function start(canvasId) {
     let ray = { x0: 0, y0: 0, x1: 600, y1: 600 };
     let rayRender = new RayRenderOffset(renderLayers[1], ray.x0, ray.y0, ray.x1, ray.y1, "green", 120000);
     onMouseDown.add(() => {
-        console.log("Point (0, 0) is inside collider: ", mouseBox.collider.overlapsPoint(0, 0));
-        let collisions = mouseBox.collider.getCollisionPointsWithRay(ray.x0, ray.y0, ray.x1, ray.y1);
-        if (collisions.length == 0)
-            return;
-        let colEntity = rayCollisionRenderBox.collider.entity;
-        colEntity.x = collisions[0].x;
-        colEntity.y = collisions[0].y;
-        console.log("Collisions: ", collisions.length, collisions);
+        showRayCollision(mouseBox.collider, rayCollisionRenderBox.collider.entity, ray);
+        showNearestPoint(mouseBox.collider, nearestPointRenderBox.collider.entity);
     }, mouseBox);
+}
+function showRayCollision(mouseBox, rayEntity, ray) {
+    console.log("Point (0, 0) is inside collider: ", mouseBox.overlapsPoint(0, 0));
+    let collisions = mouseBox.getCollisionPointsWithRay(ray.x0, ray.y0, ray.x1, ray.y1);
+    if (collisions.length == 0)
+        return;
+    rayEntity.x = collisions[0].x;
+    rayEntity.y = collisions[0].y;
+    console.log("Collisions: ", collisions.length, collisions);
+}
+function showNearestPoint(mouseBox, indicator) {
+    let nearestPoint = mouseBox.getNearestBoundingPoint(0, 0);
+    console.log("Nearest point: ", nearestPoint);
+    indicator.x = nearestPoint.x;
+    indicator.y = nearestPoint.y;
 }
 function createRenderLayers() {
     return [
@@ -517,7 +601,7 @@ function createSatBox(color = "black", size = 100) {
         { x: 0.415 * mod, y: -0.758 * mod },
     ];
     let result = new SatCollider(entity, 0, 0, vertices);
-    let renderer = new SatColliderRenderer(result, color);
+    let renderer = new SatColliderRenderer(result, "black", color);
     return { collider: result, renderer: renderer };
 }
 

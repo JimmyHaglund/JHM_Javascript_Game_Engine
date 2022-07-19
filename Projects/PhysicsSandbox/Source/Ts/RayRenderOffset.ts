@@ -14,6 +14,7 @@ class RayRenderOffset implements IRenderable {
        this._color = color;
        layer.addRenderable(this);
        this._onDestroy.add(() => layer.removeRenderable(this), this);
+       if (duration <= 0) return;
        setTimeout(() => this.destroy.call(this), duration);
    }
    destroy() { this._onDestroy.invoke(); }

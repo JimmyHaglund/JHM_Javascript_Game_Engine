@@ -8,6 +8,8 @@ class RayRenderOffset {
         this._color = color;
         layer.addRenderable(this);
         this._onDestroy.add(() => layer.removeRenderable(this), this);
+        if (duration <= 0)
+            return;
         setTimeout(() => this.destroy.call(this), duration);
     }
     get onDestroy() { return this._onDestroy; }
