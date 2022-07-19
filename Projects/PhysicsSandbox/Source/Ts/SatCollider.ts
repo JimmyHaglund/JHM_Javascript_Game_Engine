@@ -202,7 +202,8 @@ class SatCollider implements ICollider {
     }
 
     public getNearestPoint(targetX: number, targetY: number): {x: number, y: number} {
-        return null;
+        if (this.overlapsPoint(targetX, targetY)) return {x: targetX, y: targetY};
+        return this.getNearestBoundingPoint(targetX, targetY);
     }
 
     public getNearestBoundingPoint(targetX: number, targetY: number): {x: number, y: number}{

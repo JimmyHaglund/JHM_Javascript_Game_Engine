@@ -194,7 +194,9 @@ class SatCollider {
         return rayHits.length % 2 != 0;
     }
     getNearestPoint(targetX, targetY) {
-        return null;
+        if (this.overlapsPoint(targetX, targetY))
+            return { x: targetX, y: targetY };
+        return this.getNearestBoundingPoint(targetX, targetY);
     }
     getNearestBoundingPoint(targetX, targetY) {
         let nearestPoint = { x: -1, y: -1 };

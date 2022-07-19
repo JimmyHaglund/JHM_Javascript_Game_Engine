@@ -16,12 +16,14 @@ function start(canvasId) {
     let staticBox = createSatBox();
     let collisionRenderBox = createSatBox("red", 5);
     let rayCollisionRenderBox = createSatBox("green", 2);
+    let nearestBoundingPointRenderBox = createSatBox("purple", 2);
     let nearestPointRenderBox = createSatBox("blue", 2);
     // let mousePhysics = new PointRigidBody(mouseCollider.entity);
     renderLayers[1].addRenderable(mouseBox.renderer);
     renderLayers[1].addRenderable(staticBox.renderer);
     renderLayers[1].addRenderable(collisionRenderBox.renderer);
     renderLayers[1].addRenderable(rayCollisionRenderBox.renderer);
+    renderLayers[1].addRenderable(nearestBoundingPointRenderBox.renderer);
     renderLayers[1].addRenderable(nearestPointRenderBox.renderer);
     collisionSpaces[0].addCollider(staticBox.collider);
     onMouseMoved.add(() => {
@@ -47,6 +49,7 @@ function start(canvasId) {
     onMouseDown.add(() => {
         showRayCollision(mouseBox.collider, rayCollisionRenderBox.collider.entity, ray);
         showNearestPoint(mouseBox.collider, nearestPointRenderBox.collider.entity);
+        showNearestBoundingPoint(mouseBox.collider, nearestBoundingPointRenderBox.collider.entity);
     }, mouseBox);
 }
 function showRayCollision(mouseBox, rayEntity, ray) {
@@ -58,9 +61,14 @@ function showRayCollision(mouseBox, rayEntity, ray) {
     rayEntity.y = collisions[0].y;
     console.log("Collisions: ", collisions.length, collisions);
 }
-function showNearestPoint(mouseBox, indicator) {
+function showNearestBoundingPoint(mouseBox, indicator) {
     let nearestPoint = mouseBox.getNearestBoundingPoint(0, 0);
-    console.log("Nearest point: ", nearestPoint);
+    indicator.x = nearestPoint.x;
+    indicator.y = nearestPoint.y;
+    nearestPoint = mouseBox.getNearestPoint(0, 0);
+}
+function showNearestPoint(mouseBox, indicator) {
+    let nearestPoint = mouseBox.getNearestPoint(0, 0);
     indicator.x = nearestPoint.x;
     indicator.y = nearestPoint.y;
 }
