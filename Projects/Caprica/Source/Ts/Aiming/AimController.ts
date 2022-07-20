@@ -16,6 +16,8 @@ class AimController {
         this.endAim();
     }
 
+    public get transform(): ITransform {return this._transform;}
+
     constructor(loop: Loop, characterTransform: ITransform, cone: AimConeRenderer, camera: Camera, aimData: AimData) {
         // onMouseDown.add(this.steady, this);
         // onMouseUp.add(this.release, this);
@@ -58,7 +60,7 @@ class AimController {
         this._aiming = false;
     }
 
-    private getDirection(): { x: number, y: number } {
+    public getDirection(): { x: number, y: number } {
         let mouseWorldPosition = this._camera.getMouseWorldPosition();
         let positionX = this._transform.worldX;
         let positionY = this._transform.worldY;

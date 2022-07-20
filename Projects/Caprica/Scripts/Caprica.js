@@ -782,7 +782,7 @@ function capricaStart(canvasId) {
     let collisionSpaces = [new CollisionSpace()];
     let physicsSpace = new PhysicsSpace(physicsLoop, collisionSpaces);
     let mainCharacter = new CapricaMainCharacter(150, 150, inputLoop, movementLoop, renderLayers[1], renderLayers[2], renderLayers[3], camera, physicsSpace);
-    let gun = createGun(cameraTransform, movementLoop, mainCharacter.entity.transform, renderLayers[3], camera);
+    let gun = createGun(cameraTransform, movementLoop, mainCharacter.entity.transform, renderLayers[3], camera, physicsSpace);
     let boxes = createTestBoxes(renderLayers[1], collisionSpaces[0]);
     let debugCircle = new CircleRenderer(100, mainCharacter.entity.transform, "black", 32);
     renderLayers[3].addRenderable(debugCircle);
@@ -800,11 +800,14 @@ function capricaStart(canvasId) {
     testEntityGetComponent();
     console.log("Caprica Started");
 }
-function createGun(cameraTransform, gameLoop, characterTransform, renderLayer, camera) {
+function createGun(cameraTransform, gameLoop, characterTransform, renderLayer, camera, physics) {
     let aimConeRenderer = new AimConeRenderer(renderLayer, 300);
     let recoilCameraShaker = new ShakerMaker(cameraTransform, gameLoop);
     let aimController = new AimController(gameLoop, characterTransform, aimConeRenderer, camera, new AimData(Math.PI * 0.5, Math.PI * 0.15, 0.5));
-    return new Gun(aimController, recoilCameraShaker);
+    let bullet = new Bullet(0, 0, 'bullet', 10, renderLayer);
+    physics.addPhysicsActor(bullet.rigidbody);
+    gameLoop.onUpdate.add(bullet.rigidbody.update, bullet.rigidbody);
+    return new Gun(aimController, recoilCameraShaker, bullet);
 }
 function createCamera(renderLayers, transform, loop, canvasId) {
     let camera = new Camera(renderLayers, transform, loop);
@@ -986,6 +989,7 @@ class AimController {
         this._aimData = value;
         this.endAim();
     }
+    get transform() { return this._transform; }
     steady(event) {
         if (event.button != 0)
             return;
@@ -1064,6 +1068,33 @@ class AimData {
     }
 }
 
+class Bullet {
+    constructor(xPosition, yPosition, spriteId, colliderDiameter, renderLayer) {
+        this._onDestroy = new Action();
+        const collider = createSatBox(colliderDiameter).collider;
+        this._collider = collider;
+        this._entity = collider.entity;
+        this._rigidbody = new RigidBody(this._entity, this._collider);
+        this._rigidbody.dragEnabled = false;
+        this._sprite = new RotatedSprite(this._entity, spriteId);
+        this._rigidbody.onCollisionEnter.add(this.onHit, this);
+        this._renderLayer = renderLayer;
+    }
+    get onDestroy() { return this._onDestroy; }
+    get entity() { return this._entity; }
+    get rigidbody() { return this._rigidbody; }
+    enable() {
+        this._renderLayer.addRenderable(this._sprite);
+    }
+    disable() {
+        this._renderLayer.removeRenderable(this._sprite);
+        this._rigidbody.velocity = { x: 0, y: 0 };
+    }
+    onHit(collisionData, collider) {
+        this.disable();
+    }
+}
+
 class CapricaMainCharacter {
     constructor(xPosition, yPosition, inputLoop, movementLoop, legRenderLayer, armRenderLayer, torsoRenderLayer, camera, physics) {
         this._entity = new Entity(xPosition, yPosition);
@@ -1135,7 +1166,7 @@ class CapricaMainCharacter {
 }
 
 class Gun {
-    constructor(aim, shakerMaker) {
+    constructor(aim, shakerMaker, bullet) {
         this._onFire = new Action();
         this._onTakeAim = new Action();
         this._onStopAim = new Action();
@@ -1147,6 +1178,7 @@ class Gun {
         this._shootAudio.shouldLoop = false;
         this._takeAimAudio = new AudioComponent("aimStart");
         this._takeAimAudio.shouldLoop = false;
+        this._bullet = bullet;
     }
     get onFire() { return this._onFire; }
     get onTakeAim() { return this._onTakeAim; }
@@ -1163,11 +1195,29 @@ class Gun {
     }
     discharge() {
         this.endAim();
-        let offset = { min: 5, max: 15 };
         this._shakerMaker.MakeShake(1, 5, 15);
         this._shootAudio.stopPlaying();
         this._shootAudio.play();
+        this.spawnBullet();
         this._onFire.invoke();
+    }
+    spawnBullet() {
+        let direction = this._aim.getDirection();
+        let transform = this._aim.transform;
+        let startX = transform.worldX;
+        let startY = transform.worldY;
+        let dirNormalized = algebra.normalize(direction.x, direction.y);
+        let speed = 1500;
+        let distance = 5;
+        let bulletX = startX + dirNormalized.x * distance;
+        let bulletY = startY + dirNormalized.y * distance;
+        this._bullet.rigidbody.velocity = {
+            x: dirNormalized.x * speed,
+            y: dirNormalized.y * speed
+        };
+        this._bullet.entity.x = bulletX;
+        this._bullet.entity.y = bulletY;
+        this._bullet.enable();
     }
 }
 

@@ -12,7 +12,7 @@ function capricaStart(canvasId) {
     let collisionSpaces = [new CollisionSpace()];
     let physicsSpace = new PhysicsSpace(physicsLoop, collisionSpaces);
     let mainCharacter = new CapricaMainCharacter(150, 150, inputLoop, movementLoop, renderLayers[1], renderLayers[2], renderLayers[3], camera, physicsSpace);
-    let gun = createGun(cameraTransform, movementLoop, mainCharacter.entity.transform, renderLayers[3], camera);
+    let gun = createGun(cameraTransform, movementLoop, mainCharacter.entity.transform, renderLayers[3], camera, physicsSpace);
     let boxes = createTestBoxes(renderLayers[1], collisionSpaces[0]);
     let debugCircle = new CircleRenderer(100, mainCharacter.entity.transform, "black", 32);
     renderLayers[3].addRenderable(debugCircle);
@@ -30,11 +30,14 @@ function capricaStart(canvasId) {
     testEntityGetComponent();
     console.log("Caprica Started");
 }
-function createGun(cameraTransform, gameLoop, characterTransform, renderLayer, camera) {
+function createGun(cameraTransform, gameLoop, characterTransform, renderLayer, camera, physics) {
     let aimConeRenderer = new AimConeRenderer(renderLayer, 300);
     let recoilCameraShaker = new ShakerMaker(cameraTransform, gameLoop);
     let aimController = new AimController(gameLoop, characterTransform, aimConeRenderer, camera, new AimData(Math.PI * 0.5, Math.PI * 0.15, 0.5));
-    return new Gun(aimController, recoilCameraShaker);
+    let bullet = new Bullet(0, 0, 'bullet', 10, renderLayer);
+    physics.addPhysicsActor(bullet.rigidbody);
+    gameLoop.onUpdate.add(bullet.rigidbody.update, bullet.rigidbody);
+    return new Gun(aimController, recoilCameraShaker, bullet);
 }
 function createCamera(renderLayers, transform, loop, canvasId) {
     let camera = new Camera(renderLayers, transform, loop);

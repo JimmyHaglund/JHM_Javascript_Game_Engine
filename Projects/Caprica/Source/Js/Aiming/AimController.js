@@ -19,6 +19,7 @@ class AimController {
         this._aimData = value;
         this.endAim();
     }
+    get transform() { return this._transform; }
     steady(event) {
         if (event.button != 0)
             return;
