@@ -1,3 +1,29 @@
+// Accepts a point and two points defining a line. Returns the point on the line that is closes to the provided point.
+let closestPointOnLine = (targetX, targetY, linePointAX, linePointAY, linePointBX, linePointBY) => {
+    let relativePoint = {
+        x: targetX - linePointAX,
+        y: targetY - linePointAY
+    };
+    let relativeLine = {
+        x: linePointBX - linePointAX,
+        y: linePointBY - linePointAY
+    };
+    let projection = (project(relativePoint.x, relativePoint.y, relativeLine.x, relativeLine.y));
+    return {
+        x: linePointAX + projection.x,
+        y: linePointAY + projection.y
+    };
+};
+let project = (targetX, targetY, projectOnX, projectOnY) => {
+    let dot = targetX * projectOnX + targetY * projectOnY;
+    let pLengthSquared = projectOnX * projectOnX + projectOnY * projectOnY;
+    let length = dot / (pLengthSquared);
+    return {
+        x: projectOnX * length,
+        y: projectOnY * length
+    };
+};
+
 class CapricaLookController {
     constructor(camera, character) {
         this._entity = character.entity;
@@ -233,74 +259,186 @@ class CapricaMovementInput {
     }
 }
 
+class CapricaPhysicsSpace {
+    constructor(loop, collisions) {
+        // private _rigidbodies: IRigidbody[] = [];
+        this._actors = [];
+        // super();
+        loop.onUpdate.add(this.update, this);
+        this._collisionSpaces = collisions;
+    }
+    get physicsActors() { return this._actors; }
+    ;
+    update(deltaTime) {
+        this._actors.forEach((actor) => {
+            this._collisionSpaces.forEach(space => {
+                actor.checkCollision(space.colliders);
+            });
+        });
+    }
+    addPhysicsActor(actor) {
+        let index = this._actors.indexOf(actor);
+        if (index < 0) {
+            this._actors.push(actor);
+        }
+    }
+    removePhysicsActor(actor) {
+        let index = this._actors.indexOf(actor);
+        if (index < 0)
+            return;
+        this._actors.splice(index, 1);
+    }
+}
+
+class RigidBody {
+    constructor(transform, collider) {
+        this.dragEnabled = true;
+        this._velocity = { x: 0, y: 0 };
+        this._onDestroy = new Action();
+        // private _deltaTime: number;
+        this._onCollisionEnter = new Action();
+        this._onCollisionExit = new Action();
+        this._onCollisionStay = new Action();
+        this._transform = transform;
+        this._collider = collider;
+        this._previousX = transform.x;
+        this._previousY = transform.y;
+        this._drag = new PercentageDrag(5);
+    }
+    /*
+    // TODO: Implement collision stay & triggers
+    private readonly _activeCollisionData: {
+        collider: ICollider,
+        updateCount: number,
+        lastUpdateCount: number
+    }[] = [];
+    */
+    set velocity(value) { this._velocity = value; }
+    get velocity() { return this._velocity; }
+    get onCollisionEnter() { return this._onCollisionEnter; }
+    get onCollisionExit() { return this._onCollisionExit; }
+    get onCollisionStay() { return this._onCollisionStay; }
+    get onDestroy() { return this._onDestroy; }
+    get entity() { return this._transform; }
+    update(deltaTime) {
+        // this._deltaTime = deltaTime;
+        if (this.dragEnabled) {
+            this.applyDrag(deltaTime);
+        }
+        this.move(deltaTime);
+    }
+    destroy() {
+        this._loopAction.remove(this._updateActionId);
+        this._onDestroy.invoke();
+    }
+    checkCollision(colliders) {
+        // console.log("Checking Collision");
+        for (let n = 0; n < colliders.length; n++) {
+            let collider = colliders[n];
+            var collision = this._collider.getCollision(collider, true);
+            if (collision == null)
+                continue;
+            if (isNaN(collision.x))
+                continue;
+            if (collision.normalX == 0 && collision.normalY == 0)
+                continue;
+            let dX = this._transform.x - this._previousX;
+            let dY = this._transform.y - this._previousY;
+            let normalizedNormal = algebra.normalize(collision.normalX, collision.normalY);
+            this._velocity.x -= normalizedNormal.x * this._velocity.x * -Math.sign(dX);
+            this._velocity.y -= normalizedNormal.y * this._velocity.y * -Math.sign(dY);
+            this._transform.x += collision.normalX;
+            this._transform.y += collision.normalY;
+            this._onCollisionEnter.invoke.call(this._onCollisionEnter, collision, collider);
+        }
+    }
+    setDragProfile(drag) {
+        if (drag == null)
+            return;
+        this._drag = drag;
+    }
+    move(deltaTime) {
+        if (deltaTime == undefined || deltaTime <= 0)
+            return;
+        this._previousX = this._transform.x;
+        this._previousY = this._transform.y;
+        this._transform.x += deltaTime * this._velocity.x;
+        this._transform.y += deltaTime * this._velocity.y;
+    }
+    applyDrag(deltaTime) {
+        let drag = this._drag.getDrag(this._velocity.x, this._velocity.y);
+        this._velocity.x -= drag.dragX * deltaTime;
+        this._velocity.y -= drag.dragY * deltaTime;
+    }
+}
+
 // TODO: Implement normals calculation
 // TODO: Implement collision
 class SatCollider {
     constructor(entity, offsetX = 0, offsetY = 0, vertices) {
         this._entity = entity;
         this._vertices = vertices;
-        this._offsetX = offsetX;
-        this._offsetY = offsetY;
         this._normals = this.getNormals(vertices);
+        this._boundingBox = this.getBoundingBox(vertices);
         this._onDestroy = new Action();
     }
     get vertices() {
         return this._vertices;
     }
-    get offset() {
-        return {
-            x: this._offsetX,
-            y: this._offsetY
-        };
-    }
     get onDestroy() { return this._onDestroy; }
     get entity() { return this._entity; }
-    get centre() {
-        let x = this._entity.transform.x + this.offset.x;
-        let y = this._entity.transform.y + this.offset.y;
-        return { x: x, y: y };
-    }
     get normals() {
         return this._normals;
+    }
+    get boundingBox() {
+        return this._boundingBox;
+    }
+    get boundingRadius() {
+        let boundingBox = this._boundingBox;
+        return Math.max(boundingBox.left, boundingBox.right, boundingBox.top, boundingBox.bottom);
+    }
+    get centre() {
+        const bounds = this.boundingBox;
+        const x = bounds.left + (bounds.right - bounds.left) * 0.5;
+        const y = bounds.top + (bounds.bottom - bounds.top) * 0.5;
+        return { x, y };
+    }
+    get worldCentre() {
+        const localCentre = this.centre;
+        return {
+            x: localCentre.x + this.entity.worldX,
+            y: localCentre.y + this.entity.worldY
+        };
     }
     destroy() {
         this._onDestroy.invoke();
     }
-    GetCollisionPoint(other) {
+    getCollision(other, checkOther = true) {
         let vertices = this._vertices;
         if (vertices.length < 2)
-            return;
+            return null;
         let collidingIndex = -1;
         let collidingDistance = Number.MAX_SAFE_INTEGER;
-        console.log(vertices);
         for (let n = 0; n < vertices.length; n++) {
             let axis = this._normals[n];
-            console.log("Axis:", axis);
-            let distX = other.entity.worldX - this.entity.worldX;
-            let distY = other.entity.worldY - this.entity.worldY;
+            let otherCentre = other.worldCentre;
+            let myCentre = this.worldCentre;
+            let distX = otherCentre.x - myCentre.x;
+            let distY = otherCentre.y - myCentre.y;
             let angleDot = algebra.dot(distX, distY, axis.x, axis.y);
-            if (angleDot < 0) {
-                // TODO: Major bug potential here, need to check centre of polygon instead of 
-                // the entity  since the collider may be offset away from the entity.
-                console.log("Normal is away from other collider entity, ignoring");
-                console.log("from to other vector: ", distX, distY);
-                console.log("Dot product with normal: ", angleDot);
+            if (angleDot < 0)
                 continue;
-            }
             let myProjection = this.getShadowOnAxis(axis.x, axis.y);
             let theirProjection = other.getShadowOnAxis(axis.x, axis.y);
-            console.log("Projections:", myProjection, theirProjection);
             if (myProjection.minScalar > theirProjection.maxScalar
                 || myProjection.maxScalar < theirProjection.minScalar) {
                 // No shadow overlap -> no collision, quit
-                console.log("No overlap for projections: ", myProjection, theirProjection);
                 return null;
             }
             // Collision found - compare distance to determine if that's the closest to push out
             let pen0 = Math.max(myProjection.minScalar, theirProjection.minScalar);
             let pen1 = Math.min(myProjection.maxScalar, theirProjection.maxScalar);
             let penetration = Math.abs(pen1 - pen0);
-            console.log("Penetration: " + penetration);
             if (penetration > collidingDistance && n > 0)
                 continue;
             if (penetration == collidingDistance) {
@@ -310,9 +448,16 @@ class SatCollider {
             collidingDistance = penetration;
             collidingIndex = n;
         }
-        if (collidingIndex == -1) {
-            console.log("CollidingIndex -1");
-            return null;
+        // Do same thing for other polygon's vertices
+        if (checkOther) {
+            let otherCollision = other.getCollision(this, false);
+            if (otherCollision == null)
+                return null;
+            if (algebra.squareDistance(0, 0, otherCollision.normalX, otherCollision.normalY) < collidingDistance) {
+                otherCollision.normalX *= -1;
+                otherCollision.normalY *= -1;
+                return otherCollision;
+            }
         }
         let startVertex = vertices[collidingIndex];
         let endVertex = vertices[0];
@@ -322,28 +467,15 @@ class SatCollider {
             x: startVertex.x + 0.5 * (endVertex.x - startVertex.x),
             y: startVertex.y + 0.5 * (endVertex.y - startVertex.y)
         };
-        console.log("Colliding vertex index: ", collidingIndex);
         let directionVector = this._normals[collidingIndex];
-        let collisionX = startPoint.x - directionVector.x * collidingDistance;
-        let collisionY = startPoint.y - directionVector.y * collidingDistance;
-        return { x: collisionX, y: collisionY };
-    }
-    getNormals(vertices) {
-        let result = [];
-        for (let n = 0; n < vertices.length; n++) {
-            let nextN = (n == vertices.length - 1) ? 0 : n + 1;
-            let normal = {
-                x: vertices[n].y - vertices[nextN].y,
-                y: vertices[nextN].x - vertices[n].x
-            };
-            let magnitude = algebra.magnitude(normal.x, normal.y);
-            if (magnitude == 0)
-                return;
-            normal.x /= magnitude;
-            normal.y /= magnitude;
-            result.push(normal);
-        }
-        return result;
+        let collisionX = this._entity.worldX + startPoint.x - directionVector.x * collidingDistance;
+        let collisionY = this._entity.worldY + startPoint.y - directionVector.y * collidingDistance;
+        return {
+            x: collisionX,
+            y: collisionY,
+            normalX: -directionVector.x * collidingDistance,
+            normalY: -directionVector.y * collidingDistance
+        };
     }
     getShadowOnAxis(axisX, axisY) {
         let vertices = this.vertices;
@@ -365,41 +497,168 @@ class SatCollider {
         }
         return { minScalar: minScalar, maxScalar: maxScalar };
     }
-    max(a, b) {
-        if (this.sqrMag(a.x, a.y) > this.sqrMag(b.x, b.y))
-            return a;
-        return b;
-    }
-    sqrMag(x, y) {
-        return (x * x) + (y * y);
-    }
     overlapsPoint(pointX, pointY) {
-        return false;
+        let boundingBox = this.getBoundingBox(this._vertices);
+        let rayCastStart = {
+            x: boundingBox.left - 10 + this._entity.worldX,
+            y: boundingBox.top + this._entity.worldY - 10
+        };
+        let raycastEnd = { x: pointX, y: pointY };
+        let rayHits = this.getCollisionPointsWithRay(rayCastStart.x, rayCastStart.y, raycastEnd.x, raycastEnd.y);
+        // By raycasting from a point outside the collider into the checked point, if the point is inside the collider
+        // the ray should hit exactly once.
+        return rayHits.length % 2 != 0;
     }
-    getCollisionPointWithRay(x0, y0, xDir, yDir) {
+    getNearestPoint(targetX, targetY) {
+        if (this.overlapsPoint(targetX, targetY))
+            return { x: targetX, y: targetY };
+        return this.getNearestBoundingPoint(targetX, targetY);
+    }
+    getNearestBoundingPoint(targetX, targetY) {
+        let nearestPoint = { x: -1, y: -1 };
+        if (this._vertices.length < 1)
+            return nearestPoint;
+        let nearestDistance = Number.MAX_SAFE_INTEGER;
+        for (let n = 0; n < this._vertices.length; n++) {
+            let lineStart = this.getVertexWorldPosition(this._vertices[n]);
+            let direction = this.getOutlineVector(n);
+            let result = closestPointOnLine(targetX, targetY, lineStart.x, lineStart.y, lineStart.x + direction.x, lineStart.y + direction.y);
+            // If no orthogonal point is found, the closest possible should be the corner.
+            if (!this.isInVertRange(result.x, result.y, n))
+                result = lineStart;
+            let distance = algebra.squareDistance(result.x, result.y, targetX, targetY);
+            if (distance < nearestDistance) {
+                console.log("sqrDist: ", distance);
+                console.log("start: ", lineStart);
+                console.log("direction: ", direction);
+                console.log("point: ", result);
+                nearestDistance = distance;
+                nearestPoint = result;
+            }
+        }
+        return nearestPoint;
+    }
+    getFirstCollisionPointWithRay(x0, y0, xDir, yDir) {
         return null;
+    }
+    getCollisionPointsWithRay(x0, y0, x1, y1) {
+        let rayStart = { x: Math.min(x0, x1), y: Math.min(y0, y1) };
+        let rayEnd = { x: Math.max(x0, x1), y: Math.max(y0, y1) };
+        let rayLean = x1 == x0 ? 0 : (y1 - y0) / (x1 - x0);
+        let result = [];
+        for (let n = 0; n < this._vertices.length; n++) {
+            let nextVertIndex = n < this._vertices.length - 1 ? n + 1 : 0;
+            let currentVert = this.getVertexWorldPosition(this._vertices[n]);
+            let nextVert = this.getVertexWorldPosition(this._vertices[nextVertIndex]);
+            let vertStart = {
+                x: Math.min(currentVert.x, nextVert.x),
+                y: Math.min(currentVert.y, nextVert.y)
+            };
+            let vertEnd = {
+                x: Math.max(currentVert.x, nextVert.x),
+                y: Math.max(currentVert.y, nextVert.y)
+            };
+            let lineVector = this.getOutlineVector(n);
+            let lineVectorLean = lineVector.y / lineVector.x;
+            let linePoint = currentVert;
+            let overlap = algebra.getLineOverlapPoint(linePoint.x, linePoint.y, lineVectorLean, x0, y0, rayLean);
+            let startX = Math.max(vertStart.x, rayStart.x);
+            let startY = Math.max(vertStart.y, rayStart.y);
+            let endX = Math.min(vertEnd.x, rayEnd.x);
+            let endY = Math.min(vertEnd.y, rayEnd.y);
+            let isOnLine = (overlap.x > startX && overlap.x < endX
+                && overlap.y > startY && overlap.y < endY);
+            if (!isOnLine)
+                continue;
+            let normal = this._normals[n];
+            result.push({
+                x: overlap.x,
+                y: overlap.y,
+                normalX: normal.x,
+                normalY: normal.y
+            });
+        }
+        return result;
     }
     getNearestCorner(x, y) {
         return null;
+    }
+    isInVertRange(x, y, vertIndex, local = false) {
+        let vertNow = this._vertices[vertIndex];
+        let vertNext = this._vertices[vertIndex >= this._vertices.length - 1 ? 0 : vertIndex + 1];
+        if (!local) {
+            vertNow = this.getVertexWorldPosition(vertNow);
+            vertNext = this.getVertexWorldPosition(vertNext);
+        }
+        let minX = Math.min(vertNow.x, vertNext.x);
+        let minY = Math.min(vertNow.y, vertNext.y);
+        let maxX = Math.max(vertNow.x, vertNext.x);
+        let maxY = Math.max(vertNow.y, vertNext.y);
+        return x >= minX && x <= maxX && y >= minY && y <= maxY;
     }
     getVertexWorldPosition(point) {
         let x = point.x + this.entity.worldX;
         let y = point.y + this.entity.worldY;
         return { x: x, y: y };
     }
-    getVertexViewPosition(point, viewX, viewY) {
-        let worldPoint = this.getVertexWorldPosition(point);
-        let x = worldPoint.x - viewX;
-        let y = worldPoint.y - viewY;
-        return { x: x, y: y };
+    getOutlineVector(cornerIndex) {
+        const startVertex = this.vertices[cornerIndex];
+        let endVertex = this.vertices[0];
+        if (cornerIndex < this.vertices.length - 1) {
+            endVertex = this.vertices[cornerIndex + 1];
+        }
+        const dirX = endVertex.x - startVertex.x;
+        const dirY = endVertex.y - startVertex.y;
+        return { x: dirX, y: dirY };
+    }
+    getNormals(vertices) {
+        let result = [];
+        for (let n = 0; n < vertices.length; n++) {
+            let nextN = (n == vertices.length - 1) ? 0 : n + 1;
+            let normal = {
+                x: vertices[n].y - vertices[nextN].y,
+                y: vertices[nextN].x - vertices[n].x
+            };
+            let magnitude = algebra.magnitude(normal.x, normal.y);
+            if (magnitude == 0)
+                return;
+            normal.x /= magnitude;
+            normal.y /= magnitude;
+            result.push(normal);
+        }
+        return result;
+    }
+    getBoundingBox(vertices) {
+        let result = {
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0
+        };
+        if (vertices.length == 0)
+            return result;
+        for (let n = 0; n < vertices.length; n++) {
+            let x = vertices[n].x;
+            let y = vertices[n].y;
+            if (x < result.left)
+                result.left = x;
+            if (x > result.right)
+                result.right = x;
+            if (y < result.top)
+                result.top = y;
+            if (y > result.bottom)
+                result.bottom = y;
+        }
+        return result;
     }
 }
 
 class SatColliderRenderer {
-    constructor(collider, color = 'black') {
+    constructor(collider, color = 'black', normalColor = "red") {
         this._onDestroy = new Action();
         this._collider = collider;
         this._color = color;
+        this._normalColor = normalColor;
     }
     get onDestroy() { return this._onDestroy; }
     render(context, viewX, viewY) {
@@ -417,7 +676,7 @@ class SatColliderRenderer {
         }
         context.closePath();
         context.stroke();
-        context.strokeStyle = "red";
+        context.strokeStyle = this._normalColor;
         for (let n = 0; n < this._collider.normals.length; n++) {
             let nextN = (n == this._collider.vertices.length - 1) ? 0 : n + 1;
             let pointA = this.getVertexViewPosition(points[n], viewX, viewY);
@@ -522,7 +781,7 @@ function capricaStart(canvasId) {
     let camera = createCamera(renderLayers, cameraTransform, renderLoop, canvasId);
     let collisionSpaces = [new CollisionSpace()];
     let physicsSpace = new PhysicsSpace(physicsLoop, collisionSpaces);
-    let mainCharacter = new CapricaMainCharacter(0, 0, inputLoop, movementLoop, renderLayers[1], renderLayers[2], renderLayers[3], camera, physicsSpace);
+    let mainCharacter = new CapricaMainCharacter(150, 150, inputLoop, movementLoop, renderLayers[1], renderLayers[2], renderLayers[3], camera, physicsSpace);
     let gun = createGun(cameraTransform, movementLoop, mainCharacter.entity.transform, renderLayers[3], camera);
     let boxes = createTestBoxes(renderLayers[1], collisionSpaces[0]);
     let debugCircle = new CircleRenderer(100, mainCharacter.entity.transform, "black", 32);
@@ -599,14 +858,29 @@ function createTestBoxes(renderspace, collisionSpace) {
     let amount = 10;
     let result = [];
     let width = 50;
-    let height = width;
     for (let n = 0; n < amount; n++) {
         let x = n * width;
         let y = 0;
-        let box = new VisibleBoxCollider(x, y, width, height, renderspace, collisionSpace);
-        result.push(box);
+        let box = createSatBox(width);
+        box.collider.entity.worldX = x;
+        box.collider.entity.worldY = y;
+        renderspace.addRenderable(box.renderer);
+        collisionSpace.addCollider(box.collider);
+        result.push(box.collider);
     }
     return result;
+}
+function createSatBox(size = 100, color = "black") {
+    let entity = new Entity(0, 0);
+    let vertices = [
+        { x: -size * 0.5, y: -size * 0.5 },
+        { x: -size * 0.5, y: size * 0.5 },
+        { x: size * 0.5, y: size * 0.5 },
+        { x: size * 0.5, y: -size * 0.5 }
+    ];
+    let result = new SatCollider(entity, 0, 0, vertices);
+    let renderer = new SatColliderRenderer(result, "black", color);
+    return { collider: result, renderer: renderer };
 }
 /*
 Canvas settings for disabling anti alisasing
@@ -810,12 +1084,19 @@ class CapricaMainCharacter {
         gun.onStopAim.add(this._sprite.endAim, this._sprite);
     }
     initialisePhysics(entity, physics, movementLoop) {
-        let rigidBody = new PointRigidBody(entity);
+        const verts = [
+            { x: -20, y: -20 },
+            { x: -20, y: 20 },
+            { x: 20, y: 20 },
+            { x: 20, y: -20 }
+        ];
+        let collider = new SatCollider(entity, 0, 0, verts);
+        let rigidBody = new RigidBody(entity, collider);
         rigidBody.dragEnabled = false;
         movementLoop.onUpdate.add(rigidBody.update, rigidBody);
         entity.addComponent(rigidBody, Type.pointRigidbody);
         this._rigidbody = rigidBody;
-        // physics.addPhysicsActor(rigidBody);
+        physics.addPhysicsActor(rigidBody);
     }
     initialiseMovementController(loop) {
         this._input = new CapricaMovementInput();

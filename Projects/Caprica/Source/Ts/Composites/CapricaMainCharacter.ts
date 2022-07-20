@@ -33,13 +33,21 @@ class CapricaMainCharacter {
     }
 
     private initialisePhysics(entity: Entity, physics: PhysicsSpace, movementLoop: Loop): void {
-        let rigidBody = new PointRigidBody(entity);
+        const verts = [
+            {x: -20, y: -20},
+            {x: -20, y: 20},
+            {x: 20, y: 20},
+            {x: 20, y: -20}
+        ];
+        let collider = new SatCollider(entity, 0, 0, verts);
+        let rigidBody = new RigidBody(entity, collider);
         rigidBody.dragEnabled = false;
         movementLoop.onUpdate.add(rigidBody.update, rigidBody);
         entity.addComponent(rigidBody, Type.pointRigidbody);
         this._rigidbody = rigidBody;
         physics.addPhysicsActor(rigidBody);
     }
+    
 
     private initialiseMovementController(loop: Loop): void {
         this._input = new CapricaMovementInput();

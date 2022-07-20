@@ -18,7 +18,7 @@ function capricaStart(canvasId: string) {
   let camera = createCamera(renderLayers, cameraTransform, renderLoop, canvasId);
   let collisionSpaces = [new CollisionSpace()];
   let physicsSpace = new PhysicsSpace(physicsLoop, collisionSpaces);
-  let mainCharacter = new CapricaMainCharacter(0, 0, inputLoop, movementLoop, renderLayers[1], 
+  let mainCharacter = new CapricaMainCharacter(150, 150, inputLoop, movementLoop, renderLayers[1], 
     renderLayers[2], renderLayers[3], camera, physicsSpace);
   let gun = createGun(cameraTransform, movementLoop, mainCharacter.entity.transform, renderLayers[3], camera);
   let boxes = createTestBoxes(renderLayers[1], collisionSpaces[0]);
@@ -113,14 +113,30 @@ function createTestBoxes(renderspace: IRenderLayer, collisionSpace: CollisionSpa
   let amount = 10;
   let result = [];
   let width = 50;
-  let height = width; 
   for(let n = 0; n < amount; n++) {
     let x = n * width;
     let y = 0;
-    let box = new VisibleBoxCollider(x, y, width, height, renderspace, collisionSpace);
-    result.push(box);
+    let box = createSatBox(width);
+    box.collider.entity.worldX = x;
+    box.collider.entity.worldY = y;
+    renderspace.addRenderable(box.renderer);
+    collisionSpace.addCollider(box.collider);
+    result.push(box.collider);
   }
   return result;
+}
+
+function createSatBox( size: number = 100, color: string = "black"): {collider: SatCollider, renderer: SatColliderRenderer } {
+  let entity = new Entity(0, 0);
+  let vertices = [
+     {x: -size * 0.5, y: -size * 0.5},
+     {x: -size * 0.5, y: size * 0.5},
+     {x: size * 0.5, y: size * 0.5},
+     {x: size * 0.5, y: -size * 0.5}
+  ];
+  let result = new SatCollider(entity, 0, 0, vertices) 
+  let renderer = new SatColliderRenderer(result, "black", color);
+  return {collider: result, renderer: renderer};
 }
 
 /*

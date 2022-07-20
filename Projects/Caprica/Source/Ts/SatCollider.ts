@@ -45,13 +45,13 @@ class SatCollider implements ICollider {
         this._onDestroy = new Action();
     }
 
-    destroy(): void {
+    public destroy(): void {
         this._onDestroy.invoke();
     }
 
-    public getCollision(other: ICollider, checkOther: boolean = true): { x: number, y: number, normalX: number, normalY: number} {
+    public getCollision(other: ICollider, checkOther: boolean = true): { collision: boolean, x: number, y: number, normalX: number, normalY: number} {
         let vertices = this._vertices;
-        if (vertices.length < 2) return;
+        if (vertices.length < 2) return null;
         let collidingIndex = -1;
         let collidingDistance = Number.MAX_SAFE_INTEGER;
         for (let n = 0; n < vertices.length; n++) {
@@ -111,53 +111,6 @@ class SatCollider implements ICollider {
         };
     }
 
-    private getOutlineVector(cornerIndex: number): {x: number, y: number} {
-        const startVertex = this.vertices[cornerIndex];
-        let endVertex = this.vertices[0];
-        if (cornerIndex < this.vertices.length - 1) {
-            endVertex = this.vertices[cornerIndex + 1];
-        }
-        const dirX = endVertex.x - startVertex.x;
-        const dirY = endVertex.y - startVertex.y;
-        return {x: dirX, y: dirY};
-    }
-
-    private getNormals(vertices: {x: number, y: number}[]) : {x:number, y:number}[] {
-        let result: {x: number, y: number}[] = [];
-        for(let n = 0; n < vertices.length; n++) {
-            let nextN = (n == vertices.length - 1) ? 0 : n + 1;
-            let normal = {
-                x: vertices[n].y - vertices[nextN].y,
-                y: vertices[nextN].x - vertices[n].x
-            }
-            let magnitude = algebra.magnitude(normal.x, normal.y);
-            if (magnitude == 0) return;
-            normal.x /= magnitude;
-            normal.y /= magnitude;
-            result.push(normal);
-        }
-        return result;
-    }
-
-    private getBoundingBox(vertices: {x: number, y: number}[]) : { left:number, right: number, top:number, bottom: number } {
-        let result = {
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0
-        }
-        if (vertices.length == 0) return result;
-        for(let n = 0; n < vertices.length; n++) {
-            let x = vertices[n].x;
-            let y = vertices[n].y;
-            if (x < result.left) result.left = x;
-            if (x > result.right) result.right = x;
-            if (y < result.top) result.top = y;
-            if (y > result.bottom) result.bottom = y;
-        }
-        return result;
-    }
-
     public getShadowOnAxis(axisX: number, axisY: number): { minScalar: number, maxScalar: number } {
         let vertices = this.vertices;
         if (vertices.length == 0) return null;
@@ -177,15 +130,6 @@ class SatCollider implements ICollider {
 
         }
         return { minScalar: minScalar, maxScalar: maxScalar };
-    }
-
-    private max(a: { x: number, y: number }, b: { x: number, y: number }): { x: number, y: number } {
-        if (this.sqrMag(a.x, a.y) > this.sqrMag(b.x, b.y)) return a;
-        return b;
-    }
-
-    private sqrMag(x: number, y: number): number {
-        return (x * x) + (y * y)
     }
 
     public overlapsPoint(pointX: number, pointY: number): boolean {
@@ -229,19 +173,6 @@ class SatCollider implements ICollider {
             }
         }
         return nearestPoint;
-    }
-    private isInVertRange(x: number, y: number, vertIndex: number,  local: boolean = false) {
-        let vertNow = this._vertices[vertIndex];
-        let vertNext = this._vertices[vertIndex >= this._vertices.length - 1 ? 0 : vertIndex + 1];
-        if (!local) {
-            vertNow = this.getVertexWorldPosition(vertNow);
-            vertNext = this.getVertexWorldPosition(vertNext);
-        }
-        let minX = Math.min(vertNow.x, vertNext.x);
-        let minY = Math.min(vertNow.y, vertNext.y);
-        let maxX = Math.max(vertNow.x, vertNext.x);
-        let maxY = Math.max(vertNow.y, vertNext.y); 
-        return x >= minX && x <= maxX && y >= minY && y <= maxY;
     }
 
     public getFirstCollisionPointWithRay(x0: number, y0: number, xDir: number, yDir: number): 
@@ -299,19 +230,22 @@ class SatCollider implements ICollider {
         return result;
     }
 
-    private pointIsOnLineSegment(pointX, pointY, lineStartX, lineStartY, lineEndX, lineEndY): boolean {
-        let lineVector = {
-            x: lineEndX - lineStartX, 
-            y: lineEndY - lineStartY
-        };
-        if (algebra.angleBetween(lineVector.x, lineVector.y, pointX, pointY) > 0.00001) return false;
-        return pointX > lineStartX && pointX < lineEndX 
-            && pointY > lineStartY && pointY < lineEndY;
-    }
-
-
     public getNearestCorner(x: number, y: number): { x: number, y: number } {
         return null;
+    }
+
+    private isInVertRange(x: number, y: number, vertIndex: number,  local: boolean = false) {
+        let vertNow = this._vertices[vertIndex];
+        let vertNext = this._vertices[vertIndex >= this._vertices.length - 1 ? 0 : vertIndex + 1];
+        if (!local) {
+            vertNow = this.getVertexWorldPosition(vertNow);
+            vertNext = this.getVertexWorldPosition(vertNext);
+        }
+        let minX = Math.min(vertNow.x, vertNext.x);
+        let minY = Math.min(vertNow.y, vertNext.y);
+        let maxX = Math.max(vertNow.x, vertNext.x);
+        let maxY = Math.max(vertNow.y, vertNext.y); 
+        return x >= minX && x <= maxX && y >= minY && y <= maxY;
     }
 
     private getVertexWorldPosition(point: { x: number, y: number }): { x: number, y: number } {
@@ -320,10 +254,50 @@ class SatCollider implements ICollider {
         return { x: x, y: y };
     }
 
-    private getVertexViewPosition(point: { x: number, y: number }, viewX: number, viewY: number): { x: number, y: number } {
-        let worldPoint = this.getVertexWorldPosition(point);
-        let x = worldPoint.x - viewX;
-        let y = worldPoint.y - viewY;
-        return { x: x, y: y };
+    private getOutlineVector(cornerIndex: number): {x: number, y: number} {
+        const startVertex = this.vertices[cornerIndex];
+        let endVertex = this.vertices[0];
+        if (cornerIndex < this.vertices.length - 1) {
+            endVertex = this.vertices[cornerIndex + 1];
+        }
+        const dirX = endVertex.x - startVertex.x;
+        const dirY = endVertex.y - startVertex.y;
+        return {x: dirX, y: dirY};
+    }
+
+    private getNormals(vertices: {x: number, y: number}[]) : {x:number, y:number}[] {
+        let result: {x: number, y: number}[] = [];
+        for(let n = 0; n < vertices.length; n++) {
+            let nextN = (n == vertices.length - 1) ? 0 : n + 1;
+            let normal = {
+                x: vertices[n].y - vertices[nextN].y,
+                y: vertices[nextN].x - vertices[n].x
+            }
+            let magnitude = algebra.magnitude(normal.x, normal.y);
+            if (magnitude == 0) return;
+            normal.x /= magnitude;
+            normal.y /= magnitude;
+            result.push(normal);
+        }
+        return result;
+    }
+
+    private getBoundingBox(vertices: {x: number, y: number}[]) : { left:number, right: number, top:number, bottom: number } {
+        let result = {
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0
+        }
+        if (vertices.length == 0) return result;
+        for(let n = 0; n < vertices.length; n++) {
+            let x = vertices[n].x;
+            let y = vertices[n].y;
+            if (x < result.left) result.left = x;
+            if (x > result.right) result.right = x;
+            if (y < result.top) result.top = y;
+            if (y > result.bottom) result.bottom = y;
+        }
+        return result;
     }
 }

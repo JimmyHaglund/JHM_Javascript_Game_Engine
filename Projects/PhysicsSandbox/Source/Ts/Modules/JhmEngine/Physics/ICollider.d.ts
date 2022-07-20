@@ -1,6 +1,9 @@
-interface ICollider extends IDestroyable {
+interface ICollider {
     centre: { x: number, y: number };
     worldCentre: { x: number, y: number };
+    boundingBox: { left: number, right: number, top: number, bottom: number};
+    boundingRadius: number;
+
     overlapsPoint(pointX: number, pointY: number): boolean;
     getNearestPoint(pointX: number, pointY: number): {x: number, y: number};
     getNearestBoundingPoint(pointX: number, pointY: number): {x: number, y: number};
@@ -17,10 +20,6 @@ interface ICollider extends IDestroyable {
         normalX: number;
         normalY: number;
     }[];
-    getNearestCorner(x: number, y: number): {
-        x: number;
-        y: number;
-    };
     getShadowOnAxis(axisDirectionX: number, axisDirectionY:number): { minScalar: number, maxScalar: number };
     getCollision(other: ICollider, checkOther: boolean): { x: number, y: number, normalX: number, normalY: number};
 }

@@ -1,8 +1,9 @@
 class SatColliderRenderer {
-    constructor(collider, color = 'black') {
+    constructor(collider, color = 'black', normalColor = "red") {
         this._onDestroy = new Action();
         this._collider = collider;
         this._color = color;
+        this._normalColor = normalColor;
     }
     get onDestroy() { return this._onDestroy; }
     render(context, viewX, viewY) {
@@ -20,7 +21,7 @@ class SatColliderRenderer {
         }
         context.closePath();
         context.stroke();
-        context.strokeStyle = "red";
+        context.strokeStyle = this._normalColor;
         for (let n = 0; n < this._collider.normals.length; n++) {
             let nextN = (n == this._collider.vertices.length - 1) ? 0 : n + 1;
             let pointA = this.getVertexViewPosition(points[n], viewX, viewY);
