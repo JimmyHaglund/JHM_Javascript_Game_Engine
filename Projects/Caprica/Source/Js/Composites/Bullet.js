@@ -21,6 +21,9 @@ class Bullet {
         this._rigidbody.velocity = { x: 0, y: 0 };
     }
     onHit(collisionData, collider) {
+        if (Bullet.targets.find((target => target.collider == collider))) {
+        }
         this.disable();
     }
 }
+Bullet.targets = [];

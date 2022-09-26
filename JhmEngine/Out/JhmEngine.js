@@ -149,6 +149,8 @@ class Entity {
 
 
 
+
+
 class Loop {
     constructor(ticksPerSecond = 60, startPaused = false) {
         this._interval = null;

@@ -7,7 +7,7 @@ class CapricaMainCharacter {
     private _lookCone:AimConeRenderer;
     private _lookController: CapricaLookController;
     private _gun: Gun;
-    private _sprite: CapricaMainCharacterSprite;
+    private _sprite: CapricaCharacterSprite;
 
     public get entity() { return this._entity; }
     public get rigidbody() { return this._rigidbody; }
@@ -17,8 +17,8 @@ class CapricaMainCharacter {
     public get gun() { return this._gun; }
 
     constructor(xPosition: number, yPosition: number, inputLoop: Loop, movementLoop: Loop,
-        legRenderLayer: IRenderLayer, armRenderLayer: IRenderLayer, torsoRenderLayer:IRenderLayer,
-         camera:Camera, physics: PhysicsSpace) {
+    legRenderLayer: IRenderLayer, armRenderLayer: IRenderLayer, torsoRenderLayer:IRenderLayer,
+    camera:Camera, physics: PhysicsSpace) {
         this._entity = new Entity(xPosition, yPosition);
         this.initialiseMovementController(inputLoop);
         this.initialiseLookController(camera, inputLoop);
@@ -77,17 +77,13 @@ class CapricaMainCharacter {
             armDown: 'armsDown',
             armUp: 'armsAim',
             torso: 'torso'
-        }
-        let legA = new RotatedSprite(transform, ids.legA);
-        let legB = new RotatedSprite(transform, ids.legB);
-        let armDown = new RotatedSprite(transform, ids.armDown)
-        let armUp = new RotatedSprite(transform, ids.armUp);
-        let torso = new RotatedSprite(transform, ids.torso);
+        };
+        let sprites = CapricaCharacterSprite.generateSprites(this._entity.transform,'legsA','legsB','armsDown','armsAim','torso');
 
-        this._sprite = new CapricaMainCharacterSprite(loop, renderLayerLegs, renderLayerArms, renderLayerTorso, movementController)
-            .withArms(armDown, armUp)
-            .withLegs(legA, legB)
-            .withTorso(torso);
+        this._sprite = new CapricaCharacterSprite(loop, renderLayerLegs, renderLayerArms, renderLayerTorso, movementController)
+            .withArms(sprites.armDown,sprites.armUp)
+            .withLegs(sprites.legA, sprites.legB)
+            .withTorso(sprites.torso);
     }
     /*
     private initialiseRendering(entity: Entity, renderSpace: IRenderLayer): void {

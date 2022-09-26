@@ -1,0 +1,4 @@
+interface IStatefulSprite {
+    sprite: RotatedSprite;
+    
+}

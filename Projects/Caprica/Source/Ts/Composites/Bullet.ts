@@ -5,6 +5,7 @@ class Bullet {
    private _collider: ICollider;
    private _onDestroy: Action = new Action();
    private _renderLayer: IRenderLayer;
+   public static readonly targets: {collider: ICollider, entity: Entity}[] = [];
 
    public get onDestroy(): Action { return this._onDestroy; }
    public get entity(): Entity { return this._entity; }
@@ -31,6 +32,9 @@ class Bullet {
    }
 
    private onHit(collisionData, collider): void {
+      if (Bullet.targets.find((target => target.collider == collider))) {
+         
+      }
       this.disable();
    }
 }

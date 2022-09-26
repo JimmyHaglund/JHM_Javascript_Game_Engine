@@ -5,7 +5,7 @@ let gameData: {
   renderLayers: IRenderLayer[],
   physics: PhysicsSpace,
   mainCharacter: CapricaMainCharacter,
-  lookController: CapricaLookController
+  lookController: CapricaLookController,
 }
 
 function capricaStart(canvasId: string) {

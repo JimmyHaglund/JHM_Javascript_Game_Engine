@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<head>
+    <style>
+        button {
+            position: relative;
+            min-width: 250px;
+            min-height: 250px;
+        }
+    </style>
+<script src ="./State.js"></script>
+<script src ="./Action.js"></script>
+<script>
+    let setText = (text, target) => {
+        let textElement = document.getElementById(target);
+        textElement.innerHTML = text;
+    }
+    let stateA = new State();
+    let stateB = new State();
+    let stateC = new State();
+    let currentState = stateA;
+    let gotoA = () => currentState.goTo(stateA);
+    let gotoB = () => currentState.goTo(stateB);
+    let gotoC = () => currentState.goTo(stateC);    
+
+    stateA.addTransition(stateB);
+    stateB.addTransition(stateC);
+    stateC.addTransition(stateA);
+    stateA.onEnter.add(() => setText("A", "stateText"), document);
+    stateA.onEnter.add(() => currentState = stateA);
+    stateA.onExit.add(()=>setText("A", "previousStateText"), document);
+    stateB.onEnter.add(() => setText("B", "stateText"), document);
+    stateB.onEnter.add(() => currentState = stateB);
+    stateB.onExit.add(()=>setText("B", "previousStateText"), document);
+    stateC.onEnter.add(() => setText("C", "stateText"), document);
+    stateC.onEnter.add(() => currentState = stateC);
+    stateC.onExit.add(()=>setText("C", "previousStateText"), document);
+</script>
+
+
+</head>
+<body>
+    <div>
+        <h3>Current State:</h3>
+        <div id="stateText">N/A</div>
+    </div>
+    <div>
+        <h3>Previous State:</h3>
+        <div id="previousStateText">N/A</div>
+    </div>
+    <button onclick="gotoA()">A</button> 
+    <button onclick="gotoB()">B</button>
+    <button onclick="gotoC()">C</button>
+
+</body>
