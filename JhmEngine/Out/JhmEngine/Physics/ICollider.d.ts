@@ -1,4 +1,4 @@
-interface ICollider {
+interface ICollider extends IComponent, IDestroyable {
     centre: {
         x: number;
         y: number;

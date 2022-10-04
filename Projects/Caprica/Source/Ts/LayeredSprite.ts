@@ -1,5 +1,5 @@
-class LayeredSprite {
-    private _layers: Sprite[][]= [];
+class StatefulSprite {
+    private _sprites: Sprite[][]= [];
     private _loop: ILoop;
     private _entity: Entity;
 
@@ -8,7 +8,6 @@ class LayeredSprite {
     private _currentLegSprite: RotatedSprite;
     private _movementController: CapricaMovementController;
     private _legsVisible: boolean = false;
-    
     private get moving(): boolean { return this._movementController.moving; }
     
     constructor(loop: ILoop, legLayer: IRenderLayer, armLayer: IRenderLayer, torsoLayer: IRenderLayer, movementController: CapricaMovementController) {

@@ -3,7 +3,7 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
     protected _image: HTMLImageElement;
     protected _width: number;
     protected _height: number;
-    protected _transform: ITransform;
+    protected _entity: Entity;
     protected _crop: {
         width: number,
         height: number,
@@ -30,9 +30,10 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
     set width(value: number) { this._width = value; }
     get height(): number { return this._width; }
     set height(value: number) { this._height = value; }
-    get Transform(): ITransform { return this._transform; }
+    get Transform(): ITransform { return this._entity; }
+    get rotation(): number { return this._entity.rotation; }
 
-    constructor(transform: ITransform, spriteId: string = "") {
+    constructor(entity: Entity, spriteId: string = "") {
         this._spriteId = spriteId;
         this._image = document.getElementById(spriteId) as HTMLImageElement;
         if (this._image != null) {
@@ -49,14 +50,20 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
             console.log("Warning: Sprite component with sprite id",
                 spriteId, "failed to find an image.");
         }
-        this._transform = transform;
+        this._entity = entity;
     }
+    entity: Entity;
 
     public destroy(): void {
         this._onDestroy.invoke();
     }
     
     public render(context: CanvasRenderingContext2D, viewX:number, viewY:number):void {
+        let renderStrategy = this.rotation === 0 ? this.renderNonRotated : this.renderRotated;
+        renderStrategy(context, viewX, viewY);
+    }
+
+    private renderNonRotated(context: CanvasRenderingContext2D, viewX:number, viewY:number):void {
         if (this._image == null) return;
         let translationX = this.translation.x - viewX;
         let translationY = this.translation.y - viewY;
@@ -69,6 +76,29 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
             },
             reset: function () {
                 context.globalAlpha = contextSettings.contextAlpha;
+                context.translate(-contextSettings.translation.x, -contextSettings.translation.y);
+            }
+        }
+        contextSettings.apply();
+        this.drawSprite(context);
+        contextSettings.reset();
+    }
+
+    private renderRotated(context: CanvasRenderingContext2D, viewX:number, viewY:number) {
+        let translationX = this.translation.x - viewX;
+        let translationY = this.translation.y - viewY;
+        let contextSettings = {
+            contextAlpha: context.globalAlpha,
+            translation: { x:translationX, y:translationY },
+            rotation: -this.rotation,
+            apply: function () {
+                context.globalAlpha = this._alpha;
+                context.translate(contextSettings.translation.x, contextSettings.translation.y);
+                context.rotate(contextSettings.rotation);
+            },
+            reset: function () {
+                context.globalAlpha = contextSettings.contextAlpha;
+                context.rotate(-contextSettings.rotation);
                 context.translate(-contextSettings.translation.x, -contextSettings.translation.y);
             }
         }
@@ -93,8 +123,8 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
 
     protected get translation(): { x: number, y: number } {
         return {
-            x: this._transform.worldX,
-            y: this._transform.worldY
+            x: this._entity.worldX,
+            y: this._entity.worldY
         }
     }
 }

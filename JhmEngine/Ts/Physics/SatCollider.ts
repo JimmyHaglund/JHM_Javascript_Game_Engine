@@ -1,4 +1,4 @@
-class SatCollider implements ICollider {
+class SatCollider implements ICollider, IComponent, IDestroyable {
     private _entity: Entity;
     private _vertices: { x: number, y: number }[];
     private _normals: { x: number, y: number }[];
@@ -212,7 +212,7 @@ class SatCollider implements ICollider {
         for(let n = 0; n < this._vertices.length; n++) {
             let lineStart = this.getVertexWorldPosition(this._vertices[n]); 
             let direction = this.getOutlineVector(n);
-            let result = closestPointOnLine(targetX, targetY, lineStart.x, lineStart.y, lineStart.x + direction.x, lineStart.y + direction.y);
+            let result = algebra.closestPointOnLine(targetX, targetY, lineStart.x, lineStart.y, lineStart.x + direction.x, lineStart.y + direction.y);
             // If no orthogonal point is found, the closest possible should be the corner.
             if (!this.isInVertRange(result.x, result.y, n)) result = lineStart;
             let distance = algebra.squareDistance(result.x, result.y, targetX, targetY);

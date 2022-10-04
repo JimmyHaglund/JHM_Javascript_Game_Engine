@@ -1,6 +1,6 @@
 // Dependencies: Sprite
 class RotatedSprite extends Sprite {
-    get rotation() { return this._transform.rotation; }
+    get rotation() { return this._entity.rotation; }
     render(context, viewX, viewY) {
         let translationX = this.translation.x - viewX;
         let translationY = this.translation.y - viewY;

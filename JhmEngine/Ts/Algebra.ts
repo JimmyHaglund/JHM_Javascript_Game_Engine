@@ -12,6 +12,34 @@ let algebra = {
             y: intersectPointY
         }
     },
+    project: function (targetX: number, targetY: number, projectOnX:number, projectOnY:number): {x: number, y: number} {
+        let dot = targetX * projectOnX + targetY * projectOnY;
+        let pLengthSquared = projectOnX * projectOnX + projectOnY * projectOnY;
+        let length = dot / (pLengthSquared);
+        return {
+           x: projectOnX * length,
+           y: projectOnY * length
+        };
+     },
+    // Accepts a point and two points defining a line. Returns the point on the line that is closes to the provided point.
+    closestPointOnLine :function(targetX: number, targetY: number, linePointAX: number, linePointAY: number, linePointBX: number, linePointBY: number): { x: number, y: number } {
+    let relativePoint = {
+       x: targetX - linePointAX,
+       y: targetY - linePointAY
+    };
+    let relativeLine = { 
+       x: linePointBX - linePointAX,
+       y: linePointBY - linePointAY
+    };
+    let projection = (algebra.project(relativePoint.x, relativePoint.y, relativeLine.x, relativeLine.y));
+ 
+    return {
+       x: linePointAX + projection.x,
+       y: linePointAY + projection.y
+    };
+ },
+ 
+ 
 
     squareDistance: function (x0: number, y0: number, x1: number, y1: number): number {
         return (x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0);

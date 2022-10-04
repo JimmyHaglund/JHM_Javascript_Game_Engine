@@ -24,6 +24,24 @@ class BoxCollider {
         let y = this._entity.transform.y + this.offset.y;
         return { x: x, y: y };
     }
+    getNearestPoint(pointX, pointY) {
+        throw new Error("Method not implemented.");
+    }
+    getNearestBoundingPoint(pointX, pointY) {
+        throw new Error("Method not implemented.");
+    }
+    getFirstCollisionPointWithRay(x0, y0, xDir, yDir) {
+        throw new Error("Method not implemented.");
+    }
+    getCollisionPointsWithRay(x0, y0, lean, length) {
+        throw new Error("Method not implemented.");
+    }
+    getShadowOnAxis(axisDirectionX, axisDirectionY) {
+        throw new Error("Method not implemented.");
+    }
+    getCollision(other, checkOther) {
+        throw new Error("Method not implemented.");
+    }
     destroy() {
         this._onDestroy.invoke();
     }

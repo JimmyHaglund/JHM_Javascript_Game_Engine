@@ -3,7 +3,7 @@ declare class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, I
     private _velocity;
     private _previousX;
     private _previousY;
-    private _transform;
+    private _entity;
     private _drag;
     private readonly _onDestroy;
     private readonly _loopAction;
@@ -23,8 +23,8 @@ declare class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, I
     get onCollisionExit(): Action;
     get onCollisionStay(): Action;
     get onDestroy(): Action;
-    get entity(): ITransform;
-    constructor(transform: ITransform);
+    get entity(): Entity;
+    constructor(entity: Entity);
     update(deltaTime: number): void;
     destroy(): void;
     checkCollision(colliders: ICollider[]): void;
