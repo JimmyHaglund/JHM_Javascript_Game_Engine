@@ -1,6 +1,6 @@
 class Entity implements IDestroyable, ITransform {
     private _transform: Transform = new Transform();
-    private _components: { component: any, id: ClassId} [] = [];
+    private _components: IComponent[] = [];
     private _onDestroy: Action = new Action();
 
     get onDestroy() { return this._onDestroy; }
@@ -16,11 +16,11 @@ class Entity implements IDestroyable, ITransform {
         this.onDestroy.invoke;
     }
     
-    addComponent(component: any, id: ClassId): void {
-        this._components.push({ component: component, id: id });
+    addComponent(component: IComponent): void {
+        this._components.push(component);
     }
 
-    removeComponent(component: any): void {
+    removeComponent(component: IComponent): void {
         let index = this._components.indexOf(component);
         if (index == -1) return;
         this._components.splice(index, 1);

@@ -30,7 +30,7 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
     set width(value: number) { this._width = value; }
     get height(): number { return this._width; }
     set height(value: number) { this._height = value; }
-    get Transform(): ITransform { return this._entity; }
+    get entity(): Entity { return this._entity; }
     get rotation(): number { return this._entity.rotation; }
 
     constructor(entity: Entity, spriteId: string = "") {
@@ -51,8 +51,8 @@ class Sprite implements IRenderable, IDestroyable, IComponent {
                 spriteId, "failed to find an image.");
         }
         this._entity = entity;
+        this._entity.addComponent(this);
     }
-    entity: Entity;
 
     public destroy(): void {
         this._onDestroy.invoke();

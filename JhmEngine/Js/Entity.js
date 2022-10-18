@@ -12,8 +12,8 @@ class Entity {
     destroy() {
         this.onDestroy.invoke;
     }
-    addComponent(component, id) {
-        this._components.push({ component: component, id: id });
+    addComponent(component) {
+        this._components.push(component);
     }
     removeComponent(component) {
         let index = this._components.indexOf(component);

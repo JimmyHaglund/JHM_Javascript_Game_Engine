@@ -4,5 +4,5 @@ interface ILoop {
     onUpdate: Action;
     pause(): void;
     play(): void;
-    update(): void
+    update(): void;
 }

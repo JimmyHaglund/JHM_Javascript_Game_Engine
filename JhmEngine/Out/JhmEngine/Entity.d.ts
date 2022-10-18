@@ -4,14 +4,11 @@ declare class Entity implements IDestroyable, ITransform {
     private _onDestroy;
     get onDestroy(): Action;
     get transform(): Transform;
-    get components(): {
-        component: any;
-        id: ClassId;
-    }[];
+    get components(): IComponent[];
     constructor(positionX?: number, positionY?: number);
     destroy(): void;
-    addComponent(component: any, id: ClassId): void;
-    removeComponent(component: any): void;
+    addComponent(component: IComponent): void;
+    removeComponent(component: IComponent): void;
     getComponent<T>(type: ClassId): T;
     get x(): number;
     set x(value: number);

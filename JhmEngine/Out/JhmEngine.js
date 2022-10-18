@@ -141,8 +141,8 @@ class Entity {
     destroy() {
         this.onDestroy.invoke;
     }
-    addComponent(component, id) {
-        this._components.push({ component: component, id: id });
+    addComponent(component) {
+        this._components.push(component);
     }
     removeComponent(component) {
         let index = this._components.indexOf(component);
@@ -1324,6 +1324,7 @@ class Sprite {
             console.log("Warning: Sprite component with sprite id", spriteId, "failed to find an image.");
         }
         this._entity = entity;
+        this._entity.addComponent(this);
     }
     set alpha(value) { this._alpha = value; }
     get alpha() { return this._alpha; }
@@ -1341,7 +1342,7 @@ class Sprite {
     set width(value) { this._width = value; }
     get height() { return this._width; }
     set height(value) { this._height = value; }
-    get Transform() { return this._entity; }
+    get entity() { return this._entity; }
     get rotation() { return this._entity.rotation; }
     destroy() {
         this._onDestroy.invoke();

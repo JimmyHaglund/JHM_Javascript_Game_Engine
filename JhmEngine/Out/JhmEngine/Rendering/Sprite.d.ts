@@ -25,10 +25,9 @@ declare class Sprite implements IRenderable, IDestroyable, IComponent {
     set width(value: number);
     get height(): number;
     set height(value: number);
-    get Transform(): ITransform;
+    get entity(): Entity;
     get rotation(): number;
     constructor(entity: Entity, spriteId?: string);
-    entity: Entity;
     destroy(): void;
     render(context: CanvasRenderingContext2D, viewX: number, viewY: number): void;
     private renderNonRotated;

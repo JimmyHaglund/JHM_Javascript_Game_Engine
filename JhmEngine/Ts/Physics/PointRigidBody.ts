@@ -16,6 +16,13 @@ class PointRigidBody implements IRigidbody, IPhysicsActor, IComponent, IDestroya
 
     private readonly _onCollisionExit: Action = new Action();
     private readonly _onCollisionStay: Action = new Action();
+    public static typeName:string = "PointRigidBody"; 
+
+    public implements(classId: string):boolean {
+        if (PointRigidBody.typeName === classId) return true;
+
+    }
+
     /*
     // TODO: Implement collision stay & triggers
     private readonly _activeCollisionData: {

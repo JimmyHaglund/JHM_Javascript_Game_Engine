@@ -37,6 +37,31 @@ let algebra = {
             y: intersectPointY
         };
     },
+    project: function (targetX, targetY, projectOnX, projectOnY) {
+        let dot = targetX * projectOnX + targetY * projectOnY;
+        let pLengthSquared = projectOnX * projectOnX + projectOnY * projectOnY;
+        let length = dot / (pLengthSquared);
+        return {
+            x: projectOnX * length,
+            y: projectOnY * length
+        };
+    },
+    // Accepts a point and two points defining a line. Returns the point on the line that is closes to the provided point.
+    closestPointOnLine: function (targetX, targetY, linePointAX, linePointAY, linePointBX, linePointBY) {
+        let relativePoint = {
+            x: targetX - linePointAX,
+            y: targetY - linePointAY
+        };
+        let relativeLine = {
+            x: linePointBX - linePointAX,
+            y: linePointBY - linePointAY
+        };
+        let projection = (algebra.project(relativePoint.x, relativePoint.y, relativeLine.x, relativeLine.y));
+        return {
+            x: linePointAX + projection.x,
+            y: linePointAY + projection.y
+        };
+    },
     squareDistance: function (x0, y0, x1, y1) {
         return (x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0);
     },
@@ -146,6 +171,8 @@ class Entity {
     get parent() { return this._transform.parent; }
     set parent(value) { this._transform.parent = value; }
 }
+
+
 
 
 
@@ -414,6 +441,24 @@ class BoxCollider {
         let y = this._entity.transform.y + this.offset.y;
         return { x: x, y: y };
     }
+    getNearestPoint(pointX, pointY) {
+        throw new Error("Method not implemented.");
+    }
+    getNearestBoundingPoint(pointX, pointY) {
+        throw new Error("Method not implemented.");
+    }
+    getFirstCollisionPointWithRay(x0, y0, xDir, yDir) {
+        throw new Error("Method not implemented.");
+    }
+    getCollisionPointsWithRay(x0, y0, lean, length) {
+        throw new Error("Method not implemented.");
+    }
+    getShadowOnAxis(axisDirectionX, axisDirectionY) {
+        throw new Error("Method not implemented.");
+    }
+    getCollision(other, checkOther) {
+        throw new Error("Method not implemented.");
+    }
     destroy() {
         this._onDestroy.invoke();
     }
@@ -565,7 +610,7 @@ class PhysicsSpace {
 }
 
 class PointRigidBody {
-    constructor(transform) {
+    constructor(entity) {
         this.dragEnabled = true;
         this._velocity = { x: 0, y: 0 };
         this._onDestroy = new Action();
@@ -573,9 +618,9 @@ class PointRigidBody {
         this._onCollisionEnter = new Action();
         this._onCollisionExit = new Action();
         this._onCollisionStay = new Action();
-        this._transform = transform;
-        this._previousX = transform.x;
-        this._previousY = transform.y;
+        this._entity = entity;
+        this._previousX = entity.x;
+        this._previousY = entity.y;
         this._drag = new PercentageDrag(5);
     }
     /*
@@ -592,7 +637,7 @@ class PointRigidBody {
     get onCollisionExit() { return this._onCollisionExit; }
     get onCollisionStay() { return this._onCollisionStay; }
     get onDestroy() { return this._onDestroy; }
-    get entity() { return this._transform; }
+    get entity() { return this._entity; }
     update(deltaTime) {
         // this._deltaTime = deltaTime;
         if (this.dragEnabled) {
@@ -606,25 +651,25 @@ class PointRigidBody {
     }
     checkCollision(colliders) {
         colliders.forEach(collider => {
-            if (collider.overlapsPoint(this._transform.x, this._transform.y)) {
+            if (collider.overlapsPoint(this._entity.x, this._entity.y)) {
                 let x0 = this._previousX;
                 let y0 = this._previousY;
-                let x1 = this._transform.x;
-                let y1 = this._transform.y;
-                let dX = this._transform.x - this._previousX;
-                let dY = this._transform.y - this._previousY;
+                let x1 = this._entity.x;
+                let y1 = this._entity.y;
+                let dX = this._entity.x - this._previousX;
+                let dY = this._entity.y - this._previousY;
                 let lean = dY / dX;
                 if (dX == 0)
                     lean = 100000;
-                let collisionData = collider.getCollisionPointWithRay(x0, y0, dX, dY);
+                let collisionData = collider.getFirstCollisionPointWithRay(x0, y0, dX, dY);
                 if (collisionData == null)
                     return;
                 let deltaColX = collisionData.x - x1;
                 let deltaColY = collisionData.y - y1;
                 this._velocity.x -= collisionData.normalX * this._velocity.x * -Math.sign(dX);
                 this._velocity.y -= collisionData.normalY * this._velocity.y * -Math.sign(dY);
-                this._transform.x -= collisionData.normalX * deltaColX * -Math.sign(deltaColX);
-                this._transform.y -= collisionData.normalY * deltaColY * -Math.sign(deltaColY);
+                this._entity.x -= collisionData.normalX * deltaColX * -Math.sign(deltaColX);
+                this._entity.y -= collisionData.normalY * deltaColY * -Math.sign(deltaColY);
                 this._onCollisionEnter.invoke.call(this._onCollisionEnter, collisionData, collider);
             }
         });
@@ -637,10 +682,10 @@ class PointRigidBody {
     move(deltaTime) {
         if (deltaTime == undefined || deltaTime <= 0)
             return;
-        this._previousX = this._transform.x;
-        this._previousY = this._transform.y;
-        this._transform.x += deltaTime * this._velocity.x;
-        this._transform.y += deltaTime * this._velocity.y;
+        this._previousX = this._entity.x;
+        this._previousY = this._entity.y;
+        this._entity.x += deltaTime * this._velocity.x;
+        this._entity.y += deltaTime * this._velocity.y;
     }
     applyDrag(deltaTime) {
         let drag = this._drag.getDrag(this._velocity.x, this._velocity.y);
@@ -689,16 +734,16 @@ class RayRender {
 }
 
 class Rigidbody {
-    constructor(transform) {
+    constructor(entity) {
         this.dragEnabled = true;
         this._velocity = { x: 0, y: 0 };
         this._onDestroy = new Action();
         this._onCollisionEnter = new Action();
         this._onCollisionExit = new Action();
         this._onCollisionStay = new Action();
-        this._transform = transform;
-        this._previousX = transform.x;
-        this._previousY = transform.y;
+        this._entity = entity;
+        this._previousX = entity.x;
+        this._previousY = entity.y;
         this._drag = new PercentageDrag(5);
     }
     set velocity(value) { this._velocity = value; }
@@ -707,7 +752,7 @@ class Rigidbody {
     get onCollisionExit() { return this._onCollisionExit; }
     get onCollisionStay() { return this._onCollisionStay; }
     get onDestroy() { return this._onDestroy; }
-    get entity() { return this._transform; }
+    get entity() { return this._entity; }
     update(deltaTime) {
         if (this.dragEnabled) {
             this.applyDrag(deltaTime);
@@ -724,24 +769,24 @@ class Rigidbody {
         colliders.forEach(collider => {
             if (collider == this._collider)
                 return;
-            var nearestPoint = this._collider.getNearestCorner(collider.centre.x, collider.centre.y);
+            var nearestPoint = this._collider.getNearestBoundingPoint(collider.centre.x, collider.centre.y);
             if (collider.overlapsPoint(nearestPoint.x, nearestPoint.y)) {
                 let x0 = this._previousX;
                 let y0 = this._previousY;
-                let x1 = this._transform.x;
-                let y1 = this._transform.y;
-                let dX = this._transform.x - this._previousX;
-                let dY = this._transform.y - this._previousY;
+                let x1 = this._entity.x;
+                let y1 = this._entity.y;
+                let dX = this._entity.x - this._previousX;
+                let dY = this._entity.y - this._previousY;
                 let lean = dY / dX;
                 if (dX == 0)
                     lean = 100000;
-                let collisionData = collider.getCollisionPointWithRay(x0, y0, dX, dY);
+                let collisionData = collider.getFirstCollisionPointWithRay(x0, y0, dX, dY);
                 let deltaColX = collisionData.x - x1;
                 let deltaColY = collisionData.y - y1;
                 this._velocity.x -= collisionData.normalX * this._velocity.x * -Math.sign(dX);
                 this._velocity.y -= collisionData.normalY * this._velocity.y * -Math.sign(dY);
-                this._transform.x -= collisionData.normalX * deltaColX * -Math.sign(deltaColX);
-                this._transform.y -= collisionData.normalY * deltaColY * -Math.sign(deltaColY);
+                this._entity.x -= collisionData.normalX * deltaColX * -Math.sign(deltaColX);
+                this._entity.y -= collisionData.normalY * deltaColY * -Math.sign(deltaColY);
                 this._onCollisionEnter.invoke.call(this._onCollisionEnter, collisionData, collider);
             }
         });
@@ -754,15 +799,318 @@ class Rigidbody {
     move(deltaTime) {
         if (deltaTime == undefined || deltaTime <= 0)
             return;
-        this._previousX = this._transform.x;
-        this._previousY = this._transform.y;
-        this._transform.x += deltaTime * this._velocity.x;
-        this._transform.y += deltaTime * this._velocity.y;
+        this._previousX = this._entity.x;
+        this._previousY = this._entity.y;
+        this._entity.x += deltaTime * this._velocity.x;
+        this._entity.y += deltaTime * this._velocity.y;
     }
     applyDrag(deltaTime) {
         let drag = this._drag.getDrag(this._velocity.x, this._velocity.y);
         this._velocity.x -= drag.dragX * deltaTime;
         this._velocity.y -= drag.dragY * deltaTime;
+    }
+}
+
+class SatCollider {
+    constructor(entity, offsetX = 0, offsetY = 0, vertices) {
+        this._entity = entity;
+        this._vertices = vertices;
+        this._normals = this.getNormals(vertices);
+        this._boundingBox = this.getBoundingBox(vertices);
+        this._onDestroy = new Action();
+    }
+    get vertices() {
+        return this._vertices;
+    }
+    get onDestroy() { return this._onDestroy; }
+    get entity() { return this._entity; }
+    get normals() {
+        return this._normals;
+    }
+    get boundingBox() {
+        return this._boundingBox;
+    }
+    get boundingRadius() {
+        let boundingBox = this._boundingBox;
+        return Math.max(boundingBox.left, boundingBox.right, boundingBox.top, boundingBox.bottom);
+    }
+    get centre() {
+        const bounds = this.boundingBox;
+        const x = bounds.left + (bounds.right - bounds.left) * 0.5;
+        const y = bounds.top + (bounds.bottom - bounds.top) * 0.5;
+        return { x, y };
+    }
+    get worldCentre() {
+        const localCentre = this.centre;
+        return {
+            x: localCentre.x + this.entity.worldX,
+            y: localCentre.y + this.entity.worldY
+        };
+    }
+    destroy() {
+        this._onDestroy.invoke();
+    }
+    getCollision(other, checkOther = true) {
+        let vertices = this._vertices;
+        if (vertices.length < 2)
+            return;
+        let collidingIndex = -1;
+        let collidingDistance = Number.MAX_SAFE_INTEGER;
+        for (let n = 0; n < vertices.length; n++) {
+            let axis = this._normals[n];
+            let otherCentre = other.worldCentre;
+            let myCentre = this.worldCentre;
+            let distX = otherCentre.x - myCentre.x;
+            let distY = otherCentre.y - myCentre.y;
+            let angleDot = algebra.dot(distX, distY, axis.x, axis.y);
+            if (angleDot < 0)
+                continue;
+            let myProjection = this.getShadowOnAxis(axis.x, axis.y);
+            let theirProjection = other.getShadowOnAxis(axis.x, axis.y);
+            if (myProjection.minScalar > theirProjection.maxScalar
+                || myProjection.maxScalar < theirProjection.minScalar) {
+                // No shadow overlap -> no collision, quit
+                return null;
+            }
+            // Collision found - compare distance to determine if that's the closest to push out
+            let pen0 = Math.max(myProjection.minScalar, theirProjection.minScalar);
+            let pen1 = Math.min(myProjection.maxScalar, theirProjection.maxScalar);
+            let penetration = Math.abs(pen1 - pen0);
+            if (penetration > collidingDistance && n > 0)
+                continue;
+            if (penetration == collidingDistance) {
+                // projecting two opposite, symmetrical sides would yield the same shadow.
+                // Use the vertex with min distance to the other
+            }
+            collidingDistance = penetration;
+            collidingIndex = n;
+        }
+        // Do same thing for other polygon's vertices
+        if (checkOther) {
+            let otherCollision = other.getCollision(this, false);
+            if (otherCollision == null)
+                return null;
+            if (algebra.squareDistance(0, 0, otherCollision.normalX, otherCollision.normalY) < collidingDistance) {
+                otherCollision.normalX *= -1;
+                otherCollision.normalY *= -1;
+                return otherCollision;
+            }
+        }
+        let startVertex = vertices[collidingIndex];
+        let endVertex = vertices[0];
+        if (collidingIndex < vertices.length - 1)
+            endVertex = vertices[collidingIndex + 1];
+        let startPoint = {
+            x: startVertex.x + 0.5 * (endVertex.x - startVertex.x),
+            y: startVertex.y + 0.5 * (endVertex.y - startVertex.y)
+        };
+        let directionVector = this._normals[collidingIndex];
+        let collisionX = this._entity.worldX + startPoint.x - directionVector.x * collidingDistance;
+        let collisionY = this._entity.worldY + startPoint.y - directionVector.y * collidingDistance;
+        return {
+            x: collisionX,
+            y: collisionY,
+            normalX: -directionVector.x * collidingDistance,
+            normalY: -directionVector.y * collidingDistance
+        };
+    }
+    getOutlineVector(cornerIndex) {
+        const startVertex = this.vertices[cornerIndex];
+        let endVertex = this.vertices[0];
+        if (cornerIndex < this.vertices.length - 1) {
+            endVertex = this.vertices[cornerIndex + 1];
+        }
+        const dirX = endVertex.x - startVertex.x;
+        const dirY = endVertex.y - startVertex.y;
+        return { x: dirX, y: dirY };
+    }
+    getNormals(vertices) {
+        let result = [];
+        for (let n = 0; n < vertices.length; n++) {
+            let nextN = (n == vertices.length - 1) ? 0 : n + 1;
+            let normal = {
+                x: vertices[n].y - vertices[nextN].y,
+                y: vertices[nextN].x - vertices[n].x
+            };
+            let magnitude = algebra.magnitude(normal.x, normal.y);
+            if (magnitude == 0)
+                return;
+            normal.x /= magnitude;
+            normal.y /= magnitude;
+            result.push(normal);
+        }
+        return result;
+    }
+    getBoundingBox(vertices) {
+        let result = {
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0
+        };
+        if (vertices.length == 0)
+            return result;
+        for (let n = 0; n < vertices.length; n++) {
+            let x = vertices[n].x;
+            let y = vertices[n].y;
+            if (x < result.left)
+                result.left = x;
+            if (x > result.right)
+                result.right = x;
+            if (y < result.top)
+                result.top = y;
+            if (y > result.bottom)
+                result.bottom = y;
+        }
+        return result;
+    }
+    getShadowOnAxis(axisX, axisY) {
+        let vertices = this.vertices;
+        if (vertices.length == 0)
+            return null;
+        let worldVert = this.getVertexWorldPosition(vertices[0]);
+        let maxScalar = algebra.dot(axisX, axisY, worldVert.x, worldVert.y);
+        let minScalar = maxScalar;
+        for (let n = 1; n < vertices.length; n++) {
+            let vert = vertices[n];
+            worldVert = this.getVertexWorldPosition(vert);
+            // Projectsion: (vert • axis) / ||axis||
+            // Since the axis is normalised, there is no need to divide by its magnitude to get the projectsion
+            let scalar = algebra.dot(axisX, axisY, worldVert.x, worldVert.y);
+            maxScalar = Math.max(scalar, maxScalar);
+            if (scalar < minScalar) {
+                minScalar = scalar;
+            }
+        }
+        return { minScalar: minScalar, maxScalar: maxScalar };
+    }
+    max(a, b) {
+        if (this.sqrMag(a.x, a.y) > this.sqrMag(b.x, b.y))
+            return a;
+        return b;
+    }
+    sqrMag(x, y) {
+        return (x * x) + (y * y);
+    }
+    overlapsPoint(pointX, pointY) {
+        let boundingBox = this.getBoundingBox(this._vertices);
+        let rayCastStart = {
+            x: boundingBox.left - 10 + this._entity.worldX,
+            y: boundingBox.top + this._entity.worldY - 10
+        };
+        let raycastEnd = { x: pointX, y: pointY };
+        let rayHits = this.getCollisionPointsWithRay(rayCastStart.x, rayCastStart.y, raycastEnd.x, raycastEnd.y);
+        // By raycasting from a point outside the collider into the checked point, if the point is inside the collider
+        // the ray should hit exactly once.
+        return rayHits.length % 2 != 0;
+    }
+    getNearestPoint(targetX, targetY) {
+        if (this.overlapsPoint(targetX, targetY))
+            return { x: targetX, y: targetY };
+        return this.getNearestBoundingPoint(targetX, targetY);
+    }
+    getNearestBoundingPoint(targetX, targetY) {
+        let nearestPoint = { x: -1, y: -1 };
+        if (this._vertices.length < 1)
+            return nearestPoint;
+        let nearestDistance = Number.MAX_SAFE_INTEGER;
+        for (let n = 0; n < this._vertices.length; n++) {
+            let lineStart = this.getVertexWorldPosition(this._vertices[n]);
+            let direction = this.getOutlineVector(n);
+            let result = algebra.closestPointOnLine(targetX, targetY, lineStart.x, lineStart.y, lineStart.x + direction.x, lineStart.y + direction.y);
+            // If no orthogonal point is found, the closest possible should be the corner.
+            if (!this.isInVertRange(result.x, result.y, n))
+                result = lineStart;
+            let distance = algebra.squareDistance(result.x, result.y, targetX, targetY);
+            if (distance < nearestDistance) {
+                console.log("sqrDist: ", distance);
+                console.log("start: ", lineStart);
+                console.log("direction: ", direction);
+                console.log("point: ", result);
+                nearestDistance = distance;
+                nearestPoint = result;
+            }
+        }
+        return nearestPoint;
+    }
+    isInVertRange(x, y, vertIndex, local = false) {
+        let vertNow = this._vertices[vertIndex];
+        let vertNext = this._vertices[vertIndex >= this._vertices.length - 1 ? 0 : vertIndex + 1];
+        if (!local) {
+            vertNow = this.getVertexWorldPosition(vertNow);
+            vertNext = this.getVertexWorldPosition(vertNext);
+        }
+        let minX = Math.min(vertNow.x, vertNext.x);
+        let minY = Math.min(vertNow.y, vertNext.y);
+        let maxX = Math.max(vertNow.x, vertNext.x);
+        let maxY = Math.max(vertNow.y, vertNext.y);
+        return x >= minX && x <= maxX && y >= minY && y <= maxY;
+    }
+    getFirstCollisionPointWithRay(x0, y0, xDir, yDir) {
+        return null;
+    }
+    getCollisionPointsWithRay(x0, y0, x1, y1) {
+        let rayStart = { x: Math.min(x0, x1), y: Math.min(y0, y1) };
+        let rayEnd = { x: Math.max(x0, x1), y: Math.max(y0, y1) };
+        let rayLean = x1 == x0 ? 0 : (y1 - y0) / (x1 - x0);
+        let result = [];
+        for (let n = 0; n < this._vertices.length; n++) {
+            let nextVertIndex = n < this._vertices.length - 1 ? n + 1 : 0;
+            let currentVert = this.getVertexWorldPosition(this._vertices[n]);
+            let nextVert = this.getVertexWorldPosition(this._vertices[nextVertIndex]);
+            let vertStart = {
+                x: Math.min(currentVert.x, nextVert.x),
+                y: Math.min(currentVert.y, nextVert.y)
+            };
+            let vertEnd = {
+                x: Math.max(currentVert.x, nextVert.x),
+                y: Math.max(currentVert.y, nextVert.y)
+            };
+            let lineVector = this.getOutlineVector(n);
+            let lineVectorLean = lineVector.y / lineVector.x;
+            let linePoint = currentVert;
+            let overlap = algebra.getLineOverlapPoint(linePoint.x, linePoint.y, lineVectorLean, x0, y0, rayLean);
+            let startX = Math.max(vertStart.x, rayStart.x);
+            let startY = Math.max(vertStart.y, rayStart.y);
+            let endX = Math.min(vertEnd.x, rayEnd.x);
+            let endY = Math.min(vertEnd.y, rayEnd.y);
+            let isOnLine = (overlap.x > startX && overlap.x < endX
+                && overlap.y > startY && overlap.y < endY);
+            if (!isOnLine)
+                continue;
+            let normal = this._normals[n];
+            result.push({
+                x: overlap.x,
+                y: overlap.y,
+                normalX: normal.x,
+                normalY: normal.y
+            });
+        }
+        return result;
+    }
+    pointIsOnLineSegment(pointX, pointY, lineStartX, lineStartY, lineEndX, lineEndY) {
+        let lineVector = {
+            x: lineEndX - lineStartX,
+            y: lineEndY - lineStartY
+        };
+        if (algebra.angleBetween(lineVector.x, lineVector.y, pointX, pointY) > 0.00001)
+            return false;
+        return pointX > lineStartX && pointX < lineEndX
+            && pointY > lineStartY && pointY < lineEndY;
+    }
+    getNearestCorner(x, y) {
+        return null;
+    }
+    getVertexWorldPosition(point) {
+        let x = point.x + this.entity.worldX;
+        let y = point.y + this.entity.worldY;
+        return { x: x, y: y };
+    }
+    getVertexViewPosition(point, viewX, viewY) {
+        let worldPoint = this.getVertexWorldPosition(point);
+        let x = worldPoint.x - viewX;
+        let y = worldPoint.y - viewY;
+        return { x: x, y: y };
     }
 }
 
@@ -955,7 +1303,7 @@ class RenderLayer {
 }
 
 class Sprite {
-    constructor(transform, spriteId = "") {
+    constructor(entity, spriteId = "") {
         this._alpha = 1;
         this._offsetX = 0;
         this._offsetY = 0;
@@ -975,7 +1323,7 @@ class Sprite {
         else {
             console.log("Warning: Sprite component with sprite id", spriteId, "failed to find an image.");
         }
-        this._transform = transform;
+        this._entity = entity;
     }
     set alpha(value) { this._alpha = value; }
     get alpha() { return this._alpha; }
@@ -993,11 +1341,16 @@ class Sprite {
     set width(value) { this._width = value; }
     get height() { return this._width; }
     set height(value) { this._height = value; }
-    get Transform() { return this._transform; }
+    get Transform() { return this._entity; }
+    get rotation() { return this._entity.rotation; }
     destroy() {
         this._onDestroy.invoke();
     }
     render(context, viewX, viewY) {
+        let renderStrategy = this.rotation === 0 ? this.renderNonRotated : this.renderRotated;
+        renderStrategy(context, viewX, viewY);
+    }
+    renderNonRotated(context, viewX, viewY) {
         if (this._image == null)
             return;
         let translationX = this.translation.x - viewX;
@@ -1018,13 +1371,35 @@ class Sprite {
         this.drawSprite(context);
         contextSettings.reset();
     }
+    renderRotated(context, viewX, viewY) {
+        let translationX = this.translation.x - viewX;
+        let translationY = this.translation.y - viewY;
+        let contextSettings = {
+            contextAlpha: context.globalAlpha,
+            translation: { x: translationX, y: translationY },
+            rotation: -this.rotation,
+            apply: function () {
+                context.globalAlpha = this._alpha;
+                context.translate(contextSettings.translation.x, contextSettings.translation.y);
+                context.rotate(contextSettings.rotation);
+            },
+            reset: function () {
+                context.globalAlpha = contextSettings.contextAlpha;
+                context.rotate(-contextSettings.rotation);
+                context.translate(-contextSettings.translation.x, -contextSettings.translation.y);
+            }
+        };
+        contextSettings.apply();
+        this.drawSprite(context);
+        contextSettings.reset();
+    }
     drawSprite(context) {
         context.drawImage(this._image, this._crop.offsetX, this._crop.offsetY, this._crop.width, this._crop.height, this._offsetX, this._offsetY, this._width, this._height);
     }
     get translation() {
         return {
-            x: this._transform.worldX,
-            y: this._transform.worldY
+            x: this._entity.worldX,
+            y: this._entity.worldY
         };
     }
 }
@@ -1059,7 +1434,7 @@ class TiledBackground {
 
 // Dependencies: Sprite
 class RotatedSprite extends Sprite {
-    get rotation() { return this._transform.rotation; }
+    get rotation() { return this._entity.rotation; }
     render(context, viewX, viewY) {
         let translationX = this.translation.x - viewX;
         let translationY = this.translation.y - viewY;

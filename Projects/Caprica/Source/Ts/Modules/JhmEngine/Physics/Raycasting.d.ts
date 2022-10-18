@@ -1,3 +1,15 @@
+declare function rayToLine(x0: number, y0: number, lean: number, length: number): {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+};
+declare function lineToRay(x1: number, y1: number, x2: number, y2: number): {
+    x0: number;
+    y0: number;
+    lean: number;
+    length: number;
+};
 declare class RayRender implements IRenderable, IDestroyable {
     private _x1;
     private _y1;
